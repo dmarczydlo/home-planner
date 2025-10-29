@@ -251,8 +251,3 @@ Families face challenges in coordinating schedules for children's activities and
 - System Reliability: The success rate of external calendar synchronizations (target > 99.5%).
 - Application Performance: The average page load time for the main calendar view should be under 2 seconds.
 - User Satisfaction: Qualitative feedback gathered through surveys or feedback forms regarding ease of use and effectiveness in solving scheduling problems.
-
-## Appendix A: Architecture Reference
-
-- For the backend architectural approach (hexagonal architecture, repositories, DI via Astro middleware), see: `.ai/hexagonal-architecture-proposal.md`.
-- This file is committed to the repo and is readable by LLM tooling when referenced by its path. When asking the LLM about architecture specifics, include the relative path in your prompt to ensure it loads the correct document.
