@@ -88,7 +88,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: New User Registration and Onboarding
 - Description: As a new user, I want to sign up for the application using my Google account and be guided through an initial setup wizard so that I can quickly configure my family and start scheduling.
 - Acceptance Criteria:
-
   - A "Sign in with Google" button is present on the landing page.
   - Upon successful Google authentication, a new user account is created in Supabase.
   - The user is immediately directed to a step-by-step onboarding wizard.
@@ -101,7 +100,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Existing User Login
 - Description: As a returning user, I want to log in using my Google account so that I can access my family's calendar.
 - Acceptance Criteria:
-
   - A "Sign in with Google" button is available for returning users.
   - Upon successful authentication, the user is redirected to their family's main calendar view.
   - If authentication fails, a clear error message is displayed.
@@ -120,7 +118,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Invite Adult Family Member
 - Description: As an Admin, I want to invite another adult to join my family group so we can share and manage our schedules together.
 - Acceptance Criteria:
-
   - An option to "Invite Member" is available in the family settings.
   - The Admin can enter the email address of the person they want to invite.
   - The invited person receives an email with a unique link to join the family.
@@ -141,7 +138,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Create a One-Time Blocker Event
 - Description: As a user, I want to create a "Blocker" event for a fixed appointment, so that no other Blocker events can be scheduled at the same time.
 - Acceptance Criteria:
-
   - I can create an event by clicking a "+" button or by clicking and dragging on the calendar.
   - The event creation form includes a title, start time, end time, and participants.
   - There is a toggle to mark the event as "Blocker".
@@ -152,7 +148,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Create a One-Time Elastic Event
 - Description: As a user, I want to create an "Elastic" event for a flexible task, allowing it to be scheduled even if other events exist at the same time.
 - Acceptance Criteria:
-
   - I can create an event with a title, start/end time, and participants.
   - There is a toggle to mark the event as "Elastic" (or this is the default).
   - The system allows me to save the "Elastic" event even if it overlaps with other "Elastic" or "Blocker" events.
@@ -162,7 +157,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Create a Recurring Event
 - Description: As a user, I want to create a recurring event (e.g., weekly piano lessons) so that I don't have to enter it manually each time.
 - Acceptance Criteria:
-
   - In the event creation form, I can select a recurrence option: daily, weekly, or monthly.
   - I am required to set an end date for the recurrence.
   - Upon saving, the event appears on the calendar at all specified recurring intervals until the end date.
@@ -171,7 +165,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Edit a Single Instance of a Recurring Event
 - Description: As a user, I want to change the time of a single instance of a recurring event without affecting the other occurrences.
 - Acceptance Criteria:
-
   - When I edit a recurring event, I am prompted to choose between "Edit only this event" or "Edit all future events."
   - If I choose "Edit only this event," the changes are applied only to that specific instance.
   - The rest of the events in the series remain unchanged.
@@ -180,7 +173,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Edit All Future Events in a Series
 - Description: As a user, I want to change the time of all future instances of a recurring event from a certain point forward.
 - Acceptance Criteria:
-
   - When I edit a recurring event, I am prompted to choose between "Edit only this event" or "Edit all future events."
   - If I choose "Edit all future events," the selected event and all subsequent events in the series are updated with the new details.
   - Past events in the series are not affected.
@@ -200,7 +192,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: View Calendar by Day, Week, Month, and Agenda
 - Description: As a user, I want to switch between different calendar views (Daily, Weekly, Monthly, Agenda) so I can see my family's schedule at different levels of detail.
 - Acceptance Criteria:
-
   - The UI provides clear controls to switch between Day, Week, Month, and Agenda views.
   - The Day view shows all events for a single day in a chronological timeline.
   - The Week view shows all events for the current week.
@@ -223,7 +214,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: Connect an External Calendar
 - Description: As a user, I want to connect my Google or Microsoft 365 calendar so that my existing events are visible within the Home Planner.
 - Acceptance Criteria:
-
   - In my settings, there is an option to "Connect Calendar."
   - I can choose to connect a Google or Microsoft 365 account.
   - I am taken through the standard OAuth flow to grant read-only permission to my calendar.
@@ -234,7 +224,6 @@ Families face challenges in coordinating schedules for children's activities and
 - Title: View Synced External Events
 - Description: As a user, I want to see events from my synced external calendars displayed alongside my native Home Planner events.
 - Acceptance Criteria:
-
   - Externally synced events are displayed on all calendar views.
   - By default, my external events appear as "Busy" blocks to other family members.
   - I have an option in settings to make specific external events fully visible to my family.
@@ -262,3 +251,8 @@ Families face challenges in coordinating schedules for children's activities and
 - System Reliability: The success rate of external calendar synchronizations (target > 99.5%).
 - Application Performance: The average page load time for the main calendar view should be under 2 seconds.
 - User Satisfaction: Qualitative feedback gathered through surveys or feedback forms regarding ease of use and effectiveness in solving scheduling problems.
+
+## Appendix A: Architecture Reference
+
+- For the backend architectural approach (hexagonal architecture, repositories, DI via Astro middleware), see: `.ai/hexagonal-architecture-proposal.md`.
+- This file is committed to the repo and is readable by LLM tooling when referenced by its path. When asking the LLM about architecture specifics, include the relative path in your prompt to ensure it loads the correct document.

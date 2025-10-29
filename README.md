@@ -11,6 +11,7 @@ A web application designed to help families better coordinate and plan their sch
 - [Getting Started Locally](#getting-started-locally)
 - [Available Scripts](#available-scripts)
 - [Project Scope](#project-scope)
+- [Architecture](#architecture)
 - [Project Status](#project-status)
 - [License](#license)
 
@@ -102,6 +103,16 @@ _Note: These are inferred scripts based on the tech stack. The `package.json` fi
 - Native mobile applications (iOS/Android).
 - File attachments or detailed notes for events.
 - Public sharing of calendars.
+
+## Architecture
+
+This repository follows a lightweight Hexagonal Architecture (Ports & Adapters) for backend data access:
+
+- **Ports (Interfaces):** Repository contracts define the domain-facing API (e.g., `FamilyRepository`, `EventRepository`).
+- **Adapters (Implementations):** Standardized per repository, e.g., `SQLFamilyRepository` and `InMemoryFamilyRepository` (same pattern for other repositories like events and users).
+- **Injection:** Repositories are created per-request and exposed via `context.locals` in Astro middleware, keeping routes framework-agnostic from the data layer.
+
+For details and rationale, see `.ai/hexagonal-architecture-proposal.md`.
 
 ## Project Status
 
