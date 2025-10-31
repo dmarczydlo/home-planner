@@ -33,7 +33,6 @@ export function createInMemoryRepositories(): Repositories {
   };
 }
 
-/
 export function createRepositories(supabase?: SupabaseClient<Database>): Repositories {
   const useInMemory = import.meta.env.USE_IN_MEMORY_DB === "true";
 
