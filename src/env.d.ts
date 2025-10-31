@@ -1,7 +1,25 @@
+/// <reference types="astro/client" />
+import type { User } from "@supabase/supabase-js";
+import type { FamilyRepository, EventRepository, UserRepository } from "./repositories/interfaces/index.ts";
+
+declare global {
+  namespace App {
+    interface Locals {
+      repositories: {
+        family: FamilyRepository;
+        event: EventRepository;
+        user: UserRepository;
+      };
+      user: User | null;
+    }
+  }
+}
+
 interface ImportMetaEnv {
   readonly SUPABASE_URL: string;
   readonly SUPABASE_KEY: string;
   readonly OPENROUTER_API_KEY: string;
+  readonly USE_IN_MEMORY_DB?: string;
   // more env variables...
 }
 
