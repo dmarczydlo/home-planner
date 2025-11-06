@@ -1,3 +1,5 @@
+import type { UserFamilyMembershipDTO } from "@/types";
+
 export interface User {
   id: string;
   full_name: string | null;
@@ -21,4 +23,6 @@ export interface UserRepository {
   create(data: CreateUserDTO): Promise<User>;
   update(id: string, data: UpdateUserDTO): Promise<User>;
   delete(id: string): Promise<void>;
+
+  getFamilyMemberships(userId: string): Promise<UserFamilyMembershipDTO[]>;
 }
