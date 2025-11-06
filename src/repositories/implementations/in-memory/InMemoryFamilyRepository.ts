@@ -1,8 +1,21 @@
-import type { FamilyRepository, Family, CreateFamilyDTO, UpdateFamilyDTO } from "../../interfaces/FamilyRepository.ts";
+import type {
+  FamilyRepository,
+  Family,
+  CreateFamilyDTO,
+  UpdateFamilyDTO,
+  FamilyMemberWithUser,
+} from "../../interfaces/FamilyRepository.ts";
+
+interface FamilyMemberData {
+  userId: string;
+  role: "admin" | "member";
+  joinedAt: string;
+}
 
 export class InMemoryFamilyRepository implements FamilyRepository {
   private families: Map<string, Family> = new Map();
-  private familyMembers: Map<string, Set<string>> = new Map(); // familyId -> Set<userId>
+  private familyMembers: Map<string, Map<string, FamilyMemberData>> = new Map(); // familyId -> Map<userId, memberData>
+  private users: Map<string, { full_name: string | null; avatar_url: string | null }> = new Map();
 
   async findById(id: string): Promise<Family | null> {
     return this.families.get(id) ?? null;
@@ -54,10 +67,42 @@ export class InMemoryFamilyRepository implements FamilyRepository {
     return members?.has(userId) ?? false;
   }
 
-  async addMember(familyId: string, userId: string): Promise<void> {
-    if (!this.familyMembers.has(familyId)) {
-      this.familyMembers.set(familyId, new Set());
+  async isUserAdmin(familyId: string, userId: string): Promise<boolean> {
+    const members = this.familyMembers.get(familyId);
+    const member = members?.get(userId);
+    return member !== undefined && member.role === "admin";
+  }
+
+  async getFamilyMembers(familyId: string): Promise<FamilyMemberWithUser[]> {
+    const members = this.familyMembers.get(familyId);
+    if (!members) {
+      return [];
     }
-    this.familyMembers.get(familyId)!.add(userId);
+
+    return Array.from(members.entries()).map(([userId, memberData]) => {
+      const user = this.users.get(userId) ?? { full_name: null, avatar_url: null };
+      return {
+        user_id: userId,
+        full_name: user.full_name,
+        avatar_url: user.avatar_url,
+        role: memberData.role,
+        joined_at: memberData.joinedAt,
+      };
+    });
+  }
+
+  async addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void> {
+    if (!this.familyMembers.has(familyId)) {
+      this.familyMembers.set(familyId, new Map());
+    }
+    this.familyMembers.get(familyId)!.set(userId, {
+      userId,
+      role,
+      joinedAt: new Date().toISOString(),
+    });
+  }
+
+  setUser(userId: string, user: { full_name: string | null; avatar_url: string | null }): void {
+    this.users.set(userId, user);
   }
 }

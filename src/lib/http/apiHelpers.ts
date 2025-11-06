@@ -1,4 +1,7 @@
 import type { APIContext } from "astro";
+import type { Result } from "@/domain/result";
+import { ok, err } from "@/domain/result";
+import { ValidationError } from "@/domain/errors";
 
 export function requireAuth(locals: APIContext["locals"]): string | Response {
   const user = locals.user;
@@ -19,3 +22,11 @@ export function requireAuth(locals: APIContext["locals"]): string | Response {
   return user.id;
 }
 
+export async function parseJSON<T>(request: Request): Promise<Result<T, ValidationError>> {
+  try {
+    const data = await request.json();
+    return ok(data);
+  } catch {
+    return err(new ValidationError("Invalid JSON in request body"));
+  }
+}

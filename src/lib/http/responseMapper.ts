@@ -2,11 +2,24 @@ import type { Result } from "@/domain/result";
 import type { DomainError } from "@/domain/errors";
 import { ValidationError } from "@/domain/errors";
 
-export function mapResultToResponse<T>(result: Result<T, DomainError>): Response {
+export function mapResultToResponse<T>(
+  result: Result<T, DomainError>,
+  options?: {
+    successStatus?: number;
+  }
+): Response {
   if (result.success) {
-    return new Response(JSON.stringify(result.data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    const status = options?.successStatus ?? 200;
+    const body = status === 204 ? undefined : JSON.stringify(result.data);
+
+    const headers: HeadersInit = {};
+    if (status !== 204) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    return new Response(body, {
+      status,
+      headers,
     });
   }
 
