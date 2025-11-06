@@ -11,10 +11,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (!useInMemory) {
     supabase = createSupabaseClient();
 
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser();
-    user = authUser;
+    const authHeader = context.request.headers.get("Authorization");
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+
+      try {
+        const { data, error } = await supabase.auth.getUser(token);
+
+        if (!error && data.user) {
+          user = data.user;
+        }
+      } catch (error) {
+        console.error("Auth middleware error:", error);
+      }
+    }
   }
   const repositories = createRepositories(supabase);
 

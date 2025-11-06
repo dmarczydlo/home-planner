@@ -1,7 +1,9 @@
 import type { UserRepository, User, CreateUserDTO, UpdateUserDTO } from "../../interfaces/UserRepository.ts";
+import type { UserFamilyMembershipDTO } from "@/types";
 
 export class InMemoryUserRepository implements UserRepository {
   private users: Map<string, User> = new Map();
+  private memberships: Map<string, UserFamilyMembershipDTO[]> = new Map();
 
   async findById(id: string): Promise<User | null> {
     return this.users.get(id) ?? null;
@@ -35,5 +37,20 @@ export class InMemoryUserRepository implements UserRepository {
 
   async delete(id: string): Promise<void> {
     this.users.delete(id);
+    this.memberships.delete(id);
+  }
+
+  async getFamilyMemberships(userId: string): Promise<UserFamilyMembershipDTO[]> {
+    return this.memberships.get(userId) || [];
+  }
+
+  seed(user: User, memberships: UserFamilyMembershipDTO[] = []): void {
+    this.users.set(user.id, user);
+    this.memberships.set(user.id, memberships);
+  }
+
+  clear(): void {
+    this.users.clear();
+    this.memberships.clear();
   }
 }
