@@ -2,6 +2,7 @@ export type {
   Family,
   CreateFamilyDTO,
   UpdateFamilyDTO,
+  FamilyMemberWithUser,
   FamilyRepository,
 } from "./FamilyRepository.ts";
 
@@ -18,4 +19,8 @@ export type {
   UpdateUserDTO,
   UserRepository,
 } from "./UserRepository.ts";
+
+export type { Child, ChildRepository } from "./ChildRepository.ts";
+
+export type { LogInsert, LogRepository } from "./LogRepository.ts";
 

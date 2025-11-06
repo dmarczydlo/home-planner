@@ -1,6 +1,12 @@
 /// <reference types="astro/client" />
 import type { User } from "@supabase/supabase-js";
-import type { FamilyRepository, EventRepository, UserRepository } from "./repositories/interfaces/index.ts";
+import type {
+  FamilyRepository,
+  EventRepository,
+  UserRepository,
+  ChildRepository,
+  LogRepository,
+} from "./repositories/interfaces/index.ts";
 
 declare global {
   namespace App {
@@ -9,6 +15,8 @@ declare global {
         family: FamilyRepository;
         event: EventRepository;
         user: UserRepository;
+        child: ChildRepository;
+        log: LogRepository;
       };
       user: User | null;
     }

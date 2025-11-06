@@ -1,6 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../../db/database.types.ts";
-import type { FamilyRepository, Family, CreateFamilyDTO, UpdateFamilyDTO } from "../../interfaces/FamilyRepository.ts";
+import type {
+  FamilyRepository,
+  Family,
+  CreateFamilyDTO,
+  UpdateFamilyDTO,
+  FamilyMemberWithUser,
+} from "../../interfaces/FamilyRepository.ts";
 
 export class SQLFamilyRepository implements FamilyRepository {
   constructor(private readonly supabase: SupabaseClient<Database>) {}
@@ -86,6 +92,56 @@ export class SQLFamilyRepository implements FamilyRepository {
       .single();
 
     return !error && data !== null;
+  }
+
+  async isUserAdmin(familyId: string, userId: string): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from("family_members")
+      .select("role")
+      .eq("family_id", familyId)
+      .eq("user_id", userId)
+      .single();
+
+    return !error && data?.role === "admin";
+  }
+
+  async getFamilyMembers(familyId: string): Promise<FamilyMemberWithUser[]> {
+    const { data, error } = await this.supabase
+      .from("family_members")
+      .select(
+        `
+        user_id,
+        role,
+        joined_at,
+        users!inner(full_name, avatar_url)
+        `
+      )
+      .eq("family_id", familyId)
+      .order("joined_at", { ascending: true });
+
+    if (error || !data) {
+      return [];
+    }
+
+    return data.map((member: any) => ({
+      user_id: member.user_id,
+      full_name: member.users.full_name,
+      avatar_url: member.users.avatar_url,
+      role: member.role as "admin" | "member",
+      joined_at: member.joined_at,
+    }));
+  }
+
+  async addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void> {
+    const { error } = await this.supabase.from("family_members").insert({
+      family_id: familyId,
+      user_id: userId,
+      role,
+    });
+
+    if (error) {
+      throw new Error(`Failed to add member: ${error.message}`);
+    }
   }
 
   private mapToDomain(row: Database["public"]["Tables"]["families"]["Row"]): Family {
