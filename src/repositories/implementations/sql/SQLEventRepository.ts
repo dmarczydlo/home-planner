@@ -11,6 +11,7 @@ import type {
   FindEventsOptions,
 } from "../../interfaces/EventRepository.ts";
 import type { ParticipantReferenceDTO, RecurrencePatternDTO } from "@/types";
+import { Event as EventEntity } from "@/domain/entities/Event";
 
 export class SQLEventRepository implements EventRepository {
   constructor(private readonly supabase: SupabaseClient<Database>) {}
@@ -213,6 +214,94 @@ export class SQLEventRepository implements EventRepository {
 
     if (error) {
       throw new Error(`Failed to delete event: ${error.message}`);
+    }
+  }
+
+  async store(event: EventEntity): Promise<void> {
+    const { error: eventError } = await this.supabase.from("events").upsert({
+      id: event.id,
+      family_id: event.familyId,
+      title: event.title,
+      start_time: event.startTime,
+      end_time: event.endTime,
+      event_type: event.eventType,
+      is_all_day: event.isAllDay,
+      created_at: event.createdAt,
+      recurrence_pattern: event.recurrencePattern ? JSON.stringify(event.recurrencePattern) : null,
+      is_synced: event.isSynced,
+      external_calendar_id: event.externalCalendarId,
+      updated_at: event.updatedAt,
+    });
+
+    if (eventError) {
+      throw new Error(`Failed to store event: ${eventError.message}`);
+    }
+
+    const existingParticipants = await this.getParticipants(event.id);
+    const existingParticipantRefs: ParticipantReferenceDTO[] = existingParticipants.map((p) => ({
+      id: p.id,
+      type: p.type,
+    }));
+
+    const newParticipantRefs: ParticipantReferenceDTO[] = event.participants.map((p) => ({
+      id: p.id,
+      type: p.type,
+    }));
+
+    const participantsToRemove = existingParticipantRefs.filter(
+      (ep) => !newParticipantRefs.some((np) => np.id === ep.id && np.type === ep.type)
+    );
+    const participantsToAdd = newParticipantRefs.filter(
+      (np) => !existingParticipantRefs.some((ep) => ep.id === np.id && ep.type === np.type)
+    );
+
+    if (participantsToRemove.length > 0) {
+      await this.removeParticipants(event.id, participantsToRemove);
+    }
+    if (participantsToAdd.length > 0) {
+      await this.addParticipants(event.id, participantsToAdd);
+    }
+
+    const existingExceptions = await this.getExceptions(event.id);
+    const existingExceptionDates = new Set(
+      existingExceptions.map((ex) => new Date(ex.original_date).toISOString().split("T")[0])
+    );
+    const newExceptionDates = new Set(
+      event.exceptions.map((ex) => new Date(ex.originalDate).toISOString().split("T")[0])
+    );
+
+    const exceptionsToRemove = existingExceptions.filter(
+      (ex) => !newExceptionDates.has(new Date(ex.original_date).toISOString().split("T")[0])
+    );
+    for (const ex of exceptionsToRemove) {
+      await this.deleteExceptions(event.id, ex.original_date);
+    }
+
+    for (const exception of event.exceptions) {
+      const existingEx = existingExceptions.find(
+        (ex) => new Date(ex.original_date).toISOString().split("T")[0] === new Date(exception.originalDate).toISOString().split("T")[0]
+      );
+
+      if (!existingEx) {
+        await this.createException(event.id, {
+          original_date: exception.originalDate,
+          new_start_time: exception.newStartTime,
+          new_end_time: exception.newEndTime,
+          is_cancelled: exception.isCancelled,
+        });
+      } else if (
+        existingEx.new_start_time !== exception.newStartTime ||
+        existingEx.new_end_time !== exception.newEndTime ||
+        existingEx.is_cancelled !== exception.isCancelled
+      ) {
+        await this.deleteExceptions(event.id, exception.originalDate);
+        await this.createException(event.id, {
+          original_date: exception.originalDate,
+          new_start_time: exception.newStartTime,
+          new_end_time: exception.newEndTime,
+          is_cancelled: exception.isCancelled,
+        });
+      }
     }
   }
 

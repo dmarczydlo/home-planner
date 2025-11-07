@@ -30,9 +30,10 @@ export type Repositories = {
 };
 
 export function createSQLRepositories(supabase: SupabaseClient<Database>): Repositories {
+  const eventRepo = new SQLEventRepository(supabase);
   return {
-    family: new SQLFamilyRepository(supabase),
-    event: new SQLEventRepository(supabase),
+    family: new SQLFamilyRepository(supabase, eventRepo),
+    event: eventRepo,
     user: new SQLUserRepository(supabase),
     child: new SQLChildRepository(supabase),
     log: new SQLLogRepository(supabase),
@@ -40,9 +41,10 @@ export function createSQLRepositories(supabase: SupabaseClient<Database>): Repos
 }
 
 export function createInMemoryRepositories(): Repositories {
+  const eventRepo = new InMemoryEventRepository();
   return {
-    family: new InMemoryFamilyRepository(),
-    event: new InMemoryEventRepository(),
+    family: new InMemoryFamilyRepository(eventRepo),
+    event: eventRepo,
     user: new InMemoryUserRepository(),
     child: new InMemoryChildRepository(),
     log: new InMemoryLogRepository(),

@@ -1,8 +1,4 @@
-export interface Family {
-  id: string;
-  name: string;
-  created_at: string;
-}
+import type { Family } from "@/domain/entities/Family";
 
 export interface CreateFamilyDTO {
   name: string;
@@ -22,13 +18,6 @@ export interface FamilyMemberWithUser {
 
 export interface FamilyRepository {
   findById(id: string): Promise<Family | null>;
-  create(data: CreateFamilyDTO): Promise<Family>;
-  update(id: string, data: UpdateFamilyDTO): Promise<Family>;
+  store(family: Family): Promise<void>;
   delete(id: string): Promise<void>;
-  findByUserId(userId: string): Promise<Family[]>;
-  isUserMember(familyId: string, userId: string): Promise<boolean>;
-  isUserAdmin(familyId: string, userId: string): Promise<boolean>;
-  getFamilyMembers(familyId: string): Promise<FamilyMemberWithUser[]>;
-  getMembers(familyId: string): Promise<FamilyMemberWithUser[]>;
-  addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void>;
 }

@@ -16,14 +16,9 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
       return mapResultToResponse(bodyResult);
     }
 
-    const familyService = new FamilyService(
-      locals.repositories.family,
-      locals.repositories.child,
-      locals.repositories.log
-    );
+    const familyService = new FamilyService(locals.repositories.family, locals.repositories.log);
     const result = await familyService.createFamily(bodyResult.data, userId);
 
     return mapResultToResponse(result, { successStatus: 201 });
   }, "POST /api/families");
 }
-

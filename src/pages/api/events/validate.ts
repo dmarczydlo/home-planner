@@ -17,9 +17,8 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
     }
 
     const eventService = new EventService(
-      locals.repositories.event,
       locals.repositories.family,
-      locals.repositories.child,
+      locals.repositories.event,
       locals.repositories.log
     );
 
@@ -28,4 +27,3 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
     return mapResultToResponse(result);
   }, "POST /api/events/validate");
 }
-

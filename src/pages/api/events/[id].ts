@@ -33,7 +33,6 @@ export async function GET({ params, url, locals }: APIContext): Promise<Response
     const eventService = new EventService(
       locals.repositories.event,
       locals.repositories.family,
-      locals.repositories.child,
       locals.repositories.log
     );
 
@@ -70,7 +69,6 @@ export async function PATCH({ params, request, url, locals }: APIContext): Promi
     const eventService = new EventService(
       locals.repositories.event,
       locals.repositories.family,
-      locals.repositories.child,
       locals.repositories.log
     );
 
@@ -102,7 +100,6 @@ export async function DELETE({ params, url, locals }: APIContext): Promise<Respo
     const eventService = new EventService(
       locals.repositories.event,
       locals.repositories.family,
-      locals.repositories.child,
       locals.repositories.log
     );
 

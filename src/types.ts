@@ -265,11 +265,7 @@ export type FamilyDTO = z.infer<typeof familySchema>;
  */
 export const createFamilyCommandSchema = z
   .object({
-    name: z
-      .string()
-      .trim()
-      .min(1, "Family name is required")
-      .max(100, "Family name must be less than 100 characters"),
+    name: z.string().trim().min(1, "Family name is required").max(100, "Family name must be less than 100 characters"),
   })
   .strict();
 

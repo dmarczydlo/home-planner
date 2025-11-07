@@ -1,11 +1,14 @@
 import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
-import { NotFoundError, ForbiddenError, DomainError } from "@/domain/errors";
+import { DomainError } from "@/domain/errors";
 import { Event } from "@/domain/entities/Event";
-import type { EventRepository } from "@/repositories/interfaces/EventRepository";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
-import type { ChildRepository } from "@/repositories/interfaces/ChildRepository.ts";
+import type { EventRepository } from "@/repositories/interfaces/EventRepository";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
+import { EventMapper } from "@/lib/mappers/EventMapper";
+import { EventAuthorization } from "@/lib/authorization/EventAuthorization";
+import { ParticipantService } from "@/lib/participants/ParticipantService";
+import { EventScopeHandler } from "@/lib/event/EventScopeHandler";
 import type {
   CreateEventCommand,
   UpdateEventCommand,
@@ -21,9 +24,8 @@ import type {
 
 export class EventService {
   constructor(
-    private readonly eventRepo: EventRepository,
     private readonly familyRepo: FamilyRepository,
-    private readonly childRepo: ChildRepository,
+    private readonly eventsRepo: EventRepository,
     private readonly logRepo: LogRepository
   ) {}
 
@@ -40,42 +42,28 @@ export class EventService {
     },
     userId: string
   ): Promise<Result<ListEventsResponseDTO, DomainError>> {
-    const isMember = await this.familyRepo.isUserMember(familyId, userId);
-    if (!isMember) {
-      return err(new ForbiddenError("You do not have access to this family"));
+    const family = await this.familyRepo.findById(familyId);
+    const accessResult = EventAuthorization.checkFamilyAccess(family, familyId, userId);
+    if (!accessResult.success) {
+      return accessResult;
     }
 
     try {
       const limit = Math.min(options.limit ?? 100, 100);
       const offset = Math.max(options.offset ?? 0, 0);
 
-      const result = await this.eventRepo.findByDateRange({
+      const result = await this.eventsRepo.findByDateRange({
         familyId,
         startDate,
         endDate,
         participantIds: options.participantIds,
         eventType: options.eventType,
         includeSynced: options.includeSynced ?? true,
-        limit,
-        offset,
+        limit: options.limit ?? 100,
+        offset: options.offset ?? 0,
       });
 
-      const events: EventWithParticipantsDTO[] = result.events.map((e) => ({
-        id: e.id,
-        family_id: e.family_id,
-        title: e.title,
-        start_time: e.start_time,
-        end_time: e.end_time,
-        is_all_day: e.is_all_day,
-        event_type: e.event_type,
-        recurrence_pattern: e.recurrence_pattern ?? null,
-        is_synced: e.is_synced ?? false,
-        external_calendar_id: e.external_calendar_id ?? null,
-        created_at: e.created_at,
-        updated_at: e.updated_at ?? null,
-        participants: e.participants,
-        has_conflict: e.has_conflict ?? false,
-      }));
+      const events = result.events.map(EventMapper.toListDTO);
 
       return ok({
         events,
@@ -93,43 +81,25 @@ export class EventService {
   }
 
   async getEventById(
+    familyId: string,
     eventId: string,
     occurrenceDate: string | undefined,
     userId: string
   ): Promise<Result<EventDetailsDTO, DomainError>> {
+    const family = await this.familyRepo.findById(familyId);
+    const accessResult = EventAuthorization.checkFamilyAccess(family, familyId, userId);
+    if (!accessResult.success) {
+      return accessResult;
+    }
+
     try {
-      const event = await this.eventRepo.findByIdWithDetails(eventId, occurrenceDate);
-      if (!event) {
-        return err(new NotFoundError("Event", eventId));
+      const eventDetails = await this.eventsRepo.findByIdWithDetails(eventId, occurrenceDate);
+      const eventAccessResult = EventAuthorization.checkEventBelongsToFamily(eventDetails, familyId, eventId);
+      if (!eventAccessResult.success) {
+        return eventAccessResult;
       }
 
-      const isMember = await this.familyRepo.isUserMember(event.family_id, userId);
-      if (!isMember) {
-        return err(new ForbiddenError("You do not have access to this event"));
-      }
-
-      return ok({
-        id: event.id,
-        family_id: event.family_id,
-        title: event.title,
-        start_time: event.start_time,
-        end_time: event.end_time,
-        is_all_day: event.is_all_day,
-        event_type: event.event_type,
-        recurrence_pattern: event.recurrence_pattern ?? null,
-        is_synced: event.is_synced ?? false,
-        external_calendar_id: event.external_calendar_id ?? null,
-        created_at: event.created_at,
-        updated_at: event.updated_at ?? null,
-        participants: event.participants,
-        exceptions: event.exceptions.map((ex) => ({
-          id: ex.id,
-          original_date: ex.original_date,
-          new_start_time: ex.new_start_time,
-          new_end_time: ex.new_end_time,
-          is_cancelled: ex.is_cancelled,
-        })),
-      });
+      return ok(EventMapper.toDetailsDTO(eventAccessResult.data));
     } catch (error) {
       console.error("Error in EventService.getEventById:", error);
       return err(new DomainError(500, "Failed to retrieve event"));
@@ -137,48 +107,56 @@ export class EventService {
   }
 
   async createEvent(command: CreateEventCommand, userId: string): Promise<Result<CreateEventResponseDTO, DomainError>> {
-    const isMember = await this.familyRepo.isUserMember(command.family_id, userId);
-    if (!isMember) {
-      return err(new ForbiddenError("You do not have access to this family"));
-    }
-
-    if (command.participants && command.participants.length > 0) {
-      const members = await this.familyRepo.getFamilyMembers(command.family_id);
-      const children = await this.childRepo.findByFamilyId(command.family_id);
-      const participantValidation = Event.validateParticipants(command.participants, members, children);
-      if (!participantValidation.success) {
-        return participantValidation;
-      }
-    }
-
-    if (command.event_type === "blocker") {
-      const conflicts = await this.eventRepo.checkConflicts(
-        command.family_id,
-        command.start_time,
-        command.end_time,
-        command.participants ?? [],
-        undefined
-      );
-
-      const conflictResult = Event.checkConflicts(command.event_type, conflicts);
-      if (!conflictResult.success) {
-        return conflictResult;
-      }
+    const family = await this.familyRepo.findById(command.family_id);
+    const accessResult = EventAuthorization.checkFamilyAccess(family, command.family_id, userId);
+    if (!accessResult.success) {
+      return accessResult;
     }
 
     try {
-      const event = await this.eventRepo.create({
-        title: command.title,
-        start_time: command.start_time,
-        end_time: command.end_time,
-        family_id: command.family_id,
-        event_type: command.event_type ?? "elastic",
-        is_all_day: command.is_all_day ?? false,
-        recurrence_pattern: command.recurrence_pattern ?? null,
-        participants: command.participants,
-      });
+      if (command.participants && command.participants.length > 0) {
+        const validationResult = ParticipantService.validateParticipants(accessResult.data, command.participants);
+        if (!validationResult.success) {
+          return validationResult;
+        }
+      }
 
-      const participants = await this.eventRepo.getParticipants(event.id);
+      if (command.event_type === "blocker") {
+        const conflicts = await this.eventsRepo.checkConflicts(
+          command.family_id,
+          command.start_time,
+          command.end_time,
+          command.participants ?? [],
+          undefined
+        );
+        const conflictResult = Event.checkConflicts("blocker", conflicts);
+        if (!conflictResult.success) {
+          return conflictResult;
+        }
+      }
+
+      const eventId = crypto.randomUUID();
+      const createdAt = new Date().toISOString();
+      const participants = ParticipantService.buildParticipants(accessResult.data, command.participants ?? []);
+
+      const event = Event.create(
+        eventId,
+        command.family_id,
+        command.title,
+        command.start_time,
+        command.end_time,
+        command.event_type ?? "elastic",
+        command.is_all_day ?? false,
+        createdAt,
+        command.recurrence_pattern ?? null,
+        false,
+        null,
+        null,
+        participants,
+        []
+      );
+
+      await this.eventsRepo.store(event);
 
       this.logRepo
         .create({
@@ -189,33 +167,14 @@ export class EventService {
           details: {
             event_id: event.id,
             title: event.title,
-            event_type: event.event_type,
+            event_type: event.eventType,
           },
         })
         .catch((error) => {
           console.error("Failed to log event.create:", error);
         });
 
-      return ok({
-        id: event.id,
-        family_id: event.family_id,
-        title: event.title,
-        start_time: event.start_time,
-        end_time: event.end_time,
-        is_all_day: event.is_all_day,
-        event_type: event.event_type,
-        recurrence_pattern: event.recurrence_pattern ?? null,
-        is_synced: event.is_synced ?? false,
-        external_calendar_id: event.external_calendar_id ?? null,
-        created_at: event.created_at,
-        updated_at: event.updated_at ?? null,
-        participants: participants.map((p) => ({
-          id: p.id,
-          name: p.name,
-          type: p.type,
-          avatar_url: p.avatar_url ?? null,
-        })),
-      });
+      return ok(EventMapper.toCreateResponseDTO(event));
     } catch (error) {
       console.error("Error in EventService.createEvent:", error);
       return err(new DomainError(500, "Failed to create event"));
@@ -223,51 +182,51 @@ export class EventService {
   }
 
   async updateEvent(
+    familyId: string,
     eventId: string,
     command: UpdateEventCommand,
     scope: "this" | "future" | "all",
     occurrenceDate: string | undefined,
     userId: string
   ): Promise<Result<UpdateEventResponseDTO, DomainError>> {
-    const event = await this.eventRepo.findById(eventId);
-    if (!event) {
-      return err(new NotFoundError("Event", eventId));
+    const family = await this.familyRepo.findById(familyId);
+    const accessResult = EventAuthorization.checkFamilyAccess(family, familyId, userId);
+    if (!accessResult.success) {
+      return accessResult;
     }
 
-    const isMember = await this.familyRepo.isUserMember(event.family_id, userId);
-    const canModifyResult = Event.canModify(event, isMember);
+    const eventDetails = await this.eventsRepo.findByIdWithDetails(eventId);
+    const eventAccessResult = EventAuthorization.checkEventBelongsToFamily(eventDetails, familyId, eventId);
+    if (!eventAccessResult.success) {
+      return eventAccessResult;
+    }
+
+    const event = EventMapper.fromRepositoryDetails(eventAccessResult.data);
+
+    const canModifyResult = event.canModify(true);
     if (!canModifyResult.success) {
       return canModifyResult;
     }
 
-    const scopeValidation = Event.validateScope(scope, event.recurrence_pattern, occurrenceDate);
+    const scopeValidation = Event.validateScope(scope, event.recurrencePattern, occurrenceDate);
     if (!scopeValidation.success) {
       return scopeValidation;
     }
 
     if (command.participants && command.participants.length > 0) {
-      const members = await this.familyRepo.getFamilyMembers(event.family_id);
-      const children = await this.childRepo.findByFamilyId(event.family_id);
-      const participantValidation = Event.validateParticipants(command.participants, members, children);
-      if (!participantValidation.success) {
-        return participantValidation;
+      const validationResult = ParticipantService.validateParticipants(accessResult.data, command.participants);
+      if (!validationResult.success) {
+        return validationResult;
       }
     }
 
-    if (command.event_type === "blocker" || event.event_type === "blocker") {
-      const startTime = command.start_time ?? event.start_time;
-      const endTime = command.end_time ?? event.end_time;
-      const participants = command.participants ?? (await this.eventRepo.getParticipants(eventId));
+    if (command.event_type === "blocker" || event.eventType === "blocker") {
+      const startTime = command.start_time ?? event.startTime;
+      const endTime = command.end_time ?? event.endTime;
+      const participants = command.participants ?? event.participants.map((p) => ({ id: p.id, type: p.type }));
 
-      const conflicts = await this.eventRepo.checkConflicts(
-        event.family_id,
-        startTime,
-        endTime,
-        participants.map((p) => ({ id: p.id, type: p.type })),
-        eventId
-      );
-
-      const eventType = command.event_type ?? event.event_type;
+      const conflicts = await this.eventsRepo.checkConflicts(familyId, startTime, endTime, participants, eventId);
+      const eventType = command.event_type ?? event.eventType;
       const conflictResult = Event.checkConflicts(eventType, conflicts);
       if (!conflictResult.success) {
         return conflictResult;
@@ -275,51 +234,33 @@ export class EventService {
     }
 
     try {
-      let exceptionCreated = false;
-
-      if (scope === "this" && event.recurrence_pattern && occurrenceDate) {
-        const exception = await this.eventRepo.createException(eventId, {
-          original_date: occurrenceDate,
-          new_start_time: command.start_time ?? null,
-          new_end_time: command.end_time ?? null,
-          is_cancelled: false,
-        });
-        exceptionCreated = !!exception;
-      } else if (scope === "future" && event.recurrence_pattern) {
-        if (command.recurrence_pattern) {
-          const updatedPattern = {
-            ...event.recurrence_pattern,
-            end_date: occurrenceDate ?? event.start_time,
-          };
-          await this.eventRepo.update(eventId, {
-            ...command,
-            recurrence_pattern: updatedPattern,
-          });
-        }
-      } else {
-        await this.eventRepo.update(eventId, command);
-        if (scope === "all" && event.recurrence_pattern) {
-          await this.eventRepo.deleteExceptions(eventId);
-        }
+      const scopeResult = await EventScopeHandler.handleUpdateScope(
+        event,
+        command,
+        scope,
+        occurrenceDate,
+        accessResult.data,
+        this.eventsRepo
+      );
+      if (!scopeResult.success) {
+        return scopeResult;
       }
 
-      const updatedEvent = await this.eventRepo.findById(eventId);
-      if (!updatedEvent) {
-        return err(new NotFoundError("Event", eventId));
+      const updatedEventDetails = await this.eventsRepo.findByIdWithDetails(eventId);
+      if (!updatedEventDetails) {
+        return err(new DomainError(500, "Failed to retrieve updated event"));
       }
-
-      const participants = await this.eventRepo.getParticipants(eventId);
 
       this.logRepo
         .create({
-          family_id: event.family_id,
+          family_id: familyId,
           actor_id: userId,
           actor_type: "user",
           action: "event.update",
           details: {
             event_id: eventId,
-            title: updatedEvent.title,
-            event_type: updatedEvent.event_type,
+            title: updatedEventDetails.title,
+            event_type: updatedEventDetails.event_type,
             scope,
           },
         })
@@ -327,27 +268,7 @@ export class EventService {
           console.error("Failed to log event.update:", error);
         });
 
-      return ok({
-        id: updatedEvent.id,
-        family_id: updatedEvent.family_id,
-        title: updatedEvent.title,
-        start_time: updatedEvent.start_time,
-        end_time: updatedEvent.end_time,
-        is_all_day: updatedEvent.is_all_day,
-        event_type: updatedEvent.event_type,
-        recurrence_pattern: updatedEvent.recurrence_pattern ?? null,
-        is_synced: updatedEvent.is_synced ?? false,
-        external_calendar_id: updatedEvent.external_calendar_id ?? null,
-        created_at: updatedEvent.created_at,
-        updated_at: updatedEvent.updated_at ?? null,
-        participants: participants.map((p) => ({
-          id: p.id,
-          name: p.name,
-          type: p.type,
-          avatar_url: p.avatar_url ?? null,
-        })),
-        exception_created: exceptionCreated,
-      });
+      return ok(EventMapper.toUpdateResponseDTO(updatedEventDetails, scopeResult.data.exceptionCreated));
     } catch (error) {
       console.error("Error in EventService.updateEvent:", error);
       return err(new DomainError(500, "Failed to update event"));
@@ -355,57 +276,52 @@ export class EventService {
   }
 
   async deleteEvent(
+    familyId: string,
     eventId: string,
     scope: "this" | "future" | "all",
     occurrenceDate: string | undefined,
     userId: string
   ): Promise<Result<void, DomainError>> {
-    const event = await this.eventRepo.findById(eventId);
-    if (!event) {
-      return err(new NotFoundError("Event", eventId));
+    const family = await this.familyRepo.findById(familyId);
+    const accessResult = EventAuthorization.checkFamilyAccess(family, familyId, userId);
+    if (!accessResult.success) {
+      return accessResult;
     }
 
-    const isMember = await this.familyRepo.isUserMember(event.family_id, userId);
-    const canModifyResult = Event.canModify(event, isMember);
+    const eventDetails = await this.eventsRepo.findByIdWithDetails(eventId);
+    const eventAccessResult = EventAuthorization.checkEventBelongsToFamily(eventDetails, familyId, eventId);
+    if (!eventAccessResult.success) {
+      return eventAccessResult;
+    }
+
+    const event = EventMapper.fromRepositoryDetails(eventAccessResult.data);
+
+    const canModifyResult = event.canModify(true);
     if (!canModifyResult.success) {
       return canModifyResult;
     }
 
-    const scopeValidation = Event.validateScope(scope, event.recurrence_pattern, occurrenceDate);
+    const scopeValidation = Event.validateScope(scope, event.recurrencePattern, occurrenceDate);
     if (!scopeValidation.success) {
       return scopeValidation;
     }
 
     try {
-      if (scope === "this" && event.recurrence_pattern && occurrenceDate) {
-        await this.eventRepo.createException(eventId, {
-          original_date: occurrenceDate,
-          new_start_time: null,
-          new_end_time: null,
-          is_cancelled: true,
-        });
-      } else if (scope === "future" && event.recurrence_pattern) {
-        const updatedPattern = {
-          ...event.recurrence_pattern,
-          end_date: occurrenceDate ?? event.start_time,
-        };
-        await this.eventRepo.update(eventId, {
-          recurrence_pattern: updatedPattern,
-        });
-      } else {
-        await this.eventRepo.delete(eventId);
+      const deleteResult = await EventScopeHandler.handleDeleteScope(event, scope, occurrenceDate, this.eventsRepo);
+      if (!deleteResult.success) {
+        return deleteResult;
       }
 
       this.logRepo
         .create({
-          family_id: event.family_id,
+          family_id: familyId,
           actor_id: userId,
           actor_type: "user",
           action: "event.delete",
           details: {
             event_id: eventId,
             title: event.title,
-            event_type: event.event_type,
+            event_type: event.eventType,
             scope,
           },
         })
@@ -424,25 +340,24 @@ export class EventService {
     command: ValidateEventCommand,
     userId: string
   ): Promise<Result<ValidationResultDTO, DomainError>> {
-    const isMember = await this.familyRepo.isUserMember(command.family_id, userId);
-    if (!isMember) {
-      return err(new ForbiddenError("You do not have access to this family"));
+    const family = await this.familyRepo.findById(command.family_id);
+    const accessResult = EventAuthorization.checkFamilyAccess(family, command.family_id, userId);
+    if (!accessResult.success) {
+      return accessResult;
     }
 
     const errors: Array<{ field: string; message: string }> = [];
     let conflicts: ConflictingEventDTO[] = [];
 
     if (command.participants && command.participants.length > 0) {
-      const members = await this.familyRepo.getFamilyMembers(command.family_id);
-      const children = await this.childRepo.findByFamilyId(command.family_id);
-      const participantValidation = Event.validateParticipants(command.participants, members, children);
-      if (!participantValidation.success) {
-        return participantValidation;
+      const validationResult = ParticipantService.validateParticipants(accessResult.data, command.participants);
+      if (!validationResult.success) {
+        return validationResult;
       }
     }
 
     if (command.event_type === "blocker") {
-      const conflictResults = await this.eventRepo.checkConflicts(
+      const conflictResults = await this.eventsRepo.checkConflicts(
         command.family_id,
         command.start_time,
         command.end_time,

@@ -1,60 +1,124 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../../db/database.types.ts";
-import type {
-  FamilyRepository,
-  Family,
-  CreateFamilyDTO,
-  UpdateFamilyDTO,
-  FamilyMemberWithUser,
-} from "../../interfaces/FamilyRepository.ts";
+import type { FamilyRepository } from "../../interfaces/FamilyRepository.ts";
+import type { EventRepository } from "../../interfaces/EventRepository.ts";
+import { Family } from "@/domain/entities/Family.ts";
 
 export class SQLFamilyRepository implements FamilyRepository {
-  constructor(private readonly supabase: SupabaseClient<Database>) {}
+  constructor(
+    private readonly supabase: SupabaseClient<Database>,
+    private readonly eventRepo: EventRepository
+  ) {}
 
   async findById(id: string): Promise<Family | null> {
-    const { data, error } = await this.supabase.from("families").select("*").eq("id", id).single();
+    const { data, error } = await this.supabase
+      .from("families")
+      .select(
+        `
+        *,
+        family_members(user_id, role, joined_at, users(full_name, avatar_url)),
+        children(id, name, created_at)
+        `
+      )
+      .eq("id", id)
+      .single();
 
     if (error || !data) {
       return null;
     }
 
-    return this.mapToDomain(data);
+    return Family.create(
+      data.id,
+      data.name,
+      data.created_at,
+      (data.family_members || []).map((member: any) => ({
+        id: member.user_id,
+        name: member.users?.full_name ?? "",
+        userId: member.user_id,
+        role: member.role as "admin" | "member",
+        joinedAt: member.joined_at,
+        avatarUrl: member.users?.avatar_url ?? null,
+      })),
+      (data.children || []).map((child: any) => ({
+        id: child.id,
+        name: child.name,
+        createdAt: child.created_at,
+      })),
+      []
+    );
   }
 
-  async create(data: CreateFamilyDTO): Promise<Family> {
-    const { data: result, error } = await this.supabase
-      .from("families")
-      .insert({
-        name: data.name,
-      })
-      .select()
-      .single();
+  async store(family: Family): Promise<void> {
+    const { error: familyError } = await this.supabase.from("families").upsert({
+      id: family.id,
+      name: family.name,
+      created_at: family.createdAt,
+    });
 
-    if (error || !result) {
-      throw new Error(`Failed to create family: ${error?.message ?? "Unknown error"}`);
+    if (familyError) {
+      throw new Error(`Failed to store family: ${familyError.message}`);
     }
 
-    return this.mapToDomain(result);
-  }
+    const existingMembers = await this.supabase.from("family_members").select("user_id").eq("family_id", family.id);
 
-  async update(id: string, data: UpdateFamilyDTO): Promise<Family> {
-    const updateData: Partial<Database["public"]["Tables"]["families"]["Update"]> = {};
-    if (data.name !== undefined) {
-      updateData.name = data.name;
+    const existingUserIds = new Set((existingMembers.data || []).map((m: any) => m.user_id));
+
+    for (const member of family.members) {
+      if (!existingUserIds.has(member.userId)) {
+        const { error: memberError } = await this.supabase.from("family_members").insert({
+          family_id: family.id,
+          user_id: member.userId,
+          role: member.role,
+          joined_at: member.joinedAt,
+        });
+
+        if (memberError) {
+          throw new Error(`Failed to store family member: ${memberError.message}`);
+        }
+      } else {
+        const { error: memberError } = await this.supabase
+          .from("family_members")
+          .update({
+            role: member.role,
+          })
+          .eq("family_id", family.id)
+          .eq("user_id", member.userId);
+
+        if (memberError) {
+          throw new Error(`Failed to update family member: ${memberError.message}`);
+        }
+      }
     }
 
-    const { data: result, error } = await this.supabase
-      .from("families")
-      .update(updateData)
-      .eq("id", id)
-      .select()
-      .single();
+    const membersToRemove = Array.from(existingUserIds).filter(
+      (userId) => !family.members.some((m) => m.userId === userId)
+    );
+    for (const userId of membersToRemove) {
+      const { error: deleteError } = await this.supabase
+        .from("family_members")
+        .delete()
+        .eq("family_id", family.id)
+        .eq("user_id", userId);
 
-    if (error || !result) {
-      throw new Error(`Failed to update family: ${error?.message ?? "Unknown error"}`);
+      if (deleteError) {
+        throw new Error(`Failed to remove family member: ${deleteError.message}`);
+      }
     }
 
-    return this.mapToDomain(result);
+    if (family.events && family.events.length > 0) {
+      const existingEvents = await this.supabase.from("events").select("id").eq("family_id", family.id);
+      const existingEventIds = new Set((existingEvents.data || []).map((e: any) => e.id));
+      const newEventIds = new Set(family.events.map((e) => e.id));
+
+      for (const event of family.events) {
+        await this.eventRepo.store(event);
+      }
+
+      const eventsToRemove = Array.from(existingEventIds).filter((eventId) => !newEventIds.has(eventId));
+      for (const eventId of eventsToRemove) {
+        await this.eventRepo.delete(eventId);
+      }
+    }
   }
 
   async delete(id: string): Promise<void> {
@@ -63,104 +127,6 @@ export class SQLFamilyRepository implements FamilyRepository {
     if (error) {
       throw new Error(`Failed to delete family: ${error.message}`);
     }
-  }
-
-  async findByUserId(userId: string): Promise<Family[]> {
-    const { data, error } = await this.supabase
-      .from("families")
-      .select(
-        `
-        *,
-        family_members!inner(user_id)
-        `
-      )
-      .eq("family_members.user_id", userId);
-
-    if (error || !data) {
-      return [];
-    }
-
-    return data.map((row) => this.mapToDomain(row));
-  }
-
-  async isUserMember(familyId: string, userId: string): Promise<boolean> {
-    const { data, error } = await this.supabase
-      .from("family_members")
-      .select("user_id")
-      .eq("family_id", familyId)
-      .eq("user_id", userId)
-      .single();
-
-    return !error && data !== null;
-  }
-
-  async isUserAdmin(familyId: string, userId: string): Promise<boolean> {
-    const { data, error } = await this.supabase
-      .from("family_members")
-      .select("role")
-      .eq("family_id", familyId)
-      .eq("user_id", userId)
-      .single();
-
-    return !error && data?.role === "admin";
-  }
-
-  async getFamilyMembers(familyId: string): Promise<FamilyMemberWithUser[]> {
-    const { data, error } = await this.supabase
-      .from("family_members")
-      .select(
-        `
-        user_id,
-        role,
-        joined_at,
-        users!inner(full_name, avatar_url)
-        `
-      )
-      .eq("family_id", familyId)
-      .order("joined_at", { ascending: true });
-
-    if (error || !data) {
-      return [];
-    }
-
-    return data.map((member: any) => ({
-      user_id: member.user_id,
-      full_name: member.users.full_name,
-      avatar_url: member.users.avatar_url,
-      role: member.role as "admin" | "member",
-      joined_at: member.joined_at,
-    }));
-  }
-
-  async getMembers(familyId: string): Promise<FamilyMemberWithUser[]> {
-    const { data, error } = await this.supabase
-      .from("family_members")
-      .select(
-        `
-        user_id,
-        role,
-        joined_at,
-        users!inner(full_name, avatar_url)
-        `
-      )
-      .eq("family_id", familyId)
-      .order("joined_at", { ascending: true });
-
-    if (error) {
-      throw new Error(`Failed to fetch family members: ${error.message}`);
-    }
-
-    if (!data) {
-      return [];
-    }
-
-    return data.map((member: any) => ({
-      user_id: member.user_id,
-      full_name: member.users?.full_name ?? null,
-      avatar_url: member.users?.avatar_url ?? null,
-      role: member.role as "admin" | "member",
-      joined_at: member.joined_at,
-    }));
   }
 
   async addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void> {
@@ -173,13 +139,5 @@ export class SQLFamilyRepository implements FamilyRepository {
     if (error) {
       throw new Error(`Failed to add member: ${error.message}`);
     }
-  }
-
-  private mapToDomain(row: Database["public"]["Tables"]["families"]["Row"]): Family {
-    return {
-      id: row.id,
-      name: row.name,
-      created_at: row.created_at,
-    };
   }
 }

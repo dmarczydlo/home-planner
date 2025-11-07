@@ -9,6 +9,7 @@ import type {
   FindEventsOptions,
 } from "../../interfaces/EventRepository.ts";
 import type { ParticipantReferenceDTO } from "@/types";
+import { Event as EventEntity } from "@/domain/entities/Event";
 
 export class InMemoryEventRepository implements EventRepository {
   private events: Map<string, Event> = new Map();
@@ -117,6 +118,39 @@ export class InMemoryEventRepository implements EventRepository {
     this.events.delete(id);
     this.participants.delete(id);
     this.exceptions.delete(id);
+  }
+
+  async store(event: EventEntity): Promise<void> {
+    const eventDTO: Event = {
+      id: event.id,
+      title: event.title,
+      start_time: event.startTime,
+      end_time: event.endTime,
+      family_id: event.familyId,
+      event_type: event.eventType,
+      is_all_day: event.isAllDay,
+      created_at: event.createdAt,
+      recurrence_pattern: event.recurrencePattern,
+      is_synced: event.isSynced,
+      external_calendar_id: event.externalCalendarId,
+      updated_at: event.updatedAt,
+    };
+    this.events.set(event.id, eventDTO);
+
+    const participantRefs: ParticipantReferenceDTO[] = event.participants.map((p) => ({
+      id: p.id,
+      type: p.type,
+    }));
+    this.participants.set(event.id, participantRefs);
+
+    const exceptions = event.exceptions.map((ex) => ({
+      id: ex.id,
+      original_date: ex.originalDate,
+      new_start_time: ex.newStartTime,
+      new_end_time: ex.newEndTime,
+      is_cancelled: ex.isCancelled,
+    }));
+    this.exceptions.set(event.id, exceptions);
   }
 
   async findByIdWithDetails(id: string, occurrenceDate?: string): Promise<EventDetails | null> {

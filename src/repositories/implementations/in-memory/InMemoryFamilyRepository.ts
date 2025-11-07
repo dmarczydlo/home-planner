@@ -1,10 +1,11 @@
 import type {
   FamilyRepository,
-  Family,
   CreateFamilyDTO,
   UpdateFamilyDTO,
   FamilyMemberWithUser,
 } from "../../interfaces/FamilyRepository.ts";
+import type { EventRepository } from "../../interfaces/EventRepository.ts";
+import { Family, type FamilyMember } from "@/domain/entities/Family.ts";
 
 interface FamilyMemberData {
   userId: string;
@@ -13,21 +14,63 @@ interface FamilyMemberData {
 }
 
 export class InMemoryFamilyRepository implements FamilyRepository {
+  constructor(private readonly eventRepo: EventRepository) {}
+
   private families: Map<string, Family> = new Map();
   private familyMembers: Map<string, Map<string, FamilyMemberData>> = new Map(); // familyId -> Map<userId, memberData>
   private users: Map<string, { full_name: string | null; avatar_url: string | null }> = new Map();
 
   async findById(id: string): Promise<Family | null> {
-    return this.families.get(id) ?? null;
+    const family = this.families.get(id);
+    if (!family) {
+      return null;
+    }
+
+    const membersData = this.familyMembers.get(id) || new Map();
+    const members: FamilyMember[] = Array.from(membersData.entries()).map(([userId, memberData]) => {
+      const user = this.users.get(userId) ?? { full_name: null, avatar_url: null };
+      return {
+        id: userId,
+        name: user.full_name || "",
+        userId: userId,
+        role: memberData.role,
+        joinedAt: memberData.joinedAt,
+        avatarUrl: user.avatar_url,
+      };
+    });
+
+    return Family.create(family.id, family.name, family.createdAt, members, family.children, []);
+  }
+
+  async store(family: Family): Promise<void> {
+    this.families.set(family.id, family);
+
+    if (!this.familyMembers.has(family.id)) {
+      this.familyMembers.set(family.id, new Map());
+    }
+
+    const membersMap = this.familyMembers.get(family.id)!;
+    membersMap.clear();
+
+    for (const member of family.members) {
+      membersMap.set(member.userId, {
+        userId: member.userId,
+        role: member.role,
+        joinedAt: member.joinedAt,
+      });
+    }
+
+    if (family.events && family.events.length > 0) {
+      for (const event of family.events) {
+        await this.eventRepo.store(event);
+      }
+    }
   }
 
   async create(data: CreateFamilyDTO): Promise<Family> {
-    const family: Family = {
-      id: crypto.randomUUID(),
-      name: data.name,
-      created_at: new Date().toISOString(),
-    };
-    this.families.set(family.id, family);
+    const createdAt = new Date().toISOString();
+    const family = Family.create(crypto.randomUUID(), data.name, createdAt, [], []);
+    await this.store(family);
     return family;
   }
 

@@ -19,11 +19,7 @@ export async function GET({ params, locals }: APIContext): Promise<Response> {
 
     const familyId = pathResult.data.familyId;
 
-    const familyService = new FamilyService(
-      locals.repositories.family,
-      locals.repositories.child,
-      locals.repositories.log
-    );
+    const familyService = new FamilyService(locals.repositories.family, locals.repositories.log);
     const result = await familyService.getFamilyMembers(familyId, userId);
 
     if (!result.success) {

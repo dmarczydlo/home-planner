@@ -18,11 +18,7 @@ export async function GET({ params, locals }: APIContext): Promise<Response> {
 
     const familyId = pathResult.data.id;
 
-    const familyService = new FamilyService(
-      locals.repositories.family,
-      locals.repositories.child,
-      locals.repositories.log
-    );
+    const familyService = new FamilyService(locals.repositories.family, locals.repositories.log);
     const result = await familyService.getFamilyDetails(familyId, userId);
 
     return mapResultToResponse(result);
@@ -46,11 +42,7 @@ export async function PATCH({ params, request, locals }: APIContext): Promise<Re
       return mapResultToResponse(bodyResult);
     }
 
-    const familyService = new FamilyService(
-      locals.repositories.family,
-      locals.repositories.child,
-      locals.repositories.log
-    );
+    const familyService = new FamilyService(locals.repositories.family, locals.repositories.log);
     const result = await familyService.updateFamily(familyId, bodyResult.data, userId);
 
     return mapResultToResponse(result);
@@ -69,14 +61,9 @@ export async function DELETE({ params, locals }: APIContext): Promise<Response> 
 
     const familyId = pathResult.data.id;
 
-    const familyService = new FamilyService(
-      locals.repositories.family,
-      locals.repositories.child,
-      locals.repositories.log
-    );
+    const familyService = new FamilyService(locals.repositories.family, locals.repositories.log);
     const result = await familyService.deleteFamily(familyId, userId);
 
     return mapResultToResponse(result, { successStatus: 204 });
   }, "DELETE /api/families/[id]");
 }
-

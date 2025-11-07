@@ -2,7 +2,6 @@ import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
 import { NotFoundError, ValidationError, ForbiddenError, DomainError } from "@/domain/errors";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
-import type { ChildRepository } from "@/repositories/interfaces/ChildRepository";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
 import type {
   CreateFamilyCommand,
@@ -12,11 +11,12 @@ import type {
   UpdateFamilyResponseDTO,
   FamilyMemberDTO,
 } from "@/types";
+import { Family } from "@/domain/entities/Family";
+import { FamilyDTOMapper } from "@/lib/mappers/FamilyDTOMapper";
 
 export class FamilyService {
   constructor(
     private readonly familyRepo: FamilyRepository,
-    private readonly childRepo: ChildRepository,
     private readonly logRepo: LogRepository
   ) {}
 
@@ -25,12 +25,22 @@ export class FamilyService {
     userId: string
   ): Promise<Result<CreateFamilyResponseDTO, DomainError>> {
     try {
-      const family = await this.familyRepo.create({ name: command.name });
-      await this.familyRepo.addMember(family.id, userId, "admin");
+      const createdAt = new Date().toISOString();
+      const familyId = crypto.randomUUID();
+
+      const family = Family.create(familyId, command.name, createdAt, [], []).addMember({
+        id: userId,
+        name: "owner",
+        role: "admin",
+        joinedAt: createdAt,
+        userId: userId,
+      });
+
+      await this.familyRepo.store(family);
 
       this.logRepo
         .create({
-          family_id: family.id,
+          family_id: familyId,
           actor_id: userId,
           actor_type: "user",
           action: "family.create",
@@ -43,10 +53,13 @@ export class FamilyService {
       return ok({
         id: family.id,
         name: family.name,
-        created_at: family.created_at,
+        created_at: family.createdAt,
         role: "admin",
       });
     } catch (error) {
+      if (error instanceof Error) {
+        return err(new ValidationError(error.message));
+      }
       return err(new DomainError(500, "Failed to create family"));
     }
   }
@@ -57,21 +70,11 @@ export class FamilyService {
       return err(new NotFoundError("Family", familyId));
     }
 
-    const isMember = await this.familyRepo.isUserMember(familyId, userId);
-    if (!isMember) {
+    if (!family.isMember(userId)) {
       return err(new ForbiddenError("You do not have access to this family"));
     }
 
-    const members = await this.familyRepo.getFamilyMembers(familyId);
-    const children = await this.childRepo.findByFamilyId(familyId);
-
-    return ok({
-      id: family.id,
-      name: family.name,
-      created_at: family.created_at,
-      members,
-      children,
-    });
+    return ok(FamilyDTOMapper.toDetailsDTO(family));
   }
 
   async getFamilyMembers(familyId: string, userId: string): Promise<Result<FamilyMemberDTO[], DomainError>> {
@@ -80,21 +83,12 @@ export class FamilyService {
       return err(new NotFoundError("Family", familyId));
     }
 
-    const isMember = await this.familyRepo.isUserMember(familyId, userId);
-    if (!isMember) {
+    if (!family.isMember(userId)) {
       return err(new ForbiddenError("You do not have access to this family"));
     }
 
     try {
-      const memberEntities = await this.familyRepo.getFamilyMembers(familyId);
-
-      const members: FamilyMemberDTO[] = memberEntities.map((entity) => ({
-        user_id: entity.user_id,
-        full_name: entity.full_name,
-        avatar_url: entity.avatar_url,
-        role: entity.role,
-        joined_at: entity.joined_at,
-      }));
+      const members = FamilyDTOMapper.toMembersDTO(family);
 
       this.logRepo
         .create({
@@ -124,13 +118,17 @@ export class FamilyService {
       return err(new NotFoundError("Family", familyId));
     }
 
-    const isAdmin = await this.familyRepo.isUserAdmin(familyId, userId);
-    if (!isAdmin) {
+    if (!family.isAdmin(userId)) {
       return err(new ForbiddenError("You are not an admin of this family"));
     }
 
     try {
-      const updated = await this.familyRepo.update(familyId, command);
+      let updatedFamily = family;
+      if (command.name !== undefined) {
+        updatedFamily = family.updateName(command.name);
+      }
+
+      await this.familyRepo.store(updatedFamily);
 
       this.logRepo
         .create({
@@ -138,19 +136,22 @@ export class FamilyService {
           actor_id: userId,
           actor_type: "user",
           action: "family.update",
-          details: { name: updated.name },
+          details: { name: updatedFamily.name },
         })
         .catch((error) => {
           console.error("Failed to log family.update:", error);
         });
 
       return ok({
-        id: updated.id,
-        name: updated.name,
-        created_at: updated.created_at,
+        id: updatedFamily.id,
+        name: updatedFamily.name,
+        created_at: updatedFamily.createdAt,
         updated_at: new Date().toISOString(),
       });
     } catch (error) {
+      if (error instanceof Error) {
+        return err(new ValidationError(error.message));
+      }
       return err(new DomainError(500, "Failed to update family"));
     }
   }
@@ -161,8 +162,7 @@ export class FamilyService {
       return err(new NotFoundError("Family", familyId));
     }
 
-    const isAdmin = await this.familyRepo.isUserAdmin(familyId, userId);
-    if (!isAdmin) {
+    if (!family.isAdmin(userId)) {
       return err(new ForbiddenError("You are not an admin of this family"));
     }
 

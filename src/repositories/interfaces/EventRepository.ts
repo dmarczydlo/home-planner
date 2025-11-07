@@ -1,5 +1,5 @@
 import type {
-  EventEntity,
+  EventEntity as DatabaseEventEntity,
   EventInsert,
   EventUpdate,
   EventParticipantEntity,
@@ -9,6 +9,7 @@ import type {
   RecurrencePatternDTO,
   ParticipantReferenceDTO,
 } from "@/types";
+import type { Event as EventEntity } from "@/domain/entities/Event";
 
 export interface Event {
   id: string;
@@ -103,6 +104,7 @@ export interface EventRepository {
   create(data: CreateEventDTO): Promise<Event>;
   update(id: string, data: UpdateEventDTO): Promise<Event>;
   delete(id: string): Promise<void>;
+  store(event: EventEntity): Promise<void>;
   findByIdWithDetails(id: string, occurrenceDate?: string): Promise<EventDetails | null>;
   checkConflicts(
     familyId: string,
