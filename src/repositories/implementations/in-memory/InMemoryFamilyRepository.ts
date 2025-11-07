@@ -91,6 +91,26 @@ export class InMemoryFamilyRepository implements FamilyRepository {
     });
   }
 
+  async getMembers(familyId: string): Promise<FamilyMemberWithUser[]> {
+    const members = this.familyMembers.get(familyId);
+    if (!members) {
+      return [];
+    }
+
+    return Array.from(members.entries())
+      .map(([userId, memberData]) => {
+        const user = this.users.get(userId) ?? { full_name: null, avatar_url: null };
+        return {
+          user_id: userId,
+          full_name: user.full_name,
+          avatar_url: user.avatar_url,
+          role: memberData.role,
+          joined_at: memberData.joinedAt,
+        };
+      })
+      .sort((a, b) => new Date(a.joined_at).getTime() - new Date(b.joined_at).getTime());
+  }
+
   async addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void> {
     if (!this.familyMembers.has(familyId)) {
       this.familyMembers.set(familyId, new Map());

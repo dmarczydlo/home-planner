@@ -29,5 +29,6 @@ export interface FamilyRepository {
   isUserMember(familyId: string, userId: string): Promise<boolean>;
   isUserAdmin(familyId: string, userId: string): Promise<boolean>;
   getFamilyMembers(familyId: string): Promise<FamilyMemberWithUser[]>;
+  getMembers(familyId: string): Promise<FamilyMemberWithUser[]>;
   addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void>;
 }

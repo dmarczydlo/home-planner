@@ -45,9 +45,9 @@ pnpm test:ui
 
 Tests are located alongside the code they test:
 
-- `src/services/__tests__/` - Service layer tests
-- `src/repositories/__tests__/` - Repository tests (future)
-- `src/pages/api/__tests__/` - API route tests (future)
+- `src/services/` - Service layer tests
+- `src/repositories/` - Repository tests (future)
+- `src/pages/api/` - API route tests (future)
 
 ## Writing Tests
 
@@ -66,7 +66,7 @@ describe("MyService", () => {
 ## Test Coverage
 
 The project aims for:
+
 - **Services**: >80% coverage
 - **Repositories**: >70% coverage
 - **API Routes**: >60% coverage
-
