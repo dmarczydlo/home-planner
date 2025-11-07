@@ -1060,13 +1060,20 @@ Implement service methods:
 **File:** `src/pages/api/external-calendars/index.ts`
 
 ```typescript
-export async function GET({ locals }: APIContext) {
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+import type { APIContext } from "astro";
+import { handleApiRequest } from "@/lib/http/apiHelpers";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
 
-  const service = new ExternalCalendarService(locals.repositories.externalCalendar);
-  const result = await service.listCalendars(userId);
-  return mapResultToResponse(result);
+export async function GET({ locals }: APIContext) {
+  return handleApiRequest({
+    handler: async ({ userId, locals }) => {
+      const service = new ExternalCalendarService(locals.repositories.externalCalendar);
+      const result = await service.listCalendars(userId);
+      return mapResultToResponse(result);
+    },
+    context: "GET /api/external-calendars",
+    locals,
+  });
 }
 ```
 
@@ -1074,26 +1081,20 @@ export async function GET({ locals }: APIContext) {
 **File:** `src/pages/api/external-calendars/index.ts` (add POST handler)
 
 ```typescript
+import { connectCalendarCommandSchema, type ConnectCalendarCommand } from "@/types";
+
 export async function POST({ request, locals }: APIContext) {
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
-
-  const bodyResult = await parseJSON<ConnectCalendarCommand>(request);
-  if (!bodyResult.success) {
-    return mapResultToResponse(bodyResult);
-  }
-
-  // Validate with Zod schema
-  const validation = validateSchema(connectCalendarCommandSchema, bodyResult.data);
-  if (!validation.success) {
-    return mapResultToResponse(
-      err(new ValidationError("Invalid request", formatZodErrors(validation.error)))
-    );
-  }
-
-  const service = new ExternalCalendarService(locals.repositories.externalCalendar);
-  const result = await service.initiateOAuth(userId, validation.data.provider);
-  return mapResultToResponse(result);
+  return handleApiRequest<unknown, unknown, ConnectCalendarCommand>({
+    handler: async ({ userId, body, locals }) => {
+      const service = new ExternalCalendarService(locals.repositories.externalCalendar);
+      const result = await service.initiateOAuth(userId, body.provider);
+      return mapResultToResponse(result);
+    },
+    context: "POST /api/external-calendars",
+    bodySchema: connectCalendarCommandSchema,
+    request,
+    locals,
+  });
 }
 ```
 
@@ -1126,18 +1127,27 @@ export async function GET({ url, locals }: APIContext) {
 **File:** `src/pages/api/external-calendars/[calendarId].ts`
 
 ```typescript
+import type { APIContext } from "astro";
+import { handleApiRequest } from "@/lib/http/apiHelpers";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
+import { z } from "zod";
+import { uuidSchema } from "@/types";
+
+const calendarIdPathSchema = z.object({ calendarId: uuidSchema });
+type CalendarIdPath = z.infer<typeof calendarIdPathSchema>;
+
 export async function DELETE({ params, locals }: APIContext) {
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
-
-  const calendarId = params.calendarId;
-  if (!calendarId) {
-    return mapResultToResponse(err(new ValidationError("Calendar ID is required")));
-  }
-
-  const service = new ExternalCalendarService(locals.repositories.externalCalendar);
-  const result = await service.disconnectCalendar(userId, calendarId);
-  return mapResultToResponse(result, { successStatus: 204 });
+  return handleApiRequest<CalendarIdPath>({
+    handler: async ({ userId, path, locals }) => {
+      const service = new ExternalCalendarService(locals.repositories.externalCalendar);
+      const result = await service.disconnectCalendar(userId, path.calendarId);
+      return mapResultToResponse(result, { successStatus: 204 });
+    },
+    context: "DELETE /api/external-calendars/[calendarId]",
+    pathSchema: calendarIdPathSchema,
+    params,
+    locals,
+  });
 }
 ```
 
@@ -1145,18 +1155,23 @@ export async function DELETE({ params, locals }: APIContext) {
 **File:** `src/pages/api/external-calendars/[calendarId]/sync.ts`
 
 ```typescript
+import type { APIContext } from "astro";
+import { handleApiRequest } from "@/lib/http/apiHelpers";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
+import { calendarIdPathSchema, type CalendarIdPath } from "@/types";
+
 export async function POST({ params, locals }: APIContext) {
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
-
-  const calendarId = params.calendarId;
-  if (!calendarId) {
-    return mapResultToResponse(err(new ValidationError("Calendar ID is required")));
-  }
-
-  const service = new ExternalCalendarService(locals.repositories.externalCalendar);
-  const result = await service.syncCalendar(userId, calendarId);
-  return mapResultToResponse(result);
+  return handleApiRequest<CalendarIdPath>({
+    handler: async ({ userId, path, locals }) => {
+      const service = new ExternalCalendarService(locals.repositories.externalCalendar);
+      const result = await service.syncCalendar(userId, path.calendarId);
+      return mapResultToResponse(result);
+    },
+    context: "POST /api/external-calendars/[calendarId]/sync",
+    pathSchema: calendarIdPathSchema,
+    params,
+    locals,
+  });
 }
 ```
 
@@ -1164,13 +1179,20 @@ export async function POST({ params, locals }: APIContext) {
 **File:** `src/pages/api/external-calendars/sync.ts`
 
 ```typescript
-export async function POST({ locals }: APIContext) {
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+import type { APIContext } from "astro";
+import { handleApiRequest } from "@/lib/http/apiHelpers";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
 
-  const service = new ExternalCalendarService(locals.repositories.externalCalendar);
-  const result = await service.syncAllCalendars(userId);
-  return mapResultToResponse(result);
+export async function POST({ locals }: APIContext) {
+  return handleApiRequest({
+    handler: async ({ userId, locals }) => {
+      const service = new ExternalCalendarService(locals.repositories.externalCalendar);
+      const result = await service.syncAllCalendars(userId);
+      return mapResultToResponse(result);
+    },
+    context: "POST /api/external-calendars/sync",
+    locals,
+  });
 }
 ```
 

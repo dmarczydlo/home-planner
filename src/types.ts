@@ -384,7 +384,7 @@ export type UpdateMemberRoleResponseDTO = z.infer<typeof updateMemberRoleRespons
  */
 export const createChildCommandSchema = z
   .object({
-    name: z.string().min(1, "Child name is required").max(100),
+    name: z.string().trim().min(1, "Child name is required").max(100, "Child name must be less than 100 characters"),
   })
   .strict();
 
@@ -395,7 +395,12 @@ export type CreateChildCommand = z.infer<typeof createChildCommandSchema>;
  */
 export const updateChildCommandSchema = z
   .object({
-    name: z.string().min(1).max(100).optional(),
+    name: z
+      .string()
+      .trim()
+      .min(1, "Child name cannot be empty")
+      .max(100, "Child name must be less than 100 characters")
+      .optional(),
   })
   .strict();
 
@@ -1093,3 +1098,12 @@ export const listLogsQuerySchema = z
   );
 
 export type ListLogsQuery = z.infer<typeof listLogsQuerySchema>;
+
+/**
+ * Path parameter schema for child ID
+ */
+export const childIdPathSchema = z.object({
+  childId: uuidSchema,
+});
+
+export type ChildIdPath = z.infer<typeof childIdPathSchema>;

@@ -1,6 +1,35 @@
 import type { Result } from "@/domain/result";
 import type { DomainError } from "@/domain/errors";
-import { ValidationError, ConflictError } from "@/domain/errors";
+import {
+  ValidationError,
+  ConflictError,
+  NotFoundError,
+  ForbiddenError,
+  UnauthorizedError,
+  InternalError,
+} from "@/domain/errors";
+
+function mapDomainErrorToHttpStatus(error: DomainError): number {
+  if (error instanceof ValidationError) {
+    return 400;
+  }
+  if (error instanceof UnauthorizedError) {
+    return 401;
+  }
+  if (error instanceof ForbiddenError) {
+    return 403;
+  }
+  if (error instanceof NotFoundError) {
+    return 404;
+  }
+  if (error instanceof ConflictError) {
+    return 409;
+  }
+  if (error instanceof InternalError) {
+    return 500;
+  }
+  return 500;
+}
 
 export function mapResultToResponse<T>(
   result: Result<T, DomainError>,
@@ -24,7 +53,7 @@ export function mapResultToResponse<T>(
   }
 
   const error = result.error;
-  const statusCode = error.statusCode || 500;
+  const statusCode = mapDomainErrorToHttpStatus(error);
 
   const errorBody: Record<string, unknown> = {
     error: error.name.replace("Error", "").toLowerCase(),

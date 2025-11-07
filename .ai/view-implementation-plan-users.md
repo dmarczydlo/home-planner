@@ -389,33 +389,15 @@ return new Response(
 ```typescript
 // In API Route Handler
 export async function GET({ locals }: APIContext) {
-  try {
-    // 1. Auth check
-    const userId = requireAuth(locals);
-    if (userId instanceof Response) return userId;
-
-    // 2. Call service
-    const userService = new UserService(locals.repositories.user);
-    const result = await userService.getUserProfile(userId);
-
-    // 3. Map Result to Response
-    return mapResultToResponse(result);
-
-  } catch (error) {
-    // Unexpected errors
-    console.error("Unexpected error in GET /api/users/me:", error);
-    
-    // Log to audit trail
-    await logError(locals, error, { endpoint: "/api/users/me" });
-    
-    return new Response(
-      JSON.stringify({
-        error: "internal_error",
-        message: "An unexpected error occurred"
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
-  }
+  return handleApiRequest({
+    handler: async ({ userId, locals }) => {
+      const userService = new UserService(locals.repositories.user);
+      const result = await userService.getUserProfile(userId);
+      return mapResultToResponse(result);
+    },
+    context: "GET /api/users/me",
+    locals,
+  });
 }
 ```
 

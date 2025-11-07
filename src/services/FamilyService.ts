@@ -1,6 +1,6 @@
 import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
-import { NotFoundError, ValidationError, ForbiddenError, DomainError } from "@/domain/errors";
+import { NotFoundError, ValidationError, ForbiddenError, DomainError, InternalError } from "@/domain/errors";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { ChildRepository } from "@/repositories/interfaces/ChildRepository";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
@@ -61,7 +61,7 @@ export class FamilyService {
         role: "admin",
       });
     } catch (error) {
-      return err(new DomainError(500, "Failed to create family"));
+      return err(new InternalError("Failed to create family"));
     }
   }
 
@@ -134,7 +134,7 @@ export class FamilyService {
 
       return ok(members);
     } catch (error) {
-      return err(new DomainError(500, "Failed to retrieve family members"));
+      return err(new InternalError("Failed to retrieve family members"));
     }
   }
 
@@ -192,7 +192,7 @@ export class FamilyService {
         updated_at: new Date().toISOString(),
       });
     } catch (error) {
-      return err(new DomainError(500, "Failed to update family"));
+      return err(new InternalError("Failed to update family"));
     }
   }
 
@@ -229,7 +229,7 @@ export class FamilyService {
 
       return ok(undefined);
     } catch (error) {
-      return err(new DomainError(500, "Failed to delete family"));
+      return err(new InternalError("Failed to delete family"));
     }
   }
 }
