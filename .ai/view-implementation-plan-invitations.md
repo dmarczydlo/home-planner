@@ -180,11 +180,13 @@ Both operations require authentication and verify that the user is a member of t
    ↓
 3. API route extracts familyId from params
    ↓
-4. API route calls requireAuth(locals) → returns userId or Response
+4. API route uses `handleApiRequest()` with `pathSchema` and `querySchema` options
    ↓
-5. API route creates InvitationService with repositories from locals.repositories
+5. Handler receives validated `path` and `query` data automatically
    ↓
-6. Service.listInvitations(familyId, userId, status?):
+6. API route creates InvitationService with repositories from locals.repositories
+   ↓
+7. Service.listInvitations(familyId, userId, status?):
    a. Validates familyId is valid UUID
    b. Validates status parameter (if provided)
    c. Calls FamilyRepository.findById(familyId) → Result<Family, NotFoundError>
@@ -209,11 +211,9 @@ Both operations require authentication and verify that the user is a member of t
    ↓
 3. API route extracts familyId from params
    ↓
-4. API route calls requireAuth(locals) → returns userId or Response
+4. API route uses `handleApiRequest()` with `pathSchema` and `bodySchema` options
    ↓
-5. API route parses request body using parseJSON<CreateInvitationCommand>()
-   ↓
-6. API route validates body using createInvitationCommandSchema
+5. Handler receives validated `path` and `body` data automatically
    ↓
 7. API route creates InvitationService with repositories from locals.repositories
    ↓
@@ -389,39 +389,41 @@ async createInvitation(...): Promise<Result<CreateInvitationResponseDTO, DomainE
 
 **API Route:**
 ```typescript
+import type { APIContext } from "astro";
+import { handleApiRequest } from "@/lib/http/apiHelpers";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
+import {
+  familyIdParamPathSchema,
+  createInvitationCommandSchema,
+  type FamilyIdParamPath,
+  type CreateInvitationCommand,
+} from "@/types";
+
 export async function POST({ params, request, locals }: APIContext) {
-  // Auth check
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
-  
-  // Parse and validate body
-  const bodyResult = await parseJSON<CreateInvitationCommand>(request);
-  if (!bodyResult.success) {
-    return mapResultToResponse(bodyResult);
-  }
-  
-  // Validate with Zod schema
-  const validationResult = validateSchema(createInvitationCommandSchema, bodyResult.data);
-  if (!validationResult.success) {
-    return mapResultToResponse(err(new ValidationError("Invalid input", formatZodErrors(validationResult.error))));
-  }
-  
-  // Call service
-  const invitationService = new InvitationService(
-    locals.repositories.invitation,
-    locals.repositories.family,
-    locals.repositories.user,
-    locals.repositories.log
-  );
-  
-  const result = await invitationService.createInvitation(
-    params.familyId!,
-    validationResult.data,
-    userId
-  );
-  
-  // Map Result to HTTP Response
-  return mapResultToResponse(result, { successStatus: 201 });
+  return handleApiRequest<FamilyIdParamPath, unknown, CreateInvitationCommand>({
+    handler: async ({ userId, path, body, locals }) => {
+      const invitationService = new InvitationService(
+        locals.repositories.invitation,
+        locals.repositories.family,
+        locals.repositories.user,
+        locals.repositories.log
+      );
+      
+      const result = await invitationService.createInvitation(
+        path.familyId,
+        body,
+        userId
+      );
+      
+      return mapResultToResponse(result, { successStatus: 201 });
+    },
+    context: "POST /api/families/[familyId]/invitations",
+    pathSchema: familyIdParamPathSchema,
+    bodySchema: createInvitationCommandSchema,
+    params,
+    request,
+    locals,
+  });
 }
 ```
 
@@ -605,13 +607,12 @@ Implement both GET and POST handlers:
 6. Map Result to Response using `mapResultToResponse()`
 
 **POST Handler:**
-1. Extract `familyId` from params
-2. Call `requireAuth(locals)`
-3. Parse request body using `parseJSON<CreateInvitationCommand>()`
-4. Validate body using `createInvitationCommandSchema`
-5. Create `InvitationService` with repositories
-6. Call `service.createInvitation(familyId, command, userId)`
-7. Map Result to Response using `mapResultToResponse()` with `successStatus: 201`
+1. Use `handleApiRequest()` with `pathSchema` and `bodySchema` options
+2. Pass `familyIdParamPathSchema` and `createInvitationCommandSchema`
+3. Handler receives validated `path` and `body` data automatically
+4. Create `InvitationService` with repositories
+5. Call `service.createInvitation(path.familyId, body, userId)`
+6. Map Result to Response using `mapResultToResponse()` with `successStatus: 201`
 
 ### Step 12: Update Middleware
 

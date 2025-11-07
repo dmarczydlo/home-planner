@@ -3,6 +3,7 @@ import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
 import { ValidationError } from "@/domain/errors";
 import type { z } from "zod";
+import { mapResultToResponse } from "./responseMapper";
 
 export function requireAuth(locals: APIContext["locals"]): string | Response {
   const user = locals.user;
@@ -116,12 +117,115 @@ export function validateResponse<T>(
   return ok(validation.data);
 }
 
+type ApiHandlerContext<TPath = unknown, TQuery = unknown, TBody = unknown> = {
+  userId: string;
+  path: TPath;
+  query: TQuery;
+  body: TBody;
+  locals: APIContext["locals"];
+};
+
+type ApiHandler<TPath = unknown, TQuery = unknown, TBody = unknown> = (
+  context: ApiHandlerContext<TPath, TQuery, TBody>
+) => Promise<Response> | Response;
+
+type HandleApiRequestOptions<TPath = unknown, TQuery = unknown, TBody = unknown> = {
+  handler: ApiHandler<TPath, TQuery, TBody>;
+  context: string;
+  pathSchema?: z.ZodSchema<TPath>;
+  querySchema?: z.ZodSchema<TQuery>;
+  bodySchema?: z.ZodSchema<TBody>;
+  requireAuth?: boolean;
+  params?: unknown;
+  url?: URL;
+  request?: Request;
+  locals: APIContext["locals"];
+};
+
 export async function handleApiRequest(
   handler: () => Promise<Response> | Response,
-  context: string
+  contextString: string
+): Promise<Response>;
+export async function handleApiRequest<TPath = unknown, TQuery = unknown, TBody = unknown>(
+  options: HandleApiRequestOptions<TPath, TQuery, TBody>
+): Promise<Response>;
+export async function handleApiRequest<TPath = unknown, TQuery = unknown, TBody = unknown>(
+  handlerOrOptions: (() => Promise<Response> | Response) | HandleApiRequestOptions<TPath, TQuery, TBody>,
+  contextString?: string
 ): Promise<Response> {
+  if (typeof handlerOrOptions === "function") {
+    const handler = handlerOrOptions;
+    const ctx = contextString!;
+    try {
+      return await handler();
+    } catch (error) {
+      console.error(`Unexpected error in ${ctx}:`, error);
+      return new Response(
+        JSON.stringify({
+          error: "internal_error",
+          message: "An unexpected error occurred",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+  }
+
+  const options = handlerOrOptions as HandleApiRequestOptions<TPath, TQuery, TBody>;
+  const {
+    handler,
+    context,
+    pathSchema,
+    querySchema,
+    bodySchema,
+    requireAuth: requireAuthOption = true,
+    params,
+    url,
+    request,
+    locals,
+  } = options;
+
   try {
-    return await handler();
+    const userId = requireAuthOption ? requireAuth(locals) : "";
+    if (userId instanceof Response) return userId;
+
+    let pathData: TPath = undefined as TPath;
+    let queryData: TQuery = undefined as TQuery;
+    let bodyData: TBody = undefined as TBody;
+
+    if (pathSchema && params !== undefined) {
+      const pathResult = validatePathParams(pathSchema, params);
+      if (!pathResult.success) {
+        return mapResultToResponse(pathResult);
+      }
+      pathData = pathResult.data;
+    }
+
+    if (querySchema && url) {
+      const queryResult = validateQueryParams(querySchema, url);
+      if (!queryResult.success) {
+        return mapResultToResponse(queryResult);
+      }
+      queryData = queryResult.data;
+    }
+
+    if (bodySchema && request) {
+      const bodyResult = await validateBody(bodySchema, request);
+      if (!bodyResult.success) {
+        return mapResultToResponse(bodyResult);
+      }
+      bodyData = bodyResult.data;
+    }
+
+    return await handler({
+      userId: userId as string,
+      path: pathData,
+      query: queryData,
+      body: bodyData,
+      locals,
+    });
   } catch (error) {
     console.error(`Unexpected error in ${context}:`, error);
     return new Response(

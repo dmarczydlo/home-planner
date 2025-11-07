@@ -1,8 +1,5 @@
 export class DomainError extends Error {
-  constructor(
-    public readonly statusCode: number,
-    message: string
-  ) {
+  constructor(message: string) {
     super(message);
     this.name = this.constructor.name;
   }
@@ -10,19 +7,19 @@ export class DomainError extends Error {
 
 export class UnauthorizedError extends DomainError {
   constructor(message: string = "Unauthorized") {
-    super(401, message);
+    super(message);
   }
 }
 
 export class NotFoundError extends DomainError {
   constructor(resource: string, id: string) {
-    super(404, `${resource} with id ${id} not found`);
+    super(`${resource} with id ${id} not found`);
   }
 }
 
 export class ForbiddenError extends DomainError {
   constructor(message: string = "Forbidden") {
-    super(403, message);
+    super(message);
   }
 }
 
@@ -31,7 +28,7 @@ export class ValidationError extends DomainError {
     message: string,
     public readonly fields?: Record<string, string>
   ) {
-    super(400, message);
+    super(message);
   }
 }
 
@@ -40,6 +37,12 @@ export class ConflictError extends DomainError {
     message: string,
     public readonly conflictingEvents?: unknown[]
   ) {
-    super(409, message);
+    super(message);
+  }
+}
+
+export class InternalError extends DomainError {
+  constructor(message: string = "An internal error occurred") {
+    super(message);
   }
 }

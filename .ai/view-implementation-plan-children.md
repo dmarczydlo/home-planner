@@ -260,11 +260,12 @@ export interface ChildRepository {
    - Sets `context.locals.user` with authenticated user
 
 2. **Route Handler** (`src/pages/api/families/[familyId]/children/index.ts`):
-   - Extracts `familyId` from `params.familyId`
-   - Validates `familyId` is a valid UUID
-   - Calls `requireAuth(locals)` helper
+   - Uses `handleApiRequest()` with `pathSchema` option
+   - Passes `familyIdParamPathSchema` to validate path parameters
+   - Handler receives validated `path` data with `familyId` automatically
+   - Authentication is handled automatically by `handleApiRequest()`
    - Instantiates `ChildService` with `locals.repositories.child` and `locals.repositories.family`
-   - Calls `childService.listChildren(familyId, userId)`
+   - Calls `childService.listChildren(path.familyId, userId)`
 
 3. **ChildService** (`src/services/ChildService.ts`):
    - Validates `familyId` is non-empty UUID
@@ -528,8 +529,8 @@ All errors follow the standard format:
 ```
 
 **Implementation:**
-- Handled by `requireAuth()` helper in route handlers
-- Returns immediately if `locals.user` is null or undefined
+- Handled automatically by `handleApiRequest()` wrapper
+- Returns 401 immediately if `locals.user` is null or undefined
 
 #### 403 Forbidden
 
@@ -818,72 +819,165 @@ ON public.children(family_id, created_at);
 
 **File:** `src/lib/http/apiHelpers.ts`
 
-1. Implement `requireAuth(locals: APIContext["locals"]): string | Response`
-   - Extract user ID from `locals.user`
-   - Return user ID or 401 Response
-2. Implement `parseJSON<T>(request: Request): Promise<Result<T, ValidationError>>`
-   - Parse request body as JSON
-   - Return Result with parsed data or validation error
+1. **Note**: `requireAuth()`, `validateBody()`, `validatePathParams()`, and `validateQueryParams()` are still available as standalone helpers, but the new `handleApiRequest()` approach handles all validation automatically.
 
 ### Step 11: Create GET Endpoint Route
 
 **File:** `src/pages/api/families/[familyId]/children/index.ts`
 
-1. Import dependencies:
-   - `APIContext` from Astro
-   - `ChildService` from services
-   - `mapResultToResponse` from response mapper
-   - `requireAuth` from api helpers
-   - Zod schemas for validation
-2. Export `prerender = false`
-3. Implement `GET` function:
-   - Extract `familyId` from `params.familyId`
-   - Validate `familyId` is valid UUID
-   - Call `requireAuth(locals)`
-   - Instantiate `ChildService`
-   - Call `childService.listChildren(familyId, userId)`
-   - Return `mapResultToResponse(result)`
+```typescript
+import type { APIContext } from "astro";
+import { ChildService } from "@/services/ChildService";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
+import { validateResponse, handleApiRequest } from "@/lib/http/apiHelpers";
+import {
+  familyIdParamPathSchema,
+  listChildrenResponseSchema,
+  type FamilyIdParamPath,
+} from "@/types";
+import { ok } from "@/domain/result";
+
+export const prerender = false;
+
+export async function GET({ params, locals }: APIContext): Promise<Response> {
+  return handleApiRequest<FamilyIdParamPath>({
+    handler: async ({ userId, path, locals }) => {
+      const childService = new ChildService(
+        locals.repositories.child,
+        locals.repositories.family,
+        locals.repositories.log
+      );
+
+      const result = await childService.listChildren(path.familyId, userId);
+
+      if (!result.success) {
+        return mapResultToResponse(result);
+      }
+
+      const responseValidation = validateResponse(listChildrenResponseSchema, result.data);
+      if (!responseValidation.success) {
+        return mapResultToResponse(responseValidation);
+      }
+
+      return mapResultToResponse(ok(result.data));
+    },
+    context: "GET /api/families/[familyId]/children",
+    pathSchema: familyIdParamPathSchema,
+    params,
+    locals,
+  });
+}
+```
 
 ### Step 12: Create POST Endpoint Route
 
 **File:** `src/pages/api/families/[familyId]/children/index.ts` (same file as GET)
 
-1. Implement `POST` function:
-   - Extract `familyId` from path params
-   - Call `requireAuth(locals)`
-   - Parse request body with `await request.json()`
-   - Validate body with `createChildCommandSchema.safeParse(body)`
-   - If validation fails, return validation error
-   - Instantiate `ChildService`
-   - Call `childService.createChild(familyId, command, userId)`
-   - Return `mapResultToResponse(result, { successStatus: 201 })`
+```typescript
+import { createChildCommandSchema, type CreateChildCommand } from "@/types";
+
+export async function POST({ params, request, locals }: APIContext): Promise<Response> {
+  return handleApiRequest<FamilyIdParamPath, unknown, CreateChildCommand>({
+    handler: async ({ userId, path, body, locals }) => {
+      const childService = new ChildService(
+        locals.repositories.child,
+        locals.repositories.family,
+        locals.repositories.log
+      );
+
+      const result = await childService.createChild(path.familyId, body, userId);
+      return mapResultToResponse(result, { successStatus: 201 });
+    },
+    context: "POST /api/families/[familyId]/children",
+    pathSchema: familyIdParamPathSchema,
+    bodySchema: createChildCommandSchema,
+    params,
+    request,
+    locals,
+  });
+}
+```
 
 ### Step 13: Create PATCH Endpoint Route
 
 **File:** `src/pages/api/families/[familyId]/children/[childId].ts`
 
-1. Import dependencies (same as GET/POST)
-2. Export `prerender = false`
-3. Implement `PATCH` function:
-   - Extract `familyId` and `childId` from path params
-   - Validate both are valid UUIDs
-   - Call `requireAuth(locals)`
-   - Parse and validate request body with `updateChildCommandSchema`
-   - Instantiate `ChildService`
-   - Call `childService.updateChild(familyId, childId, command, userId)`
-   - Return `mapResultToResponse(result)`
+```typescript
+import type { APIContext } from "astro";
+import { ChildService } from "@/services/ChildService";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
+import { validateResponse, handleApiRequest } from "@/lib/http/apiHelpers";
+import {
+  familyIdParamPathSchema,
+  childIdPathSchema,
+  updateChildCommandSchema,
+  updateChildResponseSchema,
+  type UpdateChildCommand,
+} from "@/types";
+import { ok } from "@/domain/result";
+import { z } from "zod";
+
+export const prerender = false;
+
+const childPathParamsSchema = familyIdParamPathSchema.merge(childIdPathSchema);
+type ChildPathParams = z.infer<typeof childPathParamsSchema>;
+
+export async function PATCH({ params, request, locals }: APIContext): Promise<Response> {
+  return handleApiRequest<ChildPathParams, unknown, UpdateChildCommand>({
+    handler: async ({ userId, path, body, locals }) => {
+      const childService = new ChildService(
+        locals.repositories.child,
+        locals.repositories.family,
+        locals.repositories.log
+      );
+
+      const result = await childService.updateChild(path.familyId, path.childId, body, userId);
+
+      if (!result.success) {
+        return mapResultToResponse(result);
+      }
+
+      const responseValidation = validateResponse(updateChildResponseSchema, result.data);
+      if (!responseValidation.success) {
+        return mapResultToResponse(responseValidation);
+      }
+
+      return mapResultToResponse(ok(result.data));
+    },
+    context: "PATCH /api/families/[familyId]/children/[childId]",
+    pathSchema: childPathParamsSchema,
+    bodySchema: updateChildCommandSchema,
+    params,
+    request,
+    locals,
+  });
+}
+```
 
 ### Step 14: Create DELETE Endpoint Route
 
 **File:** `src/pages/api/families/[familyId]/children/[childId].ts` (same file as PATCH)
 
-1. Implement `DELETE` function:
-   - Extract `familyId` and `childId` from path params
-   - Validate both are valid UUIDs
-   - Call `requireAuth(locals)`
-   - Instantiate `ChildService`
-   - Call `childService.deleteChild(familyId, childId, userId)`
-   - Return `mapResultToResponse(result, { successStatus: 204 })`
+```typescript
+export async function DELETE({ params, locals }: APIContext): Promise<Response> {
+  return handleApiRequest<ChildPathParams>({
+    handler: async ({ userId, path, locals }) => {
+      const childService = new ChildService(
+        locals.repositories.child,
+        locals.repositories.family,
+        locals.repositories.log
+      );
+
+      const result = await childService.deleteChild(path.familyId, path.childId, userId);
+      return mapResultToResponse(result, { successStatus: 204 });
+    },
+    context: "DELETE /api/families/[familyId]/children/[childId]",
+    pathSchema: childPathParamsSchema,
+    params,
+    locals,
+  });
+}
+```
 
 ### Step 15: Update Middleware (if needed)
 

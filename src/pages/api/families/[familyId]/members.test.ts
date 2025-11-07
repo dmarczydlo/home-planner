@@ -112,7 +112,7 @@ describe("GET /api/families/[familyId]/members", () => {
     expect(response.status).toBe(400);
     expect(data).toHaveProperty("error");
     expect(data.error).toBe("validation");
-    expect(data.message).toContain("Invalid family ID format");
+    expect(data.message).toContain("Invalid path parameters");
   });
 
   it("should return 404 when family does not exist", async () => {
