@@ -1,6 +1,6 @@
 import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
-import { NotFoundError, ForbiddenError, DomainError } from "@/domain/errors";
+import { NotFoundError, ForbiddenError, DomainError, InternalError } from "@/domain/errors";
 import { Event } from "@/domain/entities/Event";
 import type { EventRepository } from "@/repositories/interfaces/EventRepository";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
@@ -88,7 +88,7 @@ export class EventService {
       });
     } catch (error) {
       console.error("Error in EventService.listEvents:", error);
-      return err(new DomainError(500, "Failed to retrieve events"));
+      return err(new InternalError("Failed to retrieve events"));
     }
   }
 
@@ -132,7 +132,7 @@ export class EventService {
       });
     } catch (error) {
       console.error("Error in EventService.getEventById:", error);
-      return err(new DomainError(500, "Failed to retrieve event"));
+      return err(new InternalError("Failed to retrieve event"));
     }
   }
 
@@ -218,7 +218,7 @@ export class EventService {
       });
     } catch (error) {
       console.error("Error in EventService.createEvent:", error);
-      return err(new DomainError(500, "Failed to create event"));
+      return err(new InternalError("Failed to create event"));
     }
   }
 
@@ -350,7 +350,7 @@ export class EventService {
       });
     } catch (error) {
       console.error("Error in EventService.updateEvent:", error);
-      return err(new DomainError(500, "Failed to update event"));
+      return err(new InternalError("Failed to update event"));
     }
   }
 
@@ -416,7 +416,7 @@ export class EventService {
       return ok(undefined);
     } catch (error) {
       console.error("Error in EventService.deleteEvent:", error);
-      return err(new DomainError(500, "Failed to delete event"));
+      return err(new InternalError("Failed to delete event"));
     }
   }
 

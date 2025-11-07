@@ -638,7 +638,10 @@ if (query.family_id) {
 Create GET handler:
 - Extract query parameters from `url.searchParams`
 - Parse and validate using `listLogsQuerySchema`
-- Check authentication using `requireAuth` helper
+- Use `handleApiRequest()` with `querySchema` option
+- Pass `listLogsQuerySchema` to validate query parameters
+- Handler receives validated `query` data automatically
+- Authentication is handled automatically by `handleApiRequest()`
 - Instantiate `LogService` with repositories from `locals.repositories`
 - Call `logService.listLogs(query, userId)`
 - Map `Result` to HTTP response using `mapResultToResponse`
@@ -646,44 +649,28 @@ Create GET handler:
 
 **Implementation Pattern**:
 ```typescript
+import type { APIContext } from "astro";
+import { handleApiRequest } from "@/lib/http/apiHelpers";
+import { mapResultToResponse } from "@/lib/http/responseMapper";
+import { listLogsQuerySchema, type ListLogsQuery } from "@/types";
+
 export const prerender = false;
 
 export async function GET({ url, locals }: APIContext) {
-  // Auth check
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
-
-  // Parse query parameters
-  const queryParams = {
-    family_id: url.searchParams.get('family_id') || undefined,
-    actor_id: url.searchParams.get('actor_id') || undefined,
-    action: url.searchParams.get('action') || undefined,
-    start_date: url.searchParams.get('start_date') || undefined,
-    end_date: url.searchParams.get('end_date') || undefined,
-    limit: url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!, 10) : undefined,
-    offset: url.searchParams.get('offset') ? parseInt(url.searchParams.get('offset')!, 10) : undefined,
-  };
-
-  // Validate query parameters
-  const validationResult = validateSchema(listLogsQuerySchema, queryParams);
-  if (!validationResult.success) {
-    return mapResultToResponse(
-      err(new ValidationError(
-        "Invalid query parameters",
-        formatZodErrors(validationResult.error)
-      ))
-    );
-  }
-
-  // Call service
-  const logService = new LogService(
-    locals.repositories.log,
-    locals.repositories.family
-  );
-  const result = await logService.listLogs(validationResult.data, userId);
-
-  // Map Result to HTTP Response
-  return mapResultToResponse(result);
+  return handleApiRequest<unknown, ListLogsQuery>({
+    handler: async ({ userId, query, locals }) => {
+      const logService = new LogService(
+        locals.repositories.log,
+        locals.repositories.family
+      );
+      const result = await logService.listLogs(query, userId);
+      return mapResultToResponse(result);
+    },
+    context: "GET /api/logs",
+    querySchema: listLogsQuerySchema,
+    url,
+    locals,
+  });
 }
 ```
 
@@ -717,7 +704,7 @@ Ensure `mapResultToResponse` function exists for mapping `Result` to HTTP respon
 
 **File**: `src/lib/http/apiHelpers.ts` (or ensure exists)
 
-Ensure `requireAuth` helper exists for authentication checks.
+Ensure `handleApiRequest` helper exists for authentication and validation (automatically handles `requireAuth`).
 
 ### Step 13: Add Database Indexes
 

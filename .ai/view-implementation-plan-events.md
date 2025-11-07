@@ -781,31 +781,35 @@ For conflict errors:
 ### Step 6: Create API Routes
 
 1. **Create List Events Route** (`src/pages/api/events/index.ts`):
-   - Implement `GET` handler wrapped in `handleApiRequest()`
-   - Use `requireAuth()` for authentication
-   - Use `validateQueryParams()` with `listEventsQuerySchema`
+   - Implement `GET` handler using `handleApiRequest()` with `querySchema` option
+   - Pass `listEventsQuerySchema` to `querySchema` parameter
+   - Handler receives validated `query` data automatically
    - Call `EventService.listEvents()` with parsed query parameters
    - Map Result to HTTP response
    - Implement `POST` handler for creating events
-   - Use `validateBody()` with `createEventCommandSchema`
+   - Use `handleApiRequest()` with `bodySchema` option and `createEventCommandSchema`
+   - Handler receives validated `body` data automatically
    - Call `EventService.createEvent()`
    - Return 201 Created status
 
 2. **Create Single Event Route** (`src/pages/api/events/[id].ts`):
    - Implement `GET` handler: Load event with details
-   - Use `validatePathParams()` with `eventIdPathSchema`
-   - Use `validateQueryParams()` with `getEventQuerySchema` for optional date parameter
+   - Use `handleApiRequest()` with `pathSchema` and `querySchema` options
+   - Pass `eventIdPathSchema` to `pathSchema` and `getEventQuerySchema` to `querySchema`
+   - Handler receives validated `path` and `query` data automatically
    - Implement `PATCH` handler: Update event with scope handling
-   - Use `validateQueryParams()` with `updateEventQuerySchema` for scope and date
-   - Use `validateBody()` with `updateEventCommandSchema`
+   - Use `handleApiRequest()` with `pathSchema`, `querySchema`, and `bodySchema` options
+   - Pass `eventIdPathSchema`, `updateEventQuerySchema`, and `updateEventCommandSchema`
+   - Handler receives validated `path`, `query`, and `body` data automatically
    - Implement `DELETE` handler: Delete event with scope handling
-   - All handlers wrapped in `handleApiRequest()` with context string
+   - Use `handleApiRequest()` with `pathSchema` and `querySchema` options
+   - All handlers automatically handle authentication and validation
    - Map Results to HTTP responses with appropriate status codes
 
 3. **Create Validate Route** (`src/pages/api/events/validate.ts`):
-   - Implement `POST` handler wrapped in `handleApiRequest()`
-   - Use `requireAuth()` for authentication
-   - Use `validateBody()` with `validateEventCommandSchema`
+   - Implement `POST` handler using `handleApiRequest()` with `bodySchema` option
+   - Pass `validateEventCommandSchema` to `bodySchema` parameter
+   - Handler receives validated `body` data automatically
    - Call `EventService.validateEvent()`
    - Map Result to HTTP response
 
