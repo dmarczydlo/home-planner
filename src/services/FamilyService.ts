@@ -10,6 +10,7 @@ import type {
   CreateFamilyResponseDTO,
   FamilyDetailsDTO,
   UpdateFamilyResponseDTO,
+  FamilyMemberDTO,
 } from "@/types";
 
 export class FamilyService {
@@ -88,6 +89,51 @@ export class FamilyService {
       members,
       children,
     });
+  }
+
+  async getFamilyMembers(
+    familyId: string,
+    userId: string
+  ): Promise<Result<FamilyMemberDTO[], DomainError>> {
+    if (!familyId || !this.isValidUUID(familyId)) {
+      return err(new ValidationError("Invalid family ID format", { familyId: "invalid_uuid" }));
+    }
+
+    const family = await this.familyRepo.findById(familyId);
+    if (!family) {
+      return err(new NotFoundError("Family", familyId));
+    }
+
+    const isMember = await this.familyRepo.isUserMember(familyId, userId);
+    if (!isMember) {
+      return err(new ForbiddenError("You do not have access to this family"));
+    }
+
+    try {
+      const memberEntities = await this.familyRepo.getFamilyMembers(familyId);
+
+      const members: FamilyMemberDTO[] = memberEntities.map((entity) => ({
+        user_id: entity.user_id,
+        full_name: entity.full_name,
+        avatar_url: entity.avatar_url,
+        role: entity.role,
+        joined_at: entity.joined_at,
+      }));
+
+      this.logRepo.create({
+        family_id: familyId,
+        actor_id: userId,
+        actor_type: "user",
+        action: "family.members.list",
+        details: { member_count: members.length },
+      }).catch((error) => {
+        console.error("Failed to log family.members.list:", error);
+      });
+
+      return ok(members);
+    } catch (error) {
+      return err(new DomainError(500, "Failed to retrieve family members"));
+    }
   }
 
   async updateFamily(

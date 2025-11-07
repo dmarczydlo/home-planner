@@ -294,6 +294,15 @@ export const familyMemberSchema = z.object({
 export type FamilyMemberDTO = z.infer<typeof familyMemberSchema>;
 
 /**
+ * Response: List family members
+ */
+export const listFamilyMembersResponseSchema = z.object({
+  members: z.array(familyMemberSchema),
+});
+
+export type ListFamilyMembersResponseDTO = z.infer<typeof listFamilyMembersResponseSchema>;
+
+/**
  * Child schema (forward reference for family details)
  */
 export const childSchema = z.object({
