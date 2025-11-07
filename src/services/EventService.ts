@@ -1,6 +1,7 @@
 import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
-import { NotFoundError, ValidationError, ForbiddenError, ConflictError, DomainError } from "@/domain/errors";
+import { NotFoundError, ForbiddenError, DomainError } from "@/domain/errors";
+import { Event } from "@/domain/entities/Event";
 import type { EventRepository } from "@/repositories/interfaces/EventRepository";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { ChildRepository } from "@/repositories/interfaces/ChildRepository.ts";
@@ -16,7 +17,6 @@ import type {
   ValidationResultDTO,
   EventWithParticipantsDTO,
   ConflictingEventDTO,
-  ParticipantReferenceDTO,
 } from "@/types";
 
 export class EventService {
@@ -143,9 +143,11 @@ export class EventService {
     }
 
     if (command.participants && command.participants.length > 0) {
-      const validationResult = await this.validateParticipants(command.family_id, command.participants);
-      if (!validationResult.success) {
-        return validationResult;
+      const members = await this.familyRepo.getFamilyMembers(command.family_id);
+      const children = await this.childRepo.findByFamilyId(command.family_id);
+      const participantValidation = Event.validateParticipants(command.participants, members, children);
+      if (!participantValidation.success) {
+        return participantValidation;
       }
     }
 
@@ -158,16 +160,9 @@ export class EventService {
         undefined
       );
 
-      if (conflicts.length > 0) {
-        const conflictingEvents: ConflictingEventDTO[] = conflicts.map((c) => ({
-          id: c.id,
-          title: c.title,
-          start_time: c.start_time,
-          end_time: c.end_time,
-          participants: c.participants,
-        }));
-
-        return err(new ConflictError("This blocker event conflicts with an existing blocker event", conflictingEvents));
+      const conflictResult = Event.checkConflicts(command.event_type, conflicts);
+      if (!conflictResult.success) {
+        return conflictResult;
       }
     }
 
@@ -240,30 +235,22 @@ export class EventService {
     }
 
     const isMember = await this.familyRepo.isUserMember(event.family_id, userId);
-    if (!isMember) {
-      return err(new ForbiddenError("You do not have access to this event"));
+    const canModifyResult = Event.canModify(event, isMember);
+    if (!canModifyResult.success) {
+      return canModifyResult;
     }
 
-    if (event.is_synced) {
-      return err(new ForbiddenError("Synced events cannot be modified"));
-    }
-
-    if (scope === "this" && !event.recurrence_pattern) {
-      return err(new ValidationError("Scope 'this' can only be used for recurring events", { scope: "invalid" }));
-    }
-
-    if (scope === "this" && !occurrenceDate) {
-      return err(
-        new ValidationError("Date parameter required for scope='this' on recurring events", {
-          date: "required",
-        })
-      );
+    const scopeValidation = Event.validateScope(scope, event.recurrence_pattern, occurrenceDate);
+    if (!scopeValidation.success) {
+      return scopeValidation;
     }
 
     if (command.participants && command.participants.length > 0) {
-      const validationResult = await this.validateParticipants(event.family_id, command.participants);
-      if (!validationResult.success) {
-        return validationResult;
+      const members = await this.familyRepo.getFamilyMembers(event.family_id);
+      const children = await this.childRepo.findByFamilyId(event.family_id);
+      const participantValidation = Event.validateParticipants(command.participants, members, children);
+      if (!participantValidation.success) {
+        return participantValidation;
       }
     }
 
@@ -280,16 +267,10 @@ export class EventService {
         eventId
       );
 
-      if (conflicts.length > 0) {
-        const conflictingEvents: ConflictingEventDTO[] = conflicts.map((c) => ({
-          id: c.id,
-          title: c.title,
-          start_time: c.start_time,
-          end_time: c.end_time,
-          participants: c.participants,
-        }));
-
-        return err(new ConflictError("This blocker event conflicts with an existing blocker event", conflictingEvents));
+      const eventType = command.event_type ?? event.event_type;
+      const conflictResult = Event.checkConflicts(eventType, conflicts);
+      if (!conflictResult.success) {
+        return conflictResult;
       }
     }
 
@@ -385,24 +366,14 @@ export class EventService {
     }
 
     const isMember = await this.familyRepo.isUserMember(event.family_id, userId);
-    if (!isMember) {
-      return err(new ForbiddenError("You do not have access to this event"));
+    const canModifyResult = Event.canModify(event, isMember);
+    if (!canModifyResult.success) {
+      return canModifyResult;
     }
 
-    if (event.is_synced) {
-      return err(new ForbiddenError("Synced events cannot be deleted"));
-    }
-
-    if (scope === "this" && !event.recurrence_pattern) {
-      return err(new ValidationError("Scope 'this' can only be used for recurring events", { scope: "invalid" }));
-    }
-
-    if (scope === "this" && !occurrenceDate) {
-      return err(
-        new ValidationError("Date parameter required for scope='this' on recurring events", {
-          date: "required",
-        })
-      );
+    const scopeValidation = Event.validateScope(scope, event.recurrence_pattern, occurrenceDate);
+    if (!scopeValidation.success) {
+      return scopeValidation;
     }
 
     try {
@@ -458,15 +429,17 @@ export class EventService {
       return err(new ForbiddenError("You do not have access to this family"));
     }
 
-    if (command.participants && command.participants.length > 0) {
-      const validationResult = await this.validateParticipants(command.family_id, command.participants);
-      if (!validationResult.success) {
-        return validationResult;
-      }
-    }
-
     const errors: Array<{ field: string; message: string }> = [];
     let conflicts: ConflictingEventDTO[] = [];
+
+    if (command.participants && command.participants.length > 0) {
+      const members = await this.familyRepo.getFamilyMembers(command.family_id);
+      const children = await this.childRepo.findByFamilyId(command.family_id);
+      const participantValidation = Event.validateParticipants(command.participants, members, children);
+      if (!participantValidation.success) {
+        return participantValidation;
+      }
+    }
 
     if (command.event_type === "blocker") {
       const conflictResults = await this.eventRepo.checkConflicts(
@@ -491,38 +464,5 @@ export class EventService {
       errors,
       conflicts,
     });
-  }
-
-  private async validateParticipants(
-    familyId: string,
-    participants: ParticipantReferenceDTO[]
-  ): Promise<Result<void, ValidationError>> {
-    const members = await this.familyRepo.getFamilyMembers(familyId);
-    const memberIds = new Set(members.map((m) => m.user_id));
-
-    const children = await this.childRepo.findByFamilyId(familyId);
-    const childIds = new Set(children.map((c: { id: string }) => c.id));
-
-    for (const participant of participants) {
-      if (participant.type === "user") {
-        if (!memberIds.has(participant.id)) {
-          return err(
-            new ValidationError(`Participant ${participant.id} not found in family`, {
-              participants: "invalid",
-            })
-          );
-        }
-      } else if (participant.type === "child") {
-        if (!childIds.has(participant.id)) {
-          return err(
-            new ValidationError(`Participant ${participant.id} not found in family`, {
-              participants: "invalid",
-            })
-          );
-        }
-      }
-    }
-
-    return ok(undefined);
   }
 }
