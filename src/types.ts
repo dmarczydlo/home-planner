@@ -358,6 +358,15 @@ export const updateMemberRoleResponseSchema = z.object({
 
 export type UpdateMemberRoleResponseDTO = z.infer<typeof updateMemberRoleResponseSchema>;
 
+/**
+ * Response: List family members
+ */
+export const listFamilyMembersResponseSchema = z.object({
+  members: z.array(familyMemberSchema),
+});
+
+export type ListFamilyMembersResponseDTO = z.infer<typeof listFamilyMembersResponseSchema>;
+
 // ============================================================================
 // Child Schemas
 // ============================================================================

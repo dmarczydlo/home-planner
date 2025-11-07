@@ -132,6 +132,37 @@ export class SQLFamilyRepository implements FamilyRepository {
     }));
   }
 
+  async getMembers(familyId: string): Promise<FamilyMemberWithUser[]> {
+    const { data, error } = await this.supabase
+      .from("family_members")
+      .select(
+        `
+        user_id,
+        role,
+        joined_at,
+        users!inner(full_name, avatar_url)
+        `
+      )
+      .eq("family_id", familyId)
+      .order("joined_at", { ascending: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch family members: ${error.message}`);
+    }
+
+    if (!data) {
+      return [];
+    }
+
+    return data.map((member: any) => ({
+      user_id: member.user_id,
+      full_name: member.users?.full_name ?? null,
+      avatar_url: member.users?.avatar_url ?? null,
+      role: member.role as "admin" | "member",
+      joined_at: member.joined_at,
+    }));
+  }
+
   async addMember(familyId: string, userId: string, role: "admin" | "member"): Promise<void> {
     const { error } = await this.supabase.from("family_members").insert({
       family_id: familyId,
