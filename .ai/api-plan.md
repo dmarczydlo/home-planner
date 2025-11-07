@@ -253,6 +253,54 @@ Deletes a family and all associated data. Only admins can perform this action.
 
 ### 2.4. Family Members
 
+#### List Family Members
+
+**GET** `/api/families/{familyId}/members`
+
+Retrieves all members of a specific family. Returns a list of family members with their user profile information (full name, avatar URL), role within the family, and join date. This endpoint is useful when you only need member information without the full family details or children list.
+
+**Path Parameters:**
+
+- `familyId` (required): UUID of the family
+
+**Query Parameters:** None
+
+**Response (200 OK):**
+
+```json
+{
+  "members": [
+    {
+      "user_id": "uuid",
+      "full_name": "string | null",
+      "avatar_url": "string | null",
+      "role": "admin|member",
+      "joined_at": "ISO8601 timestamp"
+    }
+  ]
+}
+```
+
+**Response Details:**
+
+- Members are ordered by `joined_at` ascending (oldest members first)
+- `full_name` and `avatar_url` may be `null` if not set by the user
+- Each member includes their role (`admin` or `member`) and join timestamp
+
+**Error Responses:**
+
+- `401 Unauthorized`: Missing or invalid JWT token
+- `400 Bad Request`: Invalid `familyId` format (not a valid UUID)
+- `403 Forbidden`: User is not a member of the specified family
+- `404 Not Found`: Family with the given `familyId` does not exist
+
+**Use Cases:**
+
+- Displaying a member list in the UI
+- Checking family membership before performing operations
+- Building member selection dropdowns
+- Member management interfaces
+
 #### Remove Family Member
 
 **DELETE** `/api/families/{familyId}/members/{userId}`
