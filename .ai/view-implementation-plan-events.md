@@ -765,35 +765,47 @@ For conflict errors:
 
 1. **Create Response Mapper** (`src/lib/http/responseMapper.ts`):
    - Implement `mapResultToResponse()` function
-   - Handle success responses with configurable status codes
+   - Handle success responses with configurable status codes (including 204 No Content)
    - Handle error responses with proper status codes and error format
-   - Support custom response transformations
+   - Support `ConflictError` with `conflictingEvents` in response body
+   - Support `ValidationError` with `details` field for field-level errors
 
 2. **Create API Helpers** (`src/lib/http/apiHelpers.ts`):
-   - Implement `requireAuth()`: Extract and validate user from locals
-   - Implement `parseJSON()`: Parse request body with error handling
-   - Implement `parseQueryParams()`: Parse and validate query parameters
-   - Implement `validateSchema()`: Validate data against Zod schemas
+   - Implement `requireAuth()`: Extract and validate user from locals, returns Response on failure
+   - Implement `parseJSON()`: Parse request body with error handling, returns Result
+   - Implement `validatePathParams()`: Validate path parameters against Zod schema
+   - Implement `validateQueryParams()`: Validate query parameters against Zod schema
+   - Implement `validateBody()`: Validate request body against Zod schema
+   - Implement `handleApiRequest()`: Wrapper for error handling with context logging
 
 ### Step 6: Create API Routes
 
 1. **Create List Events Route** (`src/pages/api/events/index.ts`):
-   - Implement `GET` handler
-   - Extract and validate query parameters
-   - Call `EventService.listEvents()`
+   - Implement `GET` handler wrapped in `handleApiRequest()`
+   - Use `requireAuth()` for authentication
+   - Use `validateQueryParams()` with `listEventsQuerySchema`
+   - Call `EventService.listEvents()` with parsed query parameters
    - Map Result to HTTP response
+   - Implement `POST` handler for creating events
+   - Use `validateBody()` with `createEventCommandSchema`
+   - Call `EventService.createEvent()`
+   - Return 201 Created status
 
 2. **Create Single Event Route** (`src/pages/api/events/[id].ts`):
    - Implement `GET` handler: Load event with details
+   - Use `validatePathParams()` with `eventIdPathSchema`
+   - Use `validateQueryParams()` with `getEventQuerySchema` for optional date parameter
    - Implement `PATCH` handler: Update event with scope handling
+   - Use `validateQueryParams()` with `updateEventQuerySchema` for scope and date
+   - Use `validateBody()` with `updateEventCommandSchema`
    - Implement `DELETE` handler: Delete event with scope handling
-   - Extract path parameters and query parameters
-   - Call appropriate `EventService` methods
-   - Map Results to HTTP responses
+   - All handlers wrapped in `handleApiRequest()` with context string
+   - Map Results to HTTP responses with appropriate status codes
 
 3. **Create Validate Route** (`src/pages/api/events/validate.ts`):
-   - Implement `POST` handler
-   - Parse and validate request body
+   - Implement `POST` handler wrapped in `handleApiRequest()`
+   - Use `requireAuth()` for authentication
+   - Use `validateBody()` with `validateEventCommandSchema`
    - Call `EventService.validateEvent()`
    - Map Result to HTTP response
 

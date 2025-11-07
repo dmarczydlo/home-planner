@@ -120,18 +120,29 @@ export function isErr<T, E>(result: Result<T, E>): result is { success: false; e
 
 export class DomainError extends Error {
   constructor(
-    message: string,
-    public readonly code: string,
-    public readonly statusCode: number = 400
+    public readonly statusCode: number,
+    message: string
   ) {
     super(message);
     this.name = this.constructor.name;
   }
 }
 
+export class UnauthorizedError extends DomainError {
+  constructor(message: string = "Unauthorized") {
+    super(401, message);
+  }
+}
+
 export class NotFoundError extends DomainError {
-  constructor(resource: string, id?: string) {
-    super(id ? `${resource} with id ${id} not found` : `${resource} not found`, "NOT_FOUND", 404);
+  constructor(resource: string, id: string) {
+    super(404, `${resource} with id ${id} not found`);
+  }
+}
+
+export class ForbiddenError extends DomainError {
+  constructor(message: string = "Forbidden") {
+    super(403, message);
   }
 }
 
@@ -140,19 +151,16 @@ export class ValidationError extends DomainError {
     message: string,
     public readonly fields?: Record<string, string>
   ) {
-    super(message, "VALIDATION_ERROR", 400);
+    super(400, message);
   }
 }
 
-export class UnauthorizedError extends DomainError {
-  constructor(message: string = "Unauthorized") {
-    super(message, "UNAUTHORIZED", 401);
-  }
-}
-
-export class ForbiddenError extends DomainError {
-  constructor(message: string = "Forbidden") {
-    super(message, "FORBIDDEN", 403);
+export class ConflictError extends DomainError {
+  constructor(
+    message: string,
+    public readonly conflictingEvents?: unknown[]
+  ) {
+    super(409, message);
   }
 }
 ```
@@ -273,41 +281,49 @@ Astro API routes (controllers) map `Result` objects to HTTP responses. This keep
 // src/lib/http/responseMapper.ts
 import type { Result } from "@/domain/result";
 import type { DomainError } from "@/domain/errors";
+import { ValidationError, ConflictError } from "@/domain/errors";
 
 export function mapResultToResponse<T>(
   result: Result<T, DomainError>,
   options?: {
     successStatus?: number;
-    transform?: (data: T) => unknown;
   }
 ): Response {
   if (result.success) {
-    const data = options?.transform ? options.transform(result.data) : result.data;
-    return new Response(JSON.stringify(data), {
-      status: options?.successStatus ?? 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const status = options?.successStatus ?? 200;
+    const body = status === 204 ? undefined : JSON.stringify(result.data);
+
+    const headers: HeadersInit = {};
+    if (status !== 204) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    return new Response(body, {
+      status,
+      headers,
     });
   }
 
-  // Handle error response
   const error = result.error;
-  return new Response(
-    JSON.stringify({
-      error: {
-        code: error.code,
-        message: error.message,
-        ...(error instanceof ValidationError && { fields: error.fields }),
-      },
-    }),
-    {
-      status: error.statusCode,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const statusCode = error.statusCode || 500;
+
+  const errorBody: Record<string, unknown> = {
+    error: error.name.replace("Error", "").toLowerCase(),
+    message: error.message,
+  };
+
+  if (error instanceof ValidationError && error.fields) {
+    errorBody.details = error.fields;
+  }
+
+  if (error instanceof ConflictError && error.conflictingEvents) {
+    errorBody.conflicting_events = error.conflictingEvents;
+  }
+
+  return new Response(JSON.stringify(errorBody), {
+    status: statusCode,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 ```
 
@@ -384,23 +400,110 @@ export async function DELETE({ params, locals }: APIContext) {
 ```typescript
 // src/lib/http/apiHelpers.ts
 import type { APIContext } from "astro";
-import { UnauthorizedError } from "@/domain/errors";
-import { err } from "@/domain/result";
-import { mapResultToResponse } from "./responseMapper";
+import type { Result } from "@/domain/result";
+import { ok, err } from "@/domain/result";
+import { ValidationError } from "@/domain/errors";
+import type { z } from "zod";
 
 export function requireAuth(locals: APIContext["locals"]): string | Response {
-  const userId = locals.user?.id;
-  if (!userId) {
-    return mapResultToResponse(err(new UnauthorizedError("Authentication required")));
+  const user = locals.user;
+  if (!user || !user.id) {
+    return new Response(
+      JSON.stringify({
+        error: "unauthorized",
+        message: "Missing or invalid JWT token",
+      }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
-  return userId;
+  return user.id;
 }
 
-export function parseJSON<T>(request: Request): Result<T, ValidationError> {
+export async function parseJSON<T>(request: Request): Promise<Result<T, ValidationError>> {
   try {
-    return ok(await request.json());
+    const data = await request.json();
+    return ok(data);
   } catch {
     return err(new ValidationError("Invalid JSON in request body"));
+  }
+}
+
+function formatZodErrors(error: z.ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+  error.issues.forEach((issue) => {
+    const path = issue.path.join(".");
+    fieldErrors[path] = issue.message;
+  });
+  return fieldErrors;
+}
+
+export function validatePathParams<T>(
+  schema: z.ZodSchema<T>,
+  params: unknown,
+  errorMessage: string = "Invalid path parameters"
+): Result<T, ValidationError> {
+  const validation = schema.safeParse(params);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export function validateQueryParams<T>(
+  schema: z.ZodSchema<T>,
+  url: URL,
+  errorMessage: string = "Invalid query parameters"
+): Result<T, ValidationError> {
+  const queryParams: Record<string, string> = {};
+  url.searchParams.forEach((value, key) => {
+    queryParams[key] = value;
+  });
+
+  const validation = schema.safeParse(queryParams);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export async function validateBody<T>(
+  schema: z.ZodSchema<T>,
+  request: Request,
+  errorMessage: string = "Invalid request body"
+): Promise<Result<T, ValidationError>> {
+  const bodyResult = await parseJSON(request);
+  if (!bodyResult.success) {
+    return bodyResult;
+  }
+
+  const validation = schema.safeParse(bodyResult.data);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export async function handleApiRequest(
+  handler: () => Promise<Response> | Response,
+  context: string
+): Promise<Response> {
+  try {
+    return await handler();
+  } catch (error) {
+    console.error(`Unexpected error in ${context}:`, error);
+    return new Response(
+      JSON.stringify({
+        error: "internal_error",
+        message: "An unexpected error occurred",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }
 ```
@@ -410,29 +513,32 @@ export function parseJSON<T>(request: Request): Result<T, ValidationError> {
 ```typescript
 // src/pages/api/families/index.ts
 import type { APIContext } from "astro";
-import { FamilyService } from "@/services/familyService";
+import { FamilyService } from "@/services/FamilyService";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
-import { requireAuth, parseJSON } from "@/lib/http/apiHelpers";
+import { requireAuth, validateBody, handleApiRequest } from "@/lib/http/apiHelpers";
+import { createFamilyCommandSchema } from "@/types";
 
 export const prerender = false;
 
-export async function POST({ request, locals }: APIContext) {
-  // Auth check
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+export async function POST({ request, locals }: APIContext): Promise<Response> {
+  return handleApiRequest(async () => {
+    const userId = requireAuth(locals);
+    if (userId instanceof Response) return userId;
 
-  // Parse body
-  const bodyResult = await parseJSON<CreateFamilyDTO>(request);
-  if (!bodyResult.success) {
-    return mapResultToResponse(bodyResult);
-  }
+    const bodyResult = await validateBody(createFamilyCommandSchema, request);
+    if (!bodyResult.success) {
+      return mapResultToResponse(bodyResult);
+    }
 
-  // Business logic
-  const familyService = new FamilyService(locals.repositories.family);
-  const result = await familyService.createFamily(bodyResult.data, userId);
+    const familyService = new FamilyService(
+      locals.repositories.family,
+      locals.repositories.child,
+      locals.repositories.log
+    );
+    const result = await familyService.createFamily(bodyResult.data, userId);
 
-  // Response
-  return mapResultToResponse(result, { successStatus: 201 });
+    return mapResultToResponse(result, { successStatus: 201 });
+  }, "POST /api/families");
 }
 ```
 

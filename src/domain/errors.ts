@@ -34,3 +34,12 @@ export class ValidationError extends DomainError {
     super(400, message);
   }
 }
+
+export class ConflictError extends DomainError {
+  constructor(
+    message: string,
+    public readonly conflictingEvents?: unknown[]
+  ) {
+    super(409, message);
+  }
+}

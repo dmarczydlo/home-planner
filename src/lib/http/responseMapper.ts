@@ -1,6 +1,6 @@
 import type { Result } from "@/domain/result";
 import type { DomainError } from "@/domain/errors";
-import { ValidationError } from "@/domain/errors";
+import { ValidationError, ConflictError } from "@/domain/errors";
 
 export function mapResultToResponse<T>(
   result: Result<T, DomainError>,
@@ -26,13 +26,18 @@ export function mapResultToResponse<T>(
   const error = result.error;
   const statusCode = error.statusCode || 500;
 
-  const errorBody = {
+  const errorBody: Record<string, unknown> = {
     error: error.name.replace("Error", "").toLowerCase(),
     message: error.message,
-    ...(error instanceof ValidationError && error.fields
-      ? { details: error.fields }
-      : {}),
   };
+
+  if (error instanceof ValidationError && error.fields) {
+    errorBody.details = error.fields;
+  }
+
+  if (error instanceof ConflictError && error.conflictingEvents) {
+    errorBody.conflicting_events = error.conflictingEvents;
+  }
 
   return new Response(JSON.stringify(errorBody), {
     status: statusCode,

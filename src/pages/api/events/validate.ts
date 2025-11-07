@@ -1,8 +1,8 @@
 import type { APIContext } from "astro";
-import { FamilyService } from "@/services/FamilyService";
+import { EventService } from "@/services/EventService";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
 import { requireAuth, validateBody, handleApiRequest } from "@/lib/http/apiHelpers";
-import { createFamilyCommandSchema } from "@/types";
+import { validateEventCommandSchema } from "@/types";
 
 export const prerender = false;
 
@@ -11,19 +11,21 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
     const userId = requireAuth(locals);
     if (userId instanceof Response) return userId;
 
-    const bodyResult = await validateBody(createFamilyCommandSchema, request);
+    const bodyResult = await validateBody(validateEventCommandSchema, request);
     if (!bodyResult.success) {
       return mapResultToResponse(bodyResult);
     }
 
-    const familyService = new FamilyService(
+    const eventService = new EventService(
+      locals.repositories.event,
       locals.repositories.family,
       locals.repositories.child,
       locals.repositories.log
     );
-    const result = await familyService.createFamily(bodyResult.data, userId);
 
-    return mapResultToResponse(result, { successStatus: 201 });
-  }, "POST /api/families");
+    const result = await eventService.validateEvent(bodyResult.data, userId);
+
+    return mapResultToResponse(result);
+  }, "POST /api/events/validate");
 }
 

@@ -265,7 +265,11 @@ export type FamilyDTO = z.infer<typeof familySchema>;
  */
 export const createFamilyCommandSchema = z
   .object({
-    name: z.string().min(1, "Family name is required").max(100),
+    name: z
+      .string()
+      .trim()
+      .min(1, "Family name is required")
+      .max(100, "Family name must be less than 100 characters"),
   })
   .strict();
 
@@ -329,9 +333,17 @@ export type FamilyDetailsDTO = z.infer<typeof familyDetailsSchema>;
  */
 export const updateFamilyCommandSchema = z
   .object({
-    name: z.string().min(1).max(100).optional(),
+    name: z
+      .string()
+      .trim()
+      .min(1, "Family name cannot be empty")
+      .max(100, "Family name must be less than 100 characters")
+      .optional(),
   })
-  .strict();
+  .strict()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided",
+  });
 
 export type UpdateFamilyCommand = z.infer<typeof updateFamilyCommandSchema>;
 
@@ -366,15 +378,6 @@ export const updateMemberRoleResponseSchema = z.object({
 });
 
 export type UpdateMemberRoleResponseDTO = z.infer<typeof updateMemberRoleResponseSchema>;
-
-/**
- * Response: List family members
- */
-export const listFamilyMembersResponseSchema = z.object({
-  members: z.array(familyMemberSchema),
-});
-
-export type ListFamilyMembersResponseDTO = z.infer<typeof listFamilyMembersResponseSchema>;
 
 // ============================================================================
 // Child Schemas
@@ -943,3 +946,108 @@ export function formatZodErrors(error: z.ZodError): ValidationErrorDTO[] {
     message: err.message,
   }));
 }
+
+// ============================================================================
+// Query Parameter Schemas
+// ============================================================================
+
+/**
+ * Query parameters for listing events
+ */
+export const listEventsQuerySchema = z
+  .object({
+    family_id: uuidSchema,
+    start_date: dateSchema,
+    end_date: dateSchema,
+    participant_ids: z.string().optional(),
+    event_type: eventTypeSchema.optional(),
+    include_synced: z
+      .union([z.string(), z.boolean()])
+      .optional()
+      .transform((val) => {
+        if (typeof val === "boolean") return val;
+        if (typeof val === "string") return val === "true" || val === "1";
+        return true;
+      })
+      .pipe(z.boolean())
+      .default(true),
+    limit: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((val) => {
+        if (typeof val === "number") return val;
+        if (typeof val === "string") return parseInt(val || "100", 10);
+        return 100;
+      })
+      .pipe(z.number().int().min(1).max(100))
+      .default(100),
+    offset: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((val) => {
+        if (typeof val === "number") return val;
+        if (typeof val === "string") return parseInt(val || "0", 10);
+        return 0;
+      })
+      .pipe(z.number().int().nonnegative())
+      .default(0),
+  })
+  .refine(
+    (data) => {
+      const start = new Date(data.start_date);
+      const end = new Date(data.end_date);
+      return end >= start;
+    },
+    {
+      message: "end_date must be after start_date",
+      path: ["end_date"],
+    }
+  );
+
+export type ListEventsQuery = z.infer<typeof listEventsQuerySchema>;
+
+/**
+ * Query parameters for getting a single event
+ */
+export const getEventQuerySchema = z.object({
+  date: dateSchema.optional(),
+});
+
+export type GetEventQuery = z.infer<typeof getEventQuerySchema>;
+
+/**
+ * Query parameters for updating/deleting an event
+ */
+export const updateEventQuerySchema = z.object({
+  scope: eventUpdateScopeSchema.optional().default("this"),
+  date: dateSchema.optional(),
+});
+
+export type UpdateEventQuery = z.infer<typeof updateEventQuerySchema>;
+
+/**
+ * Path parameter schema for event ID
+ */
+export const eventIdPathSchema = z.object({
+  id: uuidSchema,
+});
+
+export type EventIdPath = z.infer<typeof eventIdPathSchema>;
+
+/**
+ * Path parameter schema for family ID
+ */
+export const familyIdPathSchema = z.object({
+  id: uuidSchema,
+});
+
+export type FamilyIdPath = z.infer<typeof familyIdPathSchema>;
+
+/**
+ * Path parameter schema for family ID (alternative param name)
+ */
+export const familyIdParamPathSchema = z.object({
+  familyId: uuidSchema,
+});
+
+export type FamilyIdParamPath = z.infer<typeof familyIdParamPathSchema>;
