@@ -9,10 +9,6 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async getUserProfile(userId: string): Promise<Result<UserProfileDTO, DomainError>> {
-    if (!userId || typeof userId !== "string") {
-      return err(new ValidationError("User ID is required"));
-    }
-
     try {
       const user = await this.userRepository.findById(userId);
 

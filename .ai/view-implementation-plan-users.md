@@ -581,6 +581,15 @@ export class ValidationError extends DomainError {
     super(400, message);
   }
 }
+
+export class ConflictError extends DomainError {
+  constructor(
+    message: string,
+    public readonly conflictingEvents?: unknown[]
+  ) {
+    super(409, message);
+  }
+}
 ```
 
 #### Step 2.2: Create Result Type
@@ -809,25 +818,44 @@ export class UserService {
 ```typescript
 import type { Result } from "@/domain/result";
 import type { DomainError } from "@/domain/errors";
+import { ValidationError, ConflictError } from "@/domain/errors";
 
-export function mapResultToResponse<T>(result: Result<T, DomainError>): Response {
+export function mapResultToResponse<T>(
+  result: Result<T, DomainError>,
+  options?: {
+    successStatus?: number;
+  }
+): Response {
   if (result.success) {
-    return new Response(JSON.stringify(result.data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    const status = options?.successStatus ?? 200;
+    const body = status === 204 ? undefined : JSON.stringify(result.data);
+
+    const headers: HeadersInit = {};
+    if (status !== 204) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    return new Response(body, {
+      status,
+      headers,
     });
   }
 
   const error = result.error;
   const statusCode = error.statusCode || 500;
-  
-  const errorBody = {
+
+  const errorBody: Record<string, unknown> = {
     error: error.name.replace("Error", "").toLowerCase(),
     message: error.message,
-    ...(error instanceof ValidationError && error.fields
-      ? { details: error.fields }
-      : {}),
   };
+
+  if (error instanceof ValidationError && error.fields) {
+    errorBody.details = error.fields;
+  }
+
+  if (error instanceof ConflictError && error.conflictingEvents) {
+    errorBody.conflicting_events = error.conflictingEvents;
+  }
 
   return new Response(JSON.stringify(errorBody), {
     status: statusCode,
@@ -841,7 +869,10 @@ export function mapResultToResponse<T>(result: Result<T, DomainError>): Response
 
 ```typescript
 import type { APIContext } from "astro";
-import { UnauthorizedError } from "@/domain/errors";
+import type { Result } from "@/domain/result";
+import { ok, err } from "@/domain/result";
+import { ValidationError } from "@/domain/errors";
+import type { z } from "zod";
 
 /**
  * Extract and validate authenticated user from request context
@@ -864,6 +895,91 @@ export function requireAuth(locals: APIContext["locals"]): string | Response {
   }
 
   return user.id;
+}
+
+export async function parseJSON<T>(request: Request): Promise<Result<T, ValidationError>> {
+  try {
+    const data = await request.json();
+    return ok(data);
+  } catch {
+    return err(new ValidationError("Invalid JSON in request body"));
+  }
+}
+
+function formatZodErrors(error: z.ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+  error.issues.forEach((issue) => {
+    const path = issue.path.join(".");
+    fieldErrors[path] = issue.message;
+  });
+  return fieldErrors;
+}
+
+export function validatePathParams<T>(
+  schema: z.ZodSchema<T>,
+  params: unknown,
+  errorMessage: string = "Invalid path parameters"
+): Result<T, ValidationError> {
+  const validation = schema.safeParse(params);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export function validateQueryParams<T>(
+  schema: z.ZodSchema<T>,
+  url: URL,
+  errorMessage: string = "Invalid query parameters"
+): Result<T, ValidationError> {
+  const queryParams: Record<string, string> = {};
+  url.searchParams.forEach((value, key) => {
+    queryParams[key] = value;
+  });
+
+  const validation = schema.safeParse(queryParams);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export async function validateBody<T>(
+  schema: z.ZodSchema<T>,
+  request: Request,
+  errorMessage: string = "Invalid request body"
+): Promise<Result<T, ValidationError>> {
+  const bodyResult = await parseJSON(request);
+  if (!bodyResult.success) {
+    return bodyResult;
+  }
+
+  const validation = schema.safeParse(bodyResult.data);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export async function handleApiRequest(
+  handler: () => Promise<Response> | Response,
+  context: string
+): Promise<Response> {
+  try {
+    return await handler();
+  } catch (error) {
+    console.error(`Unexpected error in ${context}:`, error);
+    return new Response(
+      JSON.stringify({
+        error: "internal_error",
+        message: "An unexpected error occurred",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 }
 ```
 
@@ -948,7 +1064,7 @@ interface ImportMeta {
 ```typescript
 import type { APIContext } from "astro";
 import { UserService } from "@/services/UserService";
-import { requireAuth } from "@/lib/http/apiHelpers";
+import { requireAuth, handleApiRequest } from "@/lib/http/apiHelpers";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
 
 /**
@@ -956,37 +1072,18 @@ import { mapResultToResponse } from "@/lib/http/responseMapper";
  * Retrieves the authenticated user's profile with family memberships
  */
 export async function GET({ locals }: APIContext): Promise<Response> {
-  try {
-    // 1. Verify authentication
+  return handleApiRequest(async () => {
     const userId = requireAuth(locals);
     if (userId instanceof Response) {
-      return userId; // Return 401 response
+      return userId;
     }
 
-    // 2. Instantiate service with repository
     const userService = new UserService(locals.repositories.user);
 
-    // 3. Execute business logic
     const result = await userService.getUserProfile(userId);
 
-    // 4. Map Result to HTTP Response
     return mapResultToResponse(result);
-
-  } catch (error) {
-    // Handle unexpected errors
-    console.error("Unexpected error in GET /api/users/me:", error);
-
-    return new Response(
-      JSON.stringify({
-        error: "internal_error",
-        message: "An unexpected error occurred",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
+  }, "GET /api/users/me");
 }
 ```
 

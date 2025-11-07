@@ -1187,7 +1187,8 @@ export class FamilyService {
 
 ```typescript
 import type { Result } from "@/domain/result";
-import type { DomainError, ValidationError } from "@/domain/errors";
+import type { DomainError } from "@/domain/errors";
+import { ValidationError, ConflictError } from "@/domain/errors";
 
 export function mapResultToResponse<T>(
   result: Result<T, DomainError>,
@@ -1198,29 +1199,37 @@ export function mapResultToResponse<T>(
   if (result.success) {
     const status = options?.successStatus ?? 200;
     const body = status === 204 ? undefined : JSON.stringify(result.data);
-    
+
+    const headers: HeadersInit = {};
+    if (status !== 204) {
+      headers["Content-Type"] = "application/json";
+    }
+
     return new Response(body, {
       status,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
   }
 
   const error = result.error;
-  const errorBody = {
-    error: error.code.toLowerCase(),
+  const statusCode = error.statusCode || 500;
+
+  const errorBody: Record<string, unknown> = {
+    error: error.name.replace("Error", "").toLowerCase(),
     message: error.message,
-    ...(error instanceof ValidationError && error.fields
-      ? { details: error.fields }
-      : {}),
   };
 
+  if (error instanceof ValidationError && error.fields) {
+    errorBody.details = error.fields;
+  }
+
+  if (error instanceof ConflictError && error.conflictingEvents) {
+    errorBody.conflicting_events = error.conflictingEvents;
+  }
+
   return new Response(JSON.stringify(errorBody), {
-    status: error.statusCode,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    status: statusCode,
+    headers: { "Content-Type": "application/json" },
   });
 }
 ```
@@ -1231,14 +1240,24 @@ export function mapResultToResponse<T>(
 
 ```typescript
 import type { APIContext } from "astro";
-import { UnauthorizedError } from "@/domain/errors";
-import { err } from "@/domain/result";
-import { mapResultToResponse } from "./responseMapper";
+import type { Result } from "@/domain/result";
+import { ok, err } from "@/domain/result";
+import { ValidationError } from "@/domain/errors";
+import type { z } from "zod";
 
 export function requireAuth(locals: APIContext["locals"]): string | Response {
   const user = locals.user;
   if (!user || !user.id) {
-    return mapResultToResponse(err(new UnauthorizedError("Missing or invalid JWT token")));
+    return new Response(
+      JSON.stringify({
+        error: "unauthorized",
+        message: "Missing or invalid JWT token",
+      }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
   return user.id;
 }
@@ -1251,6 +1270,65 @@ export async function parseJSON<T>(request: Request): Promise<Result<T, Validati
     return err(new ValidationError("Invalid JSON in request body"));
   }
 }
+
+function formatZodErrors(error: z.ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+  error.issues.forEach((issue) => {
+    const path = issue.path.join(".");
+    fieldErrors[path] = issue.message;
+  });
+  return fieldErrors;
+}
+
+export function validatePathParams<T>(
+  schema: z.ZodSchema<T>,
+  params: unknown,
+  errorMessage: string = "Invalid path parameters"
+): Result<T, ValidationError> {
+  const validation = schema.safeParse(params);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export async function validateBody<T>(
+  schema: z.ZodSchema<T>,
+  request: Request,
+  errorMessage: string = "Invalid request body"
+): Promise<Result<T, ValidationError>> {
+  const bodyResult = await parseJSON(request);
+  if (!bodyResult.success) {
+    return bodyResult;
+  }
+
+  const validation = schema.safeParse(bodyResult.data);
+  if (!validation.success) {
+    return err(new ValidationError(errorMessage, formatZodErrors(validation.error)));
+  }
+  return ok(validation.data);
+}
+
+export async function handleApiRequest(
+  handler: () => Promise<Response> | Response,
+  context: string
+): Promise<Response> {
+  try {
+    return await handler();
+  } catch (error) {
+    console.error(`Unexpected error in ${context}:`, error);
+    return new Response(
+      JSON.stringify({
+        error: "internal_error",
+        message: "An unexpected error occurred",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+}
 ```
 
 ### Step 9: Create API Routes
@@ -1261,44 +1339,30 @@ export async function parseJSON<T>(request: Request): Promise<Result<T, Validati
 import type { APIContext } from "astro";
 import { FamilyService } from "@/services/FamilyService";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
-import { requireAuth, parseJSON } from "@/lib/http/apiHelpers";
+import { requireAuth, validateBody, handleApiRequest } from "@/lib/http/apiHelpers";
 import { createFamilyCommandSchema } from "@/types";
-import { ValidationError } from "@/domain/errors";
-import { err } from "@/domain/result";
 
 export const prerender = false;
 
-export async function POST({ request, locals }: APIContext) {
-  // Authentication
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+export async function POST({ request, locals }: APIContext): Promise<Response> {
+  return handleApiRequest(async () => {
+    const userId = requireAuth(locals);
+    if (userId instanceof Response) return userId;
 
-  // Parse and validate body
-  const bodyResult = await parseJSON(request);
-  if (!bodyResult.success) {
-    return mapResultToResponse(bodyResult);
-  }
+    const bodyResult = await validateBody(createFamilyCommandSchema, request);
+    if (!bodyResult.success) {
+      return mapResultToResponse(bodyResult);
+    }
 
-  const validationResult = createFamilyCommandSchema.safeParse(bodyResult.data);
-  if (!validationResult.success) {
-    return mapResultToResponse(
-      err(
-        new ValidationError("Invalid request body", {
-          ...validationResult.error.flatten().fieldErrors,
-        })
-      )
+    const familyService = new FamilyService(
+      locals.repositories.family,
+      locals.repositories.child,
+      locals.repositories.log
     );
-  }
+    const result = await familyService.createFamily(bodyResult.data, userId);
 
-  // Business logic
-  const familyService = new FamilyService(
-    locals.repositories.family,
-    locals.repositories.child
-  );
-  const result = await familyService.createFamily(validationResult.data, userId);
-
-  // Response
-  return mapResultToResponse(result, { successStatus: 201 });
+    return mapResultToResponse(result, { successStatus: 201 });
+  }, "POST /api/families");
 }
 ```
 
@@ -1308,100 +1372,83 @@ export async function POST({ request, locals }: APIContext) {
 import type { APIContext } from "astro";
 import { FamilyService } from "@/services/FamilyService";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
-import { requireAuth, parseJSON } from "@/lib/http/apiHelpers";
-import { updateFamilyCommandSchema } from "@/types";
-import { ValidationError } from "@/domain/errors";
-import { err } from "@/domain/result";
+import { requireAuth, validatePathParams, validateBody, handleApiRequest } from "@/lib/http/apiHelpers";
+import { updateFamilyCommandSchema, familyIdPathSchema } from "@/types";
 
 export const prerender = false;
 
-export async function GET({ params, locals }: APIContext) {
-  // Authentication
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+export async function GET({ params, locals }: APIContext): Promise<Response> {
+  return handleApiRequest(async () => {
+    const userId = requireAuth(locals);
+    if (userId instanceof Response) return userId;
 
-  // Extract and validate familyId
-  const familyId = params.id;
-  if (!familyId) {
-    return mapResultToResponse(
-      err(new ValidationError("Family ID is required", { familyId: "required" }))
+    const pathResult = validatePathParams(familyIdPathSchema, params);
+    if (!pathResult.success) {
+      return mapResultToResponse(pathResult);
+    }
+
+    const familyId = pathResult.data.id;
+
+    const familyService = new FamilyService(
+      locals.repositories.family,
+      locals.repositories.child,
+      locals.repositories.log
     );
-  }
+    const result = await familyService.getFamilyDetails(familyId, userId);
 
-  // Business logic
-  const familyService = new FamilyService(
-    locals.repositories.family,
-    locals.repositories.child
-  );
-  const result = await familyService.getFamilyDetails(familyId, userId);
-
-  // Response
-  return mapResultToResponse(result);
+    return mapResultToResponse(result);
+  }, "GET /api/families/[id]");
 }
 
-export async function PATCH({ params, request, locals }: APIContext) {
-  // Authentication
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+export async function PATCH({ params, request, locals }: APIContext): Promise<Response> {
+  return handleApiRequest(async () => {
+    const userId = requireAuth(locals);
+    if (userId instanceof Response) return userId;
 
-  // Extract and validate familyId
-  const familyId = params.id;
-  if (!familyId) {
-    return mapResultToResponse(
-      err(new ValidationError("Family ID is required", { familyId: "required" }))
+    const pathResult = validatePathParams(familyIdPathSchema, params);
+    if (!pathResult.success) {
+      return mapResultToResponse(pathResult);
+    }
+
+    const familyId = pathResult.data.id;
+
+    const bodyResult = await validateBody(updateFamilyCommandSchema, request);
+    if (!bodyResult.success) {
+      return mapResultToResponse(bodyResult);
+    }
+
+    const familyService = new FamilyService(
+      locals.repositories.family,
+      locals.repositories.child,
+      locals.repositories.log
     );
-  }
+    const result = await familyService.updateFamily(familyId, bodyResult.data, userId);
 
-  // Parse and validate body
-  const bodyResult = await parseJSON(request);
-  if (!bodyResult.success) {
-    return mapResultToResponse(bodyResult);
-  }
-
-  const validationResult = updateFamilyCommandSchema.safeParse(bodyResult.data);
-  if (!validationResult.success) {
-    return mapResultToResponse(
-      err(
-        new ValidationError("Invalid request body", {
-          ...validationResult.error.flatten().fieldErrors,
-        })
-      )
-    );
-  }
-
-  // Business logic
-  const familyService = new FamilyService(
-    locals.repositories.family,
-    locals.repositories.child
-  );
-  const result = await familyService.updateFamily(familyId, validationResult.data, userId);
-
-  // Response
-  return mapResultToResponse(result);
+    return mapResultToResponse(result);
+  }, "PATCH /api/families/[id]");
 }
 
-export async function DELETE({ params, locals }: APIContext) {
-  // Authentication
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+export async function DELETE({ params, locals }: APIContext): Promise<Response> {
+  return handleApiRequest(async () => {
+    const userId = requireAuth(locals);
+    if (userId instanceof Response) return userId;
 
-  // Extract and validate familyId
-  const familyId = params.id;
-  if (!familyId) {
-    return mapResultToResponse(
-      err(new ValidationError("Family ID is required", { familyId: "required" }))
+    const pathResult = validatePathParams(familyIdPathSchema, params);
+    if (!pathResult.success) {
+      return mapResultToResponse(pathResult);
+    }
+
+    const familyId = pathResult.data.id;
+
+    const familyService = new FamilyService(
+      locals.repositories.family,
+      locals.repositories.child,
+      locals.repositories.log
     );
-  }
+    const result = await familyService.deleteFamily(familyId, userId);
 
-  // Business logic
-  const familyService = new FamilyService(
-    locals.repositories.family,
-    locals.repositories.child
-  );
-  const result = await familyService.deleteFamily(familyId, userId);
-
-  // Response
-  return mapResultToResponse(result, { successStatus: 204 });
+    return mapResultToResponse(result, { successStatus: 204 });
+  }, "DELETE /api/families/[id]");
 }
 ```
 

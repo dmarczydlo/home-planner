@@ -24,31 +24,21 @@ export class FamilyService {
     command: CreateFamilyCommand,
     userId: string
   ): Promise<Result<CreateFamilyResponseDTO, DomainError>> {
-    const name = command.name?.trim();
-    if (!name || name.length === 0) {
-      return err(new ValidationError("Family name is required", { name: "required" }));
-    }
-    if (name.length > 100) {
-      return err(
-        new ValidationError("Family name must be less than 100 characters", {
-          name: "max_length",
-        })
-      );
-    }
-
     try {
-      const family = await this.familyRepo.create({ name });
+      const family = await this.familyRepo.create({ name: command.name });
       await this.familyRepo.addMember(family.id, userId, "admin");
 
-      this.logRepo.create({
-        family_id: family.id,
-        actor_id: userId,
-        actor_type: "user",
-        action: "family.create",
-        details: { name: family.name },
-      }).catch((error) => {
-        console.error("Failed to log family.create:", error);
-      });
+      this.logRepo
+        .create({
+          family_id: family.id,
+          actor_id: userId,
+          actor_type: "user",
+          action: "family.create",
+          details: { name: family.name },
+        })
+        .catch((error) => {
+          console.error("Failed to log family.create:", error);
+        });
 
       return ok({
         id: family.id,
@@ -61,14 +51,7 @@ export class FamilyService {
     }
   }
 
-  async getFamilyDetails(
-    familyId: string,
-    userId: string
-  ): Promise<Result<FamilyDetailsDTO, DomainError>> {
-    if (!familyId || !this.isValidUUID(familyId)) {
-      return err(new ValidationError("Invalid family ID format", { familyId: "invalid_uuid" }));
-    }
-
+  async getFamilyDetails(familyId: string, userId: string): Promise<Result<FamilyDetailsDTO, DomainError>> {
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -91,14 +74,7 @@ export class FamilyService {
     });
   }
 
-  async getFamilyMembers(
-    familyId: string,
-    userId: string
-  ): Promise<Result<FamilyMemberDTO[], DomainError>> {
-    if (!familyId || !this.isValidUUID(familyId)) {
-      return err(new ValidationError("Invalid family ID format", { familyId: "invalid_uuid" }));
-    }
-
+  async getFamilyMembers(familyId: string, userId: string): Promise<Result<FamilyMemberDTO[], DomainError>> {
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -120,15 +96,17 @@ export class FamilyService {
         joined_at: entity.joined_at,
       }));
 
-      this.logRepo.create({
-        family_id: familyId,
-        actor_id: userId,
-        actor_type: "user",
-        action: "family.members.list",
-        details: { member_count: members.length },
-      }).catch((error) => {
-        console.error("Failed to log family.members.list:", error);
-      });
+      this.logRepo
+        .create({
+          family_id: familyId,
+          actor_id: userId,
+          actor_type: "user",
+          action: "family.members.list",
+          details: { member_count: members.length },
+        })
+        .catch((error) => {
+          console.error("Failed to log family.members.list:", error);
+        });
 
       return ok(members);
     } catch (error) {
@@ -141,28 +119,6 @@ export class FamilyService {
     command: UpdateFamilyCommand,
     userId: string
   ): Promise<Result<UpdateFamilyResponseDTO, DomainError>> {
-    if (!familyId || !this.isValidUUID(familyId)) {
-      return err(new ValidationError("Invalid family ID format", { familyId: "invalid_uuid" }));
-    }
-
-    if (!command.name && Object.keys(command).length === 0) {
-      return err(new ValidationError("At least one field must be provided"));
-    }
-
-    if (command.name !== undefined) {
-      const name = command.name.trim();
-      if (name.length === 0) {
-        return err(new ValidationError("Family name cannot be empty", { name: "required" }));
-      }
-      if (name.length > 100) {
-        return err(
-          new ValidationError("Family name must be less than 100 characters", {
-            name: "max_length",
-          })
-        );
-      }
-    }
-
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -175,16 +131,18 @@ export class FamilyService {
 
     try {
       const updated = await this.familyRepo.update(familyId, command);
-      
-      this.logRepo.create({
-        family_id: familyId,
-        actor_id: userId,
-        actor_type: "user",
-        action: "family.update",
-        details: { name: updated.name },
-      }).catch((error) => {
-        console.error("Failed to log family.update:", error);
-      });
+
+      this.logRepo
+        .create({
+          family_id: familyId,
+          actor_id: userId,
+          actor_type: "user",
+          action: "family.update",
+          details: { name: updated.name },
+        })
+        .catch((error) => {
+          console.error("Failed to log family.update:", error);
+        });
 
       return ok({
         id: updated.id,
@@ -198,10 +156,6 @@ export class FamilyService {
   }
 
   async deleteFamily(familyId: string, userId: string): Promise<Result<void, DomainError>> {
-    if (!familyId || !this.isValidUUID(familyId)) {
-      return err(new ValidationError("Invalid family ID format", { familyId: "invalid_uuid" }));
-    }
-
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -214,26 +168,22 @@ export class FamilyService {
 
     try {
       await this.familyRepo.delete(familyId);
-      
-      this.logRepo.create({
-        family_id: familyId,
-        actor_id: userId,
-        actor_type: "user",
-        action: "family.delete",
-        details: { family_id: familyId },
-      }).catch((error) => {
-        console.error("Failed to log family.delete:", error);
-      });
+
+      this.logRepo
+        .create({
+          family_id: familyId,
+          actor_id: userId,
+          actor_type: "user",
+          action: "family.delete",
+          details: { family_id: familyId },
+        })
+        .catch((error) => {
+          console.error("Failed to log family.delete:", error);
+        });
 
       return ok(undefined);
     } catch (error) {
       return err(new DomainError(500, "Failed to delete family"));
     }
   }
-
-  private isValidUUID(uuid: string): boolean {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(uuid);
-  }
 }
-
