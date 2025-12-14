@@ -6,12 +6,14 @@ import { SQLEventRepository } from "./implementations/sql/SQLEventRepository.ts"
 import { SQLUserRepository } from "./implementations/sql/SQLUserRepository.ts";
 import { SQLChildRepository } from "./implementations/sql/SQLChildRepository.ts";
 import { SQLLogRepository } from "./implementations/sql/SQLLogRepository.ts";
+import { SQLInvitationRepository } from "./implementations/sql/SQLInvitationRepository.ts";
 
 import { InMemoryFamilyRepository } from "./implementations/in-memory/InMemoryFamilyRepository.ts";
 import { InMemoryEventRepository } from "./implementations/in-memory/InMemoryEventRepository.ts";
 import { InMemoryUserRepository } from "./implementations/in-memory/InMemoryUserRepository.ts";
 import { InMemoryChildRepository } from "./implementations/in-memory/InMemoryChildRepository.ts";
 import { InMemoryLogRepository } from "./implementations/in-memory/InMemoryLogRepository.ts";
+import { InMemoryInvitationRepository } from "./implementations/in-memory/InMemoryInvitationRepository.ts";
 
 import type {
   FamilyRepository,
@@ -19,6 +21,7 @@ import type {
   UserRepository,
   ChildRepository,
   LogRepository,
+  InvitationRepository,
 } from "./interfaces/index.ts";
 
 export type Repositories = {
@@ -27,6 +30,7 @@ export type Repositories = {
   user: UserRepository;
   child: ChildRepository;
   log: LogRepository;
+  invitation: InvitationRepository;
 };
 
 export function createSQLRepositories(supabase: SupabaseClient<Database>): Repositories {
@@ -36,6 +40,7 @@ export function createSQLRepositories(supabase: SupabaseClient<Database>): Repos
     user: new SQLUserRepository(supabase),
     child: new SQLChildRepository(supabase),
     log: new SQLLogRepository(supabase),
+    invitation: new SQLInvitationRepository(supabase),
   };
 }
 
@@ -46,6 +51,7 @@ export function createInMemoryRepositories(): Repositories {
     user: new InMemoryUserRepository(),
     child: new InMemoryChildRepository(),
     log: new InMemoryLogRepository(),
+    invitation: new InMemoryInvitationRepository(),
   };
 }
 
