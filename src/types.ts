@@ -1098,12 +1098,3 @@ export const listLogsQuerySchema = z
   );
 
 export type ListLogsQuery = z.infer<typeof listLogsQuerySchema>;
-
-/**
- * Path parameter schema for child ID
- */
-export const childIdPathSchema = z.object({
-  childId: uuidSchema,
-});
-
-export type ChildIdPath = z.infer<typeof childIdPathSchema>;
