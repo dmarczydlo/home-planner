@@ -12,7 +12,7 @@ export async function GET({ params, locals }: APIContext): Promise<Response> {
     const userId = requireAuth(locals);
     if (userId instanceof Response) return userId;
 
-    const pathResult = validatePathParams(familyIdParamPathSchema, params);
+    const pathResult = validatePathParams(familyIdParamPathSchema, params, "Invalid family ID format");
     if (!pathResult.success) {
       return mapResultToResponse(pathResult);
     }

@@ -1,12 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../../db/database.types.ts";
-import type {
-  LogRepository,
-  LogInsert,
-  LogQueryFilters,
-  LogQueryResult,
-  Log,
-} from "../../interfaces/LogRepository.ts";
+import type { Database, Json } from "../../../db/database.types.ts";
+import type { LogRepository, LogInsert, LogQueryFilters, LogQueryResult, Log } from "../../interfaces/LogRepository.ts";
 
 export class SQLLogRepository implements LogRepository {
   constructor(private readonly supabase: SupabaseClient<Database>) {}
@@ -18,7 +12,7 @@ export class SQLLogRepository implements LogRepository {
         actor_id: log.actor_id ?? null,
         actor_type: log.actor_type,
         action: log.action,
-        details: log.details ?? null,
+        details: (log.details ?? null) as Json | null,
       });
 
       if (error) {
@@ -29,11 +23,7 @@ export class SQLLogRepository implements LogRepository {
     }
   }
 
-  async findByFilters(
-    filters: LogQueryFilters,
-    userId: string,
-    isAdmin: boolean
-  ): Promise<LogQueryResult> {
+  async findByFilters(filters: LogQueryFilters, userId: string, isAdmin: boolean): Promise<LogQueryResult> {
     let query = this.supabase.from("logs").select("*", { count: "exact" });
 
     if (filters.family_id) {
@@ -66,10 +56,7 @@ export class SQLLogRepository implements LogRepository {
 
     query = query.order("created_at", { ascending: false });
 
-    const { data, error, count } = await query.range(
-      filters.offset,
-      filters.offset + filters.limit - 1
-    );
+    const { data, error, count } = await query.range(filters.offset, filters.offset + filters.limit - 1);
 
     if (error) {
       throw new Error(`Failed to fetch logs: ${error.message}`);
@@ -92,4 +79,3 @@ export class SQLLogRepository implements LogRepository {
     };
   }
 }
-

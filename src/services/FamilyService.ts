@@ -4,6 +4,7 @@ import { NotFoundError, ValidationError, ForbiddenError, DomainError } from "@/d
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { ChildRepository } from "@/repositories/interfaces/ChildRepository";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
+import { createFamilyCommandSchema, updateFamilyCommandSchema, uuidSchema, validateSchema } from "@/types";
 import type {
   CreateFamilyCommand,
   UpdateFamilyCommand,
@@ -12,6 +13,7 @@ import type {
   UpdateFamilyResponseDTO,
   FamilyMemberDTO,
 } from "@/types";
+import type { z } from "zod";
 
 export class FamilyService {
   constructor(
@@ -24,8 +26,20 @@ export class FamilyService {
     command: CreateFamilyCommand,
     userId: string
   ): Promise<Result<CreateFamilyResponseDTO, DomainError>> {
+    const validationResult = validateSchema(createFamilyCommandSchema, command);
+    if (!validationResult.success) {
+      const fieldErrors: Record<string, string> = {};
+      validationResult.error.issues.forEach((issue: z.ZodIssue) => {
+        const path = issue.path.join(".");
+        fieldErrors[path] = issue.message;
+      });
+      const firstError = validationResult.error.issues[0];
+      const errorMessage = firstError ? firstError.message : "Invalid family data";
+      return err(new ValidationError(errorMessage, fieldErrors));
+    }
+
     try {
-      const family = await this.familyRepo.create({ name: command.name });
+      const family = await this.familyRepo.create({ name: validationResult.data.name });
       await this.familyRepo.addMember(family.id, userId, "admin");
 
       this.logRepo
@@ -52,6 +66,11 @@ export class FamilyService {
   }
 
   async getFamilyDetails(familyId: string, userId: string): Promise<Result<FamilyDetailsDTO, DomainError>> {
+    const uuidValidation = uuidSchema.safeParse(familyId);
+    if (!uuidValidation.success) {
+      return err(new ValidationError("Invalid family ID format"));
+    }
+
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -75,6 +94,11 @@ export class FamilyService {
   }
 
   async getFamilyMembers(familyId: string, userId: string): Promise<Result<FamilyMemberDTO[], DomainError>> {
+    const uuidValidation = uuidSchema.safeParse(familyId);
+    if (!uuidValidation.success) {
+      return err(new ValidationError("Invalid family ID format"));
+    }
+
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -119,6 +143,23 @@ export class FamilyService {
     command: UpdateFamilyCommand,
     userId: string
   ): Promise<Result<UpdateFamilyResponseDTO, DomainError>> {
+    const uuidValidation = uuidSchema.safeParse(familyId);
+    if (!uuidValidation.success) {
+      return err(new ValidationError("Invalid family ID format"));
+    }
+
+    const validationResult = validateSchema(updateFamilyCommandSchema, command);
+    if (!validationResult.success) {
+      const fieldErrors: Record<string, string> = {};
+      validationResult.error.issues.forEach((issue: z.ZodIssue) => {
+        const path = issue.path.join(".");
+        fieldErrors[path] = issue.message;
+      });
+      const firstError = validationResult.error.issues[0];
+      const errorMessage = firstError ? firstError.message : "Invalid family data";
+      return err(new ValidationError(errorMessage, fieldErrors));
+    }
+
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
@@ -130,7 +171,7 @@ export class FamilyService {
     }
 
     try {
-      const updated = await this.familyRepo.update(familyId, command);
+      const updated = await this.familyRepo.update(familyId, validationResult.data);
 
       this.logRepo
         .create({
@@ -156,6 +197,11 @@ export class FamilyService {
   }
 
   async deleteFamily(familyId: string, userId: string): Promise<Result<void, DomainError>> {
+    const uuidValidation = uuidSchema.safeParse(familyId);
+    if (!uuidValidation.success) {
+      return err(new ValidationError("Invalid family ID format"));
+    }
+
     const family = await this.familyRepo.findById(familyId);
     if (!family) {
       return err(new NotFoundError("Family", familyId));
