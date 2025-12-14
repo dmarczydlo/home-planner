@@ -91,4 +91,3 @@ export function mapResultToResponse<T>(
     headers: { "Content-Type": "application/json" },
   });
 }
-

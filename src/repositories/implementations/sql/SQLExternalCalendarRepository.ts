@@ -21,11 +21,7 @@ export class SQLExternalCalendarRepository implements ExternalCalendarRepository
   }
 
   async findById(id: string): Promise<ExternalCalendarEntity | null> {
-    const { data, error } = await this.supabase
-      .from("external_calendars")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await this.supabase.from("external_calendars").select("*").eq("id", id).single();
 
     if (error || !data) {
       return null;
@@ -65,11 +61,7 @@ export class SQLExternalCalendarRepository implements ExternalCalendarRepository
       last_synced_at: data.last_synced_at ?? null,
     };
 
-    const { data: result, error } = await this.supabase
-      .from("external_calendars")
-      .insert(insertData)
-      .select()
-      .single();
+    const { data: result, error } = await this.supabase.from("external_calendars").insert(insertData).select().single();
 
     if (error || !result) {
       throw new Error(`Failed to create external calendar: ${error?.message ?? "Unknown error"}`);
@@ -112,10 +104,7 @@ export class SQLExternalCalendarRepository implements ExternalCalendarRepository
   }
 
   async updateLastSyncedAt(id: string, syncedAt: string): Promise<void> {
-    const { error } = await this.supabase
-      .from("external_calendars")
-      .update({ last_synced_at: syncedAt })
-      .eq("id", id);
+    const { error } = await this.supabase.from("external_calendars").update({ last_synced_at: syncedAt }).eq("id", id);
 
     if (error) {
       throw new Error(`Failed to update last synced at: ${error.message}`);
@@ -144,4 +133,3 @@ export class SQLExternalCalendarRepository implements ExternalCalendarRepository
     };
   }
 }
-

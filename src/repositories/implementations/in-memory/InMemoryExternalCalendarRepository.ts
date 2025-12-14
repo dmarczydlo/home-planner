@@ -79,4 +79,3 @@ export class InMemoryExternalCalendarRepository implements ExternalCalendarRepos
     // This is a no-op for the in-memory repository
   }
 }
-
