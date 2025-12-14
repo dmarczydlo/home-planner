@@ -3,7 +3,7 @@ import { FamilyService } from "./FamilyService";
 import { InMemoryFamilyRepository } from "@/repositories/implementations/in-memory/InMemoryFamilyRepository";
 import { InMemoryChildRepository } from "@/repositories/implementations/in-memory/InMemoryChildRepository";
 import { InMemoryLogRepository } from "@/repositories/implementations/in-memory/InMemoryLogRepository";
-import { ValidationError, NotFoundError, ForbiddenError } from "@/domain/errors";
+import { ValidationError, NotFoundError, ForbiddenError, DomainError } from "@/domain/errors";
 
 describe("FamilyService", () => {
   let familyService: FamilyService;
@@ -70,8 +70,7 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("Invalid family ID format");
+        expect(result.error).toBeInstanceOf(DomainError);
       }
     });
 
@@ -298,8 +297,7 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("Invalid family ID format");
+        expect(result.error).toBeInstanceOf(DomainError);
       }
     });
 

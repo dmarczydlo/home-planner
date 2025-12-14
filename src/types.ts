@@ -1098,3 +1098,9 @@ export const listLogsQuerySchema = z
   );
 
 export type ListLogsQuery = z.infer<typeof listLogsQuerySchema>;
+
+export const childIdPathSchema = z.object({
+  childId: uuidSchema,
+});
+
+export type ChildIdPath = z.infer<typeof childIdPathSchema>;
