@@ -1,0 +1,13 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { LoginView } from "@/components/auth/LoginView";
+import { AuthProviderWrapper } from "@/components/auth/AuthProviderWrapper";
+
+const error = Astro.url.searchParams.get("error");
+---
+
+<Layout title="Sign In - Home Planner">
+  <AuthProviderWrapper client:load>
+    <LoginView client:load error={error} />
+  </AuthProviderWrapper>
+</Layout>

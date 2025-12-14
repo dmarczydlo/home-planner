@@ -30,6 +30,8 @@ declare global {
 interface ImportMetaEnv {
   readonly SUPABASE_URL: string;
   readonly SUPABASE_KEY: string;
+  readonly PUBLIC_SUPABASE_URL?: string;
+  readonly PUBLIC_SUPABASE_ANON_KEY?: string;
   readonly OPENROUTER_API_KEY: string;
   readonly USE_IN_MEMORY_DB?: string;
   readonly GOOGLE_CLIENT_ID?: string;
