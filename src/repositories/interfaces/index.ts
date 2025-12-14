@@ -29,3 +29,5 @@ export type {
 
 export type { LogInsert, LogRepository } from "./LogRepository.ts";
 
+export type { InvitationRepository } from "./InvitationRepository.ts";
+

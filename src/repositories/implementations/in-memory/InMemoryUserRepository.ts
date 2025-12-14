@@ -4,9 +4,18 @@ import type { UserFamilyMembershipDTO } from "@/types";
 export class InMemoryUserRepository implements UserRepository {
   private users: Map<string, User> = new Map();
   private memberships: Map<string, UserFamilyMembershipDTO[]> = new Map();
+  private emailToUserId: Map<string, string> = new Map();
 
   async findById(id: string): Promise<User | null> {
     return this.users.get(id) ?? null;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const userId = this.emailToUserId.get(email.toLowerCase());
+    if (!userId) {
+      return null;
+    }
+    return this.users.get(userId) ?? null;
   }
 
   async create(data: CreateUserDTO): Promise<User> {
@@ -44,9 +53,12 @@ export class InMemoryUserRepository implements UserRepository {
     return this.memberships.get(userId) || [];
   }
 
-  seed(user: User, memberships: UserFamilyMembershipDTO[] = []): void {
+  seed(user: User, memberships: UserFamilyMembershipDTO[] = [], email?: string): void {
     this.users.set(user.id, user);
     this.memberships.set(user.id, memberships);
+    if (email) {
+      this.emailToUserId.set(email.toLowerCase(), user.id);
+    }
   }
 
   clear(): void {

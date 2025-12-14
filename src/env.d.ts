@@ -6,6 +6,7 @@ import type {
   UserRepository,
   ChildRepository,
   LogRepository,
+  InvitationRepository,
 } from "./repositories/interfaces/index.ts";
 
 declare global {
@@ -17,6 +18,7 @@ declare global {
         user: UserRepository;
         child: ChildRepository;
         log: LogRepository;
+        invitation: InvitationRepository;
       };
       user: User | null;
     }

@@ -1104,3 +1104,9 @@ export const childIdPathSchema = z.object({
 });
 
 export type ChildIdPath = z.infer<typeof childIdPathSchema>;
+
+export const listInvitationsQuerySchema = z.object({
+  status: invitationStatusSchema.optional(),
+});
+
+export type ListInvitationsQuery = z.infer<typeof listInvitationsQuerySchema>;

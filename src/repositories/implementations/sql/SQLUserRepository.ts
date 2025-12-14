@@ -16,6 +16,25 @@ export class SQLUserRepository implements UserRepository {
     return this.mapToDomain(data);
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    try {
+      const { data: users, error } = await this.supabase.auth.admin.listUsers();
+      if (error || !users) {
+        return null;
+      }
+
+      const authUser = users.users.find((user) => user.email === email);
+      if (!authUser) {
+        return null;
+      }
+
+      return this.findById(authUser.id);
+    } catch (error) {
+      console.error("Error finding user by email:", error);
+      return null;
+    }
+  }
+
   async create(data: CreateUserDTO): Promise<User> {
     const { data: result, error } = await this.supabase
       .from("users")
