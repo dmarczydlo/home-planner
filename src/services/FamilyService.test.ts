@@ -34,7 +34,6 @@ describe("FamilyService", () => {
       }
     });
 
-
     it("should log family.create action", async () => {
       const command = { name: "The Smiths" };
       await familyService.createFamily(command, userId);
@@ -71,7 +70,8 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(NotFoundError);
+        expect(result.error).toBeInstanceOf(ValidationError);
+        expect(result.error.message).toContain("Invalid family ID format");
       }
     });
 
@@ -146,7 +146,8 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(NotFoundError);
+        expect(result.error).toBeInstanceOf(ValidationError);
+        expect(result.error.message).toContain("Invalid family ID format");
       }
     });
 
@@ -209,7 +210,8 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(NotFoundError);
+        expect(result.error).toBeInstanceOf(ValidationError);
+        expect(result.error.message).toContain("Invalid family ID format");
       }
     });
 
@@ -296,7 +298,8 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(NotFoundError);
+        expect(result.error).toBeInstanceOf(ValidationError);
+        expect(result.error.message).toContain("Invalid family ID format");
       }
     });
 

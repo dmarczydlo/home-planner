@@ -1,6 +1,6 @@
 import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
-import { NotFoundError, ValidationError, ForbiddenError, DomainError } from "@/domain/errors";
+import { NotFoundError, ValidationError, ForbiddenError, DomainError, InternalError } from "@/domain/errors";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { ListLogsQuery, ListLogsResponseDTO, LogDTO } from "@/types";
@@ -74,7 +74,7 @@ export class LogService {
       return ok(response);
     } catch (error) {
       console.error("Error in LogService.listLogs:", error);
-      return err(new DomainError(500, "Failed to retrieve logs"));
+      return err(new InternalError("Failed to retrieve logs"));
     }
   }
 }

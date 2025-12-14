@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { LogService } from "./LogService";
 import { InMemoryLogRepository } from "@/repositories/implementations/in-memory/InMemoryLogRepository";
 import { InMemoryFamilyRepository } from "@/repositories/implementations/in-memory/InMemoryFamilyRepository";
-import { ValidationError, ForbiddenError, DomainError } from "@/domain/errors";
+import { ValidationError, ForbiddenError, DomainError, InternalError } from "@/domain/errors";
 
 describe("LogService", () => {
   let logService: LogService;
@@ -286,8 +286,7 @@ describe("LogService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(DomainError);
-        expect(result.error.statusCode).toBe(500);
+        expect(result.error).toBeInstanceOf(InternalError);
         expect(result.error.message).toContain("Failed to retrieve logs");
       }
     });
