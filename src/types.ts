@@ -1054,8 +1054,51 @@ export const familyIdParamPathSchema = z.object({
 export type FamilyIdParamPath = z.infer<typeof familyIdParamPathSchema>;
 
 /**
- * Path parameter schema for child ID
+ * Query parameters for listing logs
  */
+export const listLogsQuerySchema = z
+  .object({
+    family_id: uuidSchema.optional(),
+    actor_id: uuidSchema.optional(),
+    action: z.string().min(1).optional(),
+    start_date: dateSchema.optional(),
+    end_date: dateSchema.optional(),
+    limit: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((val) => {
+        if (typeof val === "number") return val;
+        if (typeof val === "string") return parseInt(val || "50", 10);
+        return 50;
+      })
+      .pipe(z.number().int().min(1).max(100))
+      .default(50),
+    offset: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((val) => {
+        if (typeof val === "number") return val;
+        if (typeof val === "string") return parseInt(val || "0", 10);
+        return 0;
+      })
+      .pipe(z.number().int().nonnegative())
+      .default(0),
+  })
+  .refine(
+    (data) => {
+      if (data.start_date && data.end_date) {
+        return new Date(data.end_date) >= new Date(data.start_date);
+      }
+      return true;
+    },
+    {
+      message: "end_date must be greater than or equal to start_date",
+      path: ["end_date"],
+    }
+  );
+
+export type ListLogsQuery = z.infer<typeof listLogsQuerySchema>;
+
 export const childIdPathSchema = z.object({
   childId: uuidSchema,
 });
