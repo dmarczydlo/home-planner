@@ -170,6 +170,8 @@ export class SQLEventRepository implements EventRepository {
     if (data.recurrence_pattern !== undefined) {
       updateData.recurrence_pattern = data.recurrence_pattern ? JSON.stringify(data.recurrence_pattern) : null;
     }
+    if (data.is_synced !== undefined) updateData.is_synced = data.is_synced;
+    if (data.external_calendar_id !== undefined) updateData.external_calendar_id = data.external_calendar_id;
     updateData.updated_at = new Date().toISOString();
 
     const { data: result, error } = await this.supabase

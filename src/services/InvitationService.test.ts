@@ -4,13 +4,7 @@ import { InMemoryInvitationRepository } from "@/repositories/implementations/in-
 import { InMemoryFamilyRepository } from "@/repositories/implementations/in-memory/InMemoryFamilyRepository";
 import { InMemoryUserRepository } from "@/repositories/implementations/in-memory/InMemoryUserRepository";
 import { InMemoryLogRepository } from "@/repositories/implementations/in-memory/InMemoryLogRepository";
-import {
-  ValidationError,
-  NotFoundError,
-  ForbiddenError,
-  ConflictError,
-  DomainError,
-} from "@/domain/errors";
+import { ValidationError, NotFoundError, ForbiddenError, ConflictError, DomainError } from "@/domain/errors";
 import type { InvitationEntity } from "@/types";
 
 describe("InvitationService", () => {
@@ -29,12 +23,7 @@ describe("InvitationService", () => {
     userRepo = new InMemoryUserRepository();
     logRepo = new InMemoryLogRepository();
 
-    invitationService = new InvitationService(
-      invitationRepo,
-      familyRepo,
-      userRepo,
-      logRepo
-    );
+    invitationService = new InvitationService(invitationRepo, familyRepo, userRepo, logRepo);
 
     userId = "550e8400-e29b-41d4-a716-446655440001";
     otherUserId = "550e8400-e29b-41d4-a716-446655440002";
@@ -43,11 +32,7 @@ describe("InvitationService", () => {
     familyId = family.id;
     await familyRepo.addMember(familyId, userId, "admin");
 
-    userRepo.seed(
-      { id: userId, full_name: "John Doe", avatar_url: null, updated_at: null },
-      [],
-      "john@example.com"
-    );
+    userRepo.seed({ id: userId, full_name: "John Doe", avatar_url: null, updated_at: null }, [], "john@example.com");
   });
 
   describe("listInvitations", () => {
@@ -283,4 +268,3 @@ describe("InvitationService", () => {
     });
   });
 });
-

@@ -124,6 +124,8 @@ export const participantTypeSchema = z.enum(["user", "child"]);
  */
 export const calendarProviderSchema = z.enum(["google", "microsoft"]);
 
+export type CalendarProvider = z.infer<typeof calendarProviderSchema>;
+
 /**
  * Calendar sync status enum schema
  */
@@ -1104,6 +1106,15 @@ export const childIdPathSchema = z.object({
 });
 
 export type ChildIdPath = z.infer<typeof childIdPathSchema>;
+
+/**
+ * Path parameter schema for calendar ID
+ */
+export const calendarIdPathSchema = z.object({
+  calendarId: uuidSchema,
+});
+
+export type CalendarIdPath = z.infer<typeof calendarIdPathSchema>;
 
 export const listInvitationsQuerySchema = z.object({
   status: invitationStatusSchema.optional(),

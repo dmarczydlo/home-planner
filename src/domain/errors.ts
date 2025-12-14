@@ -46,3 +46,12 @@ export class InternalError extends DomainError {
     super(message);
   }
 }
+
+export class RateLimitError extends DomainError {
+  constructor(
+    message: string,
+    public readonly retryAfter: number
+  ) {
+    super(message);
+  }
+}
