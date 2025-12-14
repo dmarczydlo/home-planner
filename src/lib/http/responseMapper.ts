@@ -7,6 +7,7 @@ import {
   ForbiddenError,
   UnauthorizedError,
   InternalError,
+  RateLimitError,
 } from "@/domain/errors";
 
 function mapDomainErrorToHttpStatus(error: DomainError): number {
@@ -24,6 +25,9 @@ function mapDomainErrorToHttpStatus(error: DomainError): number {
   }
   if (error instanceof ConflictError) {
     return 409;
+  }
+  if (error instanceof RateLimitError) {
+    return 429;
   }
   if (error instanceof InternalError) {
     return 500;
@@ -66,6 +70,20 @@ export function mapResultToResponse<T>(
 
   if (error instanceof ConflictError && error.conflictingEvents) {
     errorBody.conflicting_events = error.conflictingEvents;
+  }
+
+  if (error instanceof RateLimitError) {
+    errorBody.error = "rate_limit_exceeded";
+    errorBody.details = {
+      retry_after: error.retryAfter,
+    };
+    return new Response(JSON.stringify(errorBody), {
+      status: statusCode,
+      headers: {
+        "Content-Type": "application/json",
+        "Retry-After": error.retryAfter.toString(),
+      },
+    });
   }
 
   return new Response(JSON.stringify(errorBody), {

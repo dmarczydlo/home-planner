@@ -7,6 +7,7 @@ import type {
   ChildRepository,
   LogRepository,
   InvitationRepository,
+  ExternalCalendarRepository,
 } from "./repositories/interfaces/index.ts";
 
 declare global {
@@ -19,6 +20,7 @@ declare global {
         child: ChildRepository;
         log: LogRepository;
         invitation: InvitationRepository;
+        externalCalendar: ExternalCalendarRepository;
       };
       user: User | null;
     }
@@ -30,6 +32,14 @@ interface ImportMetaEnv {
   readonly SUPABASE_KEY: string;
   readonly OPENROUTER_API_KEY: string;
   readonly USE_IN_MEMORY_DB?: string;
+  readonly GOOGLE_CLIENT_ID?: string;
+  readonly GOOGLE_CLIENT_SECRET?: string;
+  readonly MICROSOFT_CLIENT_ID?: string;
+  readonly MICROSOFT_CLIENT_SECRET?: string;
+  readonly MICROSOFT_TENANT_ID?: string;
+  readonly TOKEN_ENCRYPTION_KEY?: string;
+  readonly OAUTH_STATE_SECRET?: string;
+  readonly FRONTEND_URL?: string;
   // more env variables...
 }
 

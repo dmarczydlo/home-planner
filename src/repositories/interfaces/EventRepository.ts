@@ -44,6 +44,8 @@ export interface UpdateEventDTO {
   is_all_day?: boolean;
   recurrence_pattern?: RecurrencePatternDTO | null;
   participants?: ParticipantReferenceDTO[];
+  is_synced?: boolean;
+  external_calendar_id?: string | null;
 }
 
 export interface EventWithParticipants extends Event {

@@ -7,6 +7,7 @@ import { SQLUserRepository } from "./implementations/sql/SQLUserRepository.ts";
 import { SQLChildRepository } from "./implementations/sql/SQLChildRepository.ts";
 import { SQLLogRepository } from "./implementations/sql/SQLLogRepository.ts";
 import { SQLInvitationRepository } from "./implementations/sql/SQLInvitationRepository.ts";
+import { SQLExternalCalendarRepository } from "./implementations/sql/SQLExternalCalendarRepository.ts";
 
 import { InMemoryFamilyRepository } from "./implementations/in-memory/InMemoryFamilyRepository.ts";
 import { InMemoryEventRepository } from "./implementations/in-memory/InMemoryEventRepository.ts";
@@ -14,6 +15,7 @@ import { InMemoryUserRepository } from "./implementations/in-memory/InMemoryUser
 import { InMemoryChildRepository } from "./implementations/in-memory/InMemoryChildRepository.ts";
 import { InMemoryLogRepository } from "./implementations/in-memory/InMemoryLogRepository.ts";
 import { InMemoryInvitationRepository } from "./implementations/in-memory/InMemoryInvitationRepository.ts";
+import { InMemoryExternalCalendarRepository } from "./implementations/in-memory/InMemoryExternalCalendarRepository.ts";
 
 import type {
   FamilyRepository,
@@ -22,6 +24,7 @@ import type {
   ChildRepository,
   LogRepository,
   InvitationRepository,
+  ExternalCalendarRepository,
 } from "./interfaces/index.ts";
 
 export type Repositories = {
@@ -31,6 +34,7 @@ export type Repositories = {
   child: ChildRepository;
   log: LogRepository;
   invitation: InvitationRepository;
+  externalCalendar: ExternalCalendarRepository;
 };
 
 export function createSQLRepositories(supabase: SupabaseClient<Database>): Repositories {
@@ -41,6 +45,7 @@ export function createSQLRepositories(supabase: SupabaseClient<Database>): Repos
     child: new SQLChildRepository(supabase),
     log: new SQLLogRepository(supabase),
     invitation: new SQLInvitationRepository(supabase),
+    externalCalendar: new SQLExternalCalendarRepository(supabase),
   };
 }
 
@@ -52,6 +57,7 @@ export function createInMemoryRepositories(): Repositories {
     child: new InMemoryChildRepository(),
     log: new InMemoryLogRepository(),
     invitation: new InMemoryInvitationRepository(),
+    externalCalendar: new InMemoryExternalCalendarRepository(),
   };
 }
 

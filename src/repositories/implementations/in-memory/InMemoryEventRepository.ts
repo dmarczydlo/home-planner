@@ -102,6 +102,8 @@ export class InMemoryEventRepository implements EventRepository {
       ...(data.event_type !== undefined && { event_type: data.event_type }),
       ...(data.is_all_day !== undefined && { is_all_day: data.is_all_day }),
       ...(data.recurrence_pattern !== undefined && { recurrence_pattern: data.recurrence_pattern }),
+      ...(data.is_synced !== undefined && { is_synced: data.is_synced }),
+      ...(data.external_calendar_id !== undefined && { external_calendar_id: data.external_calendar_id }),
       updated_at: new Date().toISOString(),
     };
     this.events.set(id, updated);
