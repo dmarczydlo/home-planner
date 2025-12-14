@@ -34,37 +34,6 @@ describe("FamilyService", () => {
       }
     });
 
-    it("should return error if name is empty", async () => {
-      const command = { name: "" };
-      const result = await familyService.createFamily(command, userId);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("required");
-      }
-    });
-
-    it("should return error if name is only whitespace", async () => {
-      const command = { name: "   " };
-      const result = await familyService.createFamily(command, userId);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-      }
-    });
-
-    it("should return error if name exceeds 100 characters", async () => {
-      const command = { name: "a".repeat(101) };
-      const result = await familyService.createFamily(command, userId);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("100 characters");
-      }
-    });
 
     it("should log family.create action", async () => {
       const command = { name: "The Smiths" };
@@ -102,8 +71,7 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("Invalid family ID format");
+        expect(result.error).toBeInstanceOf(NotFoundError);
       }
     });
 
@@ -172,44 +140,13 @@ describe("FamilyService", () => {
       }
     });
 
-    it("should return error if no fields provided", async () => {
-      const command = {};
-      const result = await familyService.updateFamily(familyId, command, userId);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("At least one field");
-      }
-    });
-
-    it("should return error if name is empty", async () => {
-      const command = { name: "" };
-      const result = await familyService.updateFamily(familyId, command, userId);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-      }
-    });
-
-    it("should return error if name exceeds 100 characters", async () => {
-      const command = { name: "a".repeat(101) };
-      const result = await familyService.updateFamily(familyId, command, userId);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-      }
-    });
-
     it("should return error if family ID is invalid", async () => {
       const command = { name: "New Name" };
       const result = await familyService.updateFamily("invalid-id", command, userId);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
+        expect(result.error).toBeInstanceOf(NotFoundError);
       }
     });
 
@@ -272,7 +209,7 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
+        expect(result.error).toBeInstanceOf(NotFoundError);
       }
     });
 
@@ -359,8 +296,7 @@ describe("FamilyService", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(ValidationError);
-        expect(result.error.message).toContain("Invalid family ID format");
+        expect(result.error).toBeInstanceOf(NotFoundError);
       }
     });
 

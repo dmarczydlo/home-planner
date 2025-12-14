@@ -175,12 +175,12 @@ This endpoint retrieves all members of a specific family. It returns a list of f
 ```typescript
 // File: src/pages/api/families/[familyId]/members.ts
 
-1. Call requireAuth(locals) helper
-2. Extract userId from locals.user
-3. Extract familyId from params.familyId
-4. Validate familyId is a valid UUID
+1. Use `handleApiRequest()` with `pathSchema` option
+2. Pass `familyIdParamPathSchema` to validate path parameters
+3. Handler receives validated `path` data with `familyId` automatically
+4. Authentication is handled automatically by `handleApiRequest()`
 5. Instantiate FamilyService with repositories from locals.repositories
-6. Call service.getFamilyMembers(familyId, userId)
+6. Call service.getFamilyMembers(path.familyId, userId)
 ```
 
 #### Step 3: Service Layer
@@ -705,40 +705,43 @@ Create the route handler:
 import type { APIContext } from "astro";
 import { FamilyService } from "@/services/FamilyService";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
-import { requireAuth } from "@/lib/http/apiHelpers";
-import { ValidationError } from "@/domain/errors";
-import { err } from "@/domain/result";
-import { uuidSchema } from "@/types";
+import { validateResponse, handleApiRequest } from "@/lib/http/apiHelpers";
+import { ok } from "@/domain/result";
+import {
+  familyIdParamPathSchema,
+  listFamilyMembersResponseSchema,
+  type FamilyIdParamPath,
+} from "@/types";
 
 export const prerender = false;
 
 export async function GET({ params, locals }: APIContext) {
-  // 1. Authentication check
-  const userId = requireAuth(locals);
-  if (userId instanceof Response) return userId;
+  return handleApiRequest<FamilyIdParamPath>({
+    handler: async ({ userId, path, locals }) => {
+      const familyService = new FamilyService(
+        locals.repositories.family,
+        locals.repositories.child,
+        locals.repositories.log
+      );
+      const result = await familyService.getFamilyMembers(path.familyId, userId);
 
-  // 2. Extract and validate familyId
-  const familyId = params.familyId;
-  if (!familyId) {
-    return mapResultToResponse(
-      err(new ValidationError("Family ID is required"))
-    );
-  }
+      if (!result.success) {
+        return mapResultToResponse(result);
+      }
 
-  // 3. Validate UUID format
-  const uuidValidation = uuidSchema.safeParse(familyId);
-  if (!uuidValidation.success) {
-    return mapResultToResponse(
-      err(new ValidationError("Invalid family ID format"))
-    );
-  }
+      const responseData = { members: result.data };
+      const responseValidation = validateResponse(listFamilyMembersResponseSchema, responseData);
+      if (!responseValidation.success) {
+        return mapResultToResponse(responseValidation);
+      }
 
-  // 4. Call service
-  const familyService = new FamilyService(locals.repositories.family);
-  const result = await familyService.getFamilyMembers(familyId, userId);
-
-  // 5. Map Result to HTTP Response
-  return mapResultToResponse(result);
+      return mapResultToResponse(ok(responseData));
+    },
+    context: "GET /api/families/[familyId]/members",
+    pathSchema: familyIdParamPathSchema,
+    params,
+    locals,
+  });
 }
 ```
 

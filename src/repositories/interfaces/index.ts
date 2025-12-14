@@ -20,7 +20,12 @@ export type {
   UserRepository,
 } from "./UserRepository.ts";
 
-export type { Child, ChildRepository } from "./ChildRepository.ts";
+export type {
+  Child,
+  CreateChildDTO,
+  UpdateChildDTO,
+  ChildRepository,
+} from "./ChildRepository.ts";
 
 export type { LogInsert, LogRepository } from "./LogRepository.ts";
 
