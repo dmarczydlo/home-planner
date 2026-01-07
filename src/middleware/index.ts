@@ -9,24 +9,68 @@ export const onRequest = defineMiddleware(async (context, next) => {
   let user: import("@supabase/supabase-js").User | null = null;
 
   if (!useInMemory) {
-    supabase = createSupabaseClient();
-
     const authHeader = context.request.headers.get("Authorization");
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.substring(7);
 
-      try {
-        const { data, error } = await supabase.auth.getUser(token);
+      supabase = createSupabaseClient();
 
-        if (!error && data.user) {
-          user = data.user;
-        }
-      } catch (error) {
-        console.error("Auth middleware error:", error);
+      const {
+        data: { user: authUser },
+        error,
+      } = await supabase.auth.getUser(token);
+
+      if (!error && authUser) {
+        user = authUser;
+
+        const { createClient } = await import("@supabase/supabase-js");
+        const supabaseUrl = import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL;
+        const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_KEY;
+
+        supabase = createClient(supabaseUrl, supabaseKey, {
+          global: {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+          },
+        }) as ReturnType<typeof createSupabaseClient>;
+      }
+    } else {
+      // No auth header - check for session in cookies (page requests)
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabaseUrl = import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL;
+      const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_KEY;
+
+      supabase = createClient(supabaseUrl, supabaseKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+        },
+        global: {
+          headers: {
+            cookie: context.request.headers.get("cookie") || "",
+          },
+        },
+      }) as ReturnType<typeof createSupabaseClient>;
+
+      const {
+        data: { user: sessionUser },
+      } = await supabase.auth.getUser();
+      if (sessionUser) {
+        user = sessionUser;
       }
     }
+
+    if (!supabase) {
+      supabase = createSupabaseClient();
+    }
   }
+
   const repositories = createRepositories(supabase);
 
   context.locals.repositories = repositories;

@@ -1,18 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { OnboardingProvider } from "@/contexts/OnboardingContext";
-import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
-import { WelcomeStep } from "@/components/onboarding/WelcomeStep";
-import { AuthProviderWrapper } from "@/components/auth/AuthProviderWrapper";
+import { OnboardingPage } from "@/components/onboarding/OnboardingPage";
 ---
 
 <Layout title="Welcome - Home Planner">
-  <AuthProviderWrapper client:load>
-    <OnboardingProvider client:load>
-      <OnboardingWizard client:load>
-        <WelcomeStep client:load />
-      </OnboardingWizard>
-    </OnboardingProvider>
-  </AuthProviderWrapper>
+  <OnboardingPage client:only="react" />
 </Layout>
 
