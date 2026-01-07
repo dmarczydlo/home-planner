@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { OnboardingProvider } from "@/contexts/OnboardingContext";
+import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
+import { ConnectCalendarStep } from "@/components/onboarding/ConnectCalendarStep";
+import { AuthProviderWrapper } from "@/components/auth/AuthProviderWrapper";
+---
+
+<Layout title="Connect Calendar - Home Planner">
+  <AuthProviderWrapper client:load>
+    <OnboardingProvider client:load>
+      <OnboardingWizard client:load>
+        <ConnectCalendarStep client:load />
+      </OnboardingWizard>
+    </OnboardingProvider>
+  </AuthProviderWrapper>
+</Layout>
+

@@ -1,0 +1,136 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { LegalLinks } from "../components/auth/LegalLinks";
+---
+
+<Layout title="Privacy Policy - Home Planner">
+  <div class="flex min-h-screen flex-col">
+    <main class="flex-1">
+      <section class="container mx-auto px-4 py-12 sm:py-16 md:py-20">
+        <div class="mx-auto max-w-3xl space-y-8">
+          <div class="space-y-4">
+            <h1 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
+              Privacy Policy
+            </h1>
+            <p class="text-muted-foreground">
+              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+
+          <div class="prose prose-slate dark:prose-invert max-w-none space-y-6">
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">1. Introduction</h2>
+              <p class="text-muted-foreground">
+                Home Planner ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our family calendar application.
+              </p>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">2. Information We Collect</h2>
+              <div class="space-y-3">
+                <h3 class="text-xl font-semibold">2.1. Account Information</h3>
+                <p class="text-muted-foreground">
+                  When you sign in with Google, we collect your email address, name, and profile picture from your Google account. This information is necessary to create and manage your account.
+                </p>
+
+                <h3 class="text-xl font-semibold">2.2. Family Data</h3>
+                <p class="text-muted-foreground">
+                  We store information about your family, including family member names, child profiles, and family relationships. This data is shared among all members of your family group.
+                </p>
+
+                <h3 class="text-xl font-semibold">2.3. Calendar Data</h3>
+                <p class="text-muted-foreground">
+                  We store events, appointments, and activities that you create within Home Planner. When you connect external calendars (Google Calendar or Microsoft 365), we synchronize event information on a read-only basis.
+                </p>
+
+                <h3 class="text-xl font-semibold">2.4. External Calendar Integration</h3>
+                <p class="text-muted-foreground">
+                  When you connect external calendars, we access your calendar data through OAuth 2.0. By default, external calendar events are displayed as "Busy" blocks to other family members. You can choose to make specific events fully visible to your family.
+                </p>
+              </div>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">3. How We Use Your Information</h2>
+              <ul class="list-disc list-inside space-y-2 text-muted-foreground">
+                <li>To provide and maintain our calendar service</li>
+                <li>To synchronize your external calendars</li>
+                <li>To enable family members to view and coordinate schedules</li>
+                <li>To detect and prevent scheduling conflicts</li>
+                <li>To send invitation emails to family members you invite</li>
+                <li>To improve our service and user experience</li>
+              </ul>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">4. Data Sharing</h2>
+              <div class="space-y-3">
+                <h3 class="text-xl font-semibold">4.1. Within Your Family</h3>
+                <p class="text-muted-foreground">
+                  All data you create in Home Planner is shared with members of your family group. Family members can view and manage events for all family members, including children.
+                </p>
+
+                <h3 class="text-xl font-semibold">4.2. External Calendar Providers</h3>
+                <p class="text-muted-foreground">
+                  When you connect external calendars, we interact with Google Calendar and Microsoft 365 APIs on your behalf. We do not share your data with third parties except as necessary to provide the calendar synchronization service.
+                </p>
+
+                <h3 class="text-xl font-semibold">4.3. Service Providers</h3>
+                <p class="text-muted-foreground">
+                  We use Supabase for authentication and database services. Your data is stored securely in Supabase's infrastructure. We do not sell or rent your personal information to third parties.
+                </p>
+              </div>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">5. Data Security</h2>
+              <p class="text-muted-foreground">
+                We implement appropriate technical and organizational measures to protect your personal information. This includes encryption in transit and at rest, secure authentication via OAuth 2.0, and access controls to ensure only authorized family members can access your data.
+              </p>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">6. Your Rights</h2>
+              <p class="text-muted-foreground">
+                You have the right to:
+              </p>
+              <ul class="list-disc list-inside space-y-2 text-muted-foreground">
+                <li>Access your personal data</li>
+                <li>Correct inaccurate data</li>
+                <li>Delete your account and associated data</li>
+                <li>Disconnect external calendars at any time</li>
+                <li>Remove family members from your family group</li>
+              </ul>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">7. Children's Privacy</h2>
+              <p class="text-muted-foreground">
+                Home Planner allows parents to create profiles for their children. Children do not have their own accounts. All child profile data is managed by adult family members. We do not knowingly collect personal information directly from children.
+              </p>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">8. Changes to This Privacy Policy</h2>
+              <p class="text-muted-foreground">
+                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.
+              </p>
+            </section>
+
+            <section class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight">9. Contact Us</h2>
+              <p class="text-muted-foreground">
+                If you have any questions about this Privacy Policy, please contact us through the application or your preferred method of communication.
+              </p>
+            </section>
+          </div>
+
+          <div class="pt-8 border-t">
+            <LegalLinks client:load />
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</Layout>
+
