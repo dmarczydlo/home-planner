@@ -27,7 +27,6 @@ export function Navbar() {
       setUser(session?.user ?? null);
     });
 
-    // Listen for storage changes (for cross-tab sync)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key?.includes("supabase") || e.key?.includes("sb-")) {
         checkSession();
@@ -36,7 +35,6 @@ export function Navbar() {
 
     window.addEventListener("storage", handleStorageChange);
 
-    // Also check session on window focus (catches navigation from OAuth)
     const handleFocus = () => {
       checkSession();
     };
@@ -51,7 +49,7 @@ export function Navbar() {
   }, []);
 
   if (loading) {
-    return null; // or a loading skeleton
+    return null;
   }
 
   return (

@@ -19,8 +19,7 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
   return handleApiRequest({
     handler: async ({ userId, locals }) => {
       const body = await request.json();
-      
-      // Validate that the user is creating their own profile
+
       if (body.id !== userId) {
         return new Response(
           JSON.stringify({ error: "Cannot create profile for another user" }),
@@ -29,15 +28,13 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
       }
 
       const userService = new UserService(locals.repositories.user);
-      
-      // Create the user profile
+
       await locals.repositories.user.create({
         id: userId,
         full_name: body.full_name || null,
         avatar_url: body.avatar_url || null,
       });
 
-      // Fetch and return the created profile
       const result = await userService.getUserProfile(userId);
       return mapResultToResponse(result, 201);
     },

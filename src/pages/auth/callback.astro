@@ -76,7 +76,6 @@ export const prerender = false;
             return;
           }
 
-          // Create Supabase client for PKCE code exchange
           const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
           const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
@@ -92,7 +91,6 @@ export const prerender = false;
             },
           });
 
-          // Exchange code for session using PKCE verifier from localStorage
           const { data, error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
 
           if (sessionError || !data?.session?.user) {
@@ -103,10 +101,8 @@ export const prerender = false;
 
           const accessToken = data.session.access_token;
 
-          // Clean up URL
           window.history.replaceState(null, "", window.location.pathname);
 
-          // Check if user exists
           const response = await fetch("/api/users/me", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -115,7 +111,6 @@ export const prerender = false;
 
           if (!response.ok) {
             if (response.status === 404) {
-              // Create user profile
               const userMetadata = data.session.user.user_metadata;
               const createResponse = await fetch("/api/users/me", {
                 method: "POST",
@@ -148,10 +143,8 @@ export const prerender = false;
           const userData = await response.json();
           const hasCompletedOnboarding = userData.families && userData.families.length > 0;
 
-          // Wait a bit to ensure session is fully persisted
           await new Promise((resolve) => setTimeout(resolve, 100));
 
-          // Use replace to ensure clean navigation
           window.location.replace(hasCompletedOnboarding ? "/calendar/week" : "/onboarding/welcome");
         } catch (error) {
           console.error("Unexpected error in OAuth callback:", error);

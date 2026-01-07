@@ -41,7 +41,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
         }) as ReturnType<typeof createSupabaseClient>;
       }
     } else {
-      // No auth header - check for session in cookies (page requests)
       const { createClient } = await import("@supabase/supabase-js");
       const supabaseUrl = import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL;
       const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_KEY;
