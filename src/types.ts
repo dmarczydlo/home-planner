@@ -81,8 +81,9 @@ export const uuidSchema = z.string().uuid();
 
 /**
  * ISO8601 timestamp validation schema
+ * Uses coerce to handle various timestamp formats from Postgres
  */
-export const timestampSchema = z.string().datetime();
+export const timestampSchema = z.string().datetime({ offset: true }).or(z.string().datetime());
 
 /**
  * ISO8601 date validation schema

@@ -80,15 +80,13 @@ export function OnboardingProvider({ children, initialStep = 1 }: OnboardingProv
 
   const savedState = loadFromStorage();
   const [state, setState] = useState<OnboardingState>({
-    currentStep: initialStep,
-    familyId: null,
-    familyName: "",
-    connectedCalendars: [],
-    children: [],
-    invitations: [],
-    isComplete: false,
-    ...savedState,
     currentStep: savedState.currentStep || initialStep,
+    familyId: savedState.familyId || null,
+    familyName: savedState.familyName || "",
+    connectedCalendars: savedState.connectedCalendars || [],
+    children: savedState.children || [],
+    invitations: savedState.invitations || [],
+    isComplete: savedState.isComplete || false,
   });
 
   const updateState = useCallback(
@@ -253,9 +251,10 @@ export function OnboardingProvider({ children, initialStep = 1 }: OnboardingProv
 
 export function useOnboarding(): OnboardingContextType {
   const context = useContext(OnboardingContext);
+
   if (!context) {
     throw new Error("useOnboarding must be used within OnboardingProvider");
   }
+
   return context;
 }
-

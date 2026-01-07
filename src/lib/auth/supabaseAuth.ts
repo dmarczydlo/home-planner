@@ -23,6 +23,7 @@ export function createSupabaseClientForAuth() {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
+      flowType: "pkce",
     },
   });
 
@@ -32,17 +33,29 @@ export function createSupabaseClientForAuth() {
 export async function signInWithGoogle() {
   const supabase = createSupabaseClientForAuth();
 
+  const frontendUrl =
+    import.meta.env.FRONTEND_URL ||
+    (typeof window !== "undefined" ? window.location.origin : null) ||
+    import.meta.env.PUBLIC_SUPABASE_URL?.replace("/rest/v1", "") ||
+    "http://localhost:4321";
+  const redirectTo = `${frontendUrl}/auth/callback`;
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo,
       queryParams: {
         access_type: "offline",
         prompt: "consent",
       },
+      skipBrowserRedirect: false,
     },
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error("OAuth initiation error:", error);
+    throw error;
+  }
+
   return data;
 }

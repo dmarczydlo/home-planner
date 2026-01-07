@@ -6,7 +6,7 @@ import { AuthProviderWrapper } from "@/components/auth/AuthProviderWrapper";
 const error = Astro.url.searchParams.get("error");
 ---
 
-<Layout title="Sign In - Home Planner">
+<Layout title="Sign In - Home Planner" showNavbar={false}>
   <AuthProviderWrapper client:load>
     <LoginView client:load error={error} />
   </AuthProviderWrapper>
