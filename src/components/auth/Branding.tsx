@@ -15,4 +15,3 @@ export function Branding(): ReactNode {
     </div>
   );
 }
-

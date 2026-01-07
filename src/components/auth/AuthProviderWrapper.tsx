@@ -8,4 +8,3 @@ interface AuthProviderWrapperProps {
 export function AuthProviderWrapper({ children }: AuthProviderWrapperProps): ReactNode {
   return <AuthProvider>{children}</AuthProvider>;
 }
-
