@@ -19,7 +19,6 @@ export function ViewSwitcher() {
 
   const handleViewChange = (view: CalendarView) => {
     setView(view);
-    window.history.pushState({}, "", `/calendar/${view}`);
   };
 
   return (

@@ -41,7 +41,7 @@ export function getDateRange(view: CalendarView, currentDate: Date): DateRange {
     case "agenda":
       return {
         start: startOfDay(currentDate),
-        end: addDays(currentDate, 30),
+        end: endOfDay(addDays(currentDate, 29)),
       };
     default:
       return {
@@ -51,30 +51,18 @@ export function getDateRange(view: CalendarView, currentDate: Date): DateRange {
   }
 }
 
-export function navigateDate(
-  currentDate: Date,
-  view: CalendarView,
-  direction: "previous" | "next"
-): Date {
+export function navigateDate(currentDate: Date, view: CalendarView, direction: "previous" | "next"): Date {
   const multiplier = direction === "next" ? 1 : -1;
 
   switch (view) {
     case "day":
-      return direction === "next" 
-        ? addDays(currentDate, 1) 
-        : subDays(currentDate, 1);
+      return direction === "next" ? addDays(currentDate, 1) : subDays(currentDate, 1);
     case "week":
-      return direction === "next"
-        ? addWeeks(currentDate, 1)
-        : subWeeks(currentDate, 1);
+      return direction === "next" ? addWeeks(currentDate, 1) : subWeeks(currentDate, 1);
     case "month":
-      return direction === "next"
-        ? addMonths(currentDate, 1)
-        : subMonths(currentDate, 1);
+      return direction === "next" ? addMonths(currentDate, 1) : subMonths(currentDate, 1);
     case "agenda":
-      return direction === "next"
-        ? addDays(currentDate, 30)
-        : subDays(currentDate, 30);
+      return direction === "next" ? addDays(currentDate, 30) : subDays(currentDate, 30);
     default:
       return currentDate;
   }

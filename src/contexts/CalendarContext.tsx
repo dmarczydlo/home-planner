@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 import type { EventWithParticipantsDTO } from "../types";
 import { getDateRange } from "../lib/calendar/dateUtils";
 
@@ -38,11 +38,7 @@ interface CalendarProviderProps {
   initialDate?: Date;
 }
 
-export function CalendarProvider({ 
-  children, 
-  initialView = "week",
-  initialDate = new Date()
-}: CalendarProviderProps) {
+export function CalendarProvider({ children, initialView = "week", initialDate = new Date() }: CalendarProviderProps) {
   const [state, setState] = useState<CalendarState>(() => {
     const initialRange = getDateRange(initialView, initialDate);
     return {
@@ -89,22 +85,21 @@ export function CalendarProvider({
     setState((prev) => ({ ...prev, dateRange: range }));
   }, []);
 
-  const value: CalendarContextType = {
-    state,
-    setView,
-    setCurrentDate,
-    setFilters,
-    setEvents,
-    setIsLoading,
-    setError,
-    setDateRange,
-  };
-
-  return (
-    <CalendarContext.Provider value={value}>
-      {children}
-    </CalendarContext.Provider>
+  const value: CalendarContextType = useMemo(
+    () => ({
+      state,
+      setView,
+      setCurrentDate,
+      setFilters,
+      setEvents,
+      setIsLoading,
+      setError,
+      setDateRange,
+    }),
+    [state, setView, setCurrentDate, setFilters, setEvents, setIsLoading, setError, setDateRange]
   );
+
+  return <CalendarContext.Provider value={value}>{children}</CalendarContext.Provider>;
 }
 
 export function useCalendar() {
