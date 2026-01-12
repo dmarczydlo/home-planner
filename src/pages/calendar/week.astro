@@ -1,0 +1,29 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { CalendarView } from "../../components/calendar/CalendarView";
+
+export const prerender = false;
+
+if (!Astro.locals.user) {
+  return Astro.redirect("/auth/login");
+}
+
+const userService = new (await import("../../services/UserService")).UserService(Astro.locals.repositories.user);
+const result = await userService.getUserProfile(Astro.locals.user.id);
+
+if (!result.success) {
+  return Astro.redirect("/");
+}
+
+const userProfile = result.data;
+
+if (!userProfile.families || userProfile.families.length === 0) {
+  return Astro.redirect("/onboarding/welcome");
+}
+
+const primaryFamily = userProfile.families[0];
+---
+
+<Layout title="Week View - Calendar">
+  <CalendarView client:load familyId={primaryFamily.family_id} initialView="week" />
+</Layout>
