@@ -4,6 +4,7 @@ import { NotFoundError, ValidationError, ForbiddenError, DomainError, InternalEr
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { ChildRepository } from "@/repositories/interfaces/ChildRepository";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
+import type { UserRepository } from "@/repositories/interfaces/UserRepository";
 import { createFamilyCommandSchema, updateFamilyCommandSchema, uuidSchema, validateSchema } from "@/types";
 import type {
   CreateFamilyCommand,
@@ -19,7 +20,8 @@ export class FamilyService {
   constructor(
     private readonly familyRepo: FamilyRepository,
     private readonly childRepo: ChildRepository,
-    private readonly logRepo: LogRepository
+    private readonly logRepo: LogRepository,
+    private readonly userRepo: UserRepository
   ) {}
 
   async createFamily(
@@ -39,6 +41,11 @@ export class FamilyService {
     }
 
     try {
+      let user = await this.userRepo.findById(userId);
+      if (!user) {
+        user = await this.userRepo.create({ id: userId });
+      }
+
       const family = await this.familyRepo.create({ name: validationResult.data.name });
       await this.familyRepo.addMember(family.id, userId, "admin");
 
@@ -61,6 +68,7 @@ export class FamilyService {
         role: "admin",
       });
     } catch (error) {
+      console.error("Error creating family:", error);
       return err(new InternalError("Failed to create family"));
     }
   }

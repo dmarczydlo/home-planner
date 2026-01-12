@@ -17,7 +17,8 @@ export async function GET({ params, locals }: APIContext): Promise<Response> {
       const familyService = new FamilyService(
         locals.repositories.family,
         locals.repositories.child,
-        locals.repositories.log
+        locals.repositories.log,
+        locals.repositories.user
       );
       const result = await familyService.getFamilyDetails(path.id, userId);
       return mapResultToResponse(result);
@@ -35,7 +36,8 @@ export async function PATCH({ params, request, locals }: APIContext): Promise<Re
       const familyService = new FamilyService(
         locals.repositories.family,
         locals.repositories.child,
-        locals.repositories.log
+        locals.repositories.log,
+        locals.repositories.user
       );
       const result = await familyService.updateFamily(path.id, body, userId);
       return mapResultToResponse(result);
@@ -55,7 +57,8 @@ export async function DELETE({ params, locals }: APIContext): Promise<Response> 
       const familyService = new FamilyService(
         locals.repositories.family,
         locals.repositories.child,
-        locals.repositories.log
+        locals.repositories.log,
+        locals.repositories.user
       );
       const result = await familyService.deleteFamily(path.id, userId);
       return mapResultToResponse(result, { successStatus: 204 });
