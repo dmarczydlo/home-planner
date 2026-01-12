@@ -64,10 +64,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
         user = sessionUser;
       }
     }
-
-    if (!supabase) {
-      supabase = createSupabaseClient();
-    }
   }
 
   const repositories = createRepositories(supabase);

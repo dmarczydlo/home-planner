@@ -55,8 +55,6 @@ export const prerender = false;
     </div>
 
     <script>
-      import { createSupabaseClientForAuth } from "@/lib/auth/supabaseAuth";
-
       async function handleCallback() {
         try {
           const urlParams = new URLSearchParams(window.location.search);
