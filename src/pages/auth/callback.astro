@@ -143,8 +143,6 @@ export const prerender = false;
           const userData = await response.json();
           const hasCompletedOnboarding = userData.families && userData.families.length > 0;
 
-          await new Promise((resolve) => setTimeout(resolve, 100));
-
           window.location.replace(hasCompletedOnboarding ? "/calendar/week" : "/onboarding/welcome");
         } catch (error) {
           console.error("Unexpected error in OAuth callback:", error);

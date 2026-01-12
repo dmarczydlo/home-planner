@@ -33,11 +33,7 @@ export function createSupabaseClientForAuth() {
 export async function signInWithGoogle() {
   const supabase = createSupabaseClientForAuth();
 
-  const frontendUrl =
-    import.meta.env.FRONTEND_URL ||
-    (typeof window !== "undefined" ? window.location.origin : null) ||
-    import.meta.env.PUBLIC_SUPABASE_URL?.replace("/rest/v1", "") ||
-    "http://localhost:4321";
+  const frontendUrl = import.meta.env.FRONTEND_URL;
   const redirectTo = `${frontendUrl}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
