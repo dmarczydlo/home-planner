@@ -38,8 +38,8 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
         body: JSON.stringify({
           family_id: familyId,
           title: formData.title,
-          start_time: formData.startTime,
-          end_time: formData.endTime,
+          start_time: convertToISOTimestamp(formData.startTime, formData.isAllDay),
+          end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay),
           is_all_day: formData.isAllDay,
           event_type: formData.eventType,
         }),
@@ -52,7 +52,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
 
       onEventCreated?.();
       onClose();
-      
+
       setFormData({
         title: "",
         startTime: "",
@@ -87,20 +87,28 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     return now.toISOString().slice(0, 16);
   };
 
+  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean): string => {
+    if (isAllDay) {
+      const date = new Date(dateTimeString);
+      date.setHours(0, 0, 0, 0);
+      return date.toISOString();
+    }
+    const date = new Date(dateTimeString);
+    return date.toISOString();
+  };
+
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={handleClose}
     >
-      <div 
+      <div
         className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Create New Event
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Create New Event</h2>
           <button
             onClick={handleClose}
             disabled={isSubmitting}
