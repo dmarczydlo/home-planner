@@ -5,7 +5,7 @@ import { CalendarView } from "../../components/calendar/CalendarView";
 export const prerender = false;
 
 if (!Astro.locals.user) {
-  return Astro.redirect("/auth/signin");
+  return Astro.redirect("/auth/login");
 }
 
 const userService = new (await import("../../services/UserService")).UserService(Astro.locals.repositories.user);
