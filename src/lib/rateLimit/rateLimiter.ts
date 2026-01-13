@@ -44,12 +44,7 @@ export class RateLimiter {
       const timeSinceLastSync = now - lastSyncTime;
       if (timeSinceLastSync < SYNC_RATE_LIMIT_MS) {
         const retryAfter = Math.ceil((SYNC_RATE_LIMIT_MS - timeSinceLastSync) / 1000);
-        return err(
-          new RateLimitError(
-            `Sync rate limit exceeded. Please wait before syncing again.`,
-            retryAfter
-          )
-        );
+        return err(new RateLimitError(`Sync rate limit exceeded. Please wait before syncing again.`, retryAfter));
       }
     }
 
@@ -61,6 +56,3 @@ export class RateLimiter {
     rateLimitStore.setLastSyncTime(calendarId, Date.now());
   }
 }
-
-
-

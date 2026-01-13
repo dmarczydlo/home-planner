@@ -32,7 +32,7 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
         locals.repositories.event,
         locals.repositories.family
       );
-      const result = await calendarService.initiateOAuth(userId, body.provider);
+      const result = await calendarService.initiateOAuth(userId, body.provider, body.return_path);
       return mapResultToResponse(result);
     },
     context: "POST /api/external-calendars",

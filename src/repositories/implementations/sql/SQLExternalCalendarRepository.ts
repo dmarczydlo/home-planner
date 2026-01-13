@@ -133,5 +133,3 @@ export class SQLExternalCalendarRepository implements ExternalCalendarRepository
     };
   }
 }
-
-

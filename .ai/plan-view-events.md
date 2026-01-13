@@ -1,16 +1,19 @@
 # Implementation Plan: Event Management
+
 ## Mobile-First Design
 
 ## 1. Overview
 
 **Purpose**: Create, edit, view, and delete calendar events with conflict detection
 
-**Routes**: 
+**Routes**:
+
 - Event creation: Triggered from calendar view (FAB or date tap)
 - Event editing: Modal/bottom sheet overlay (no dedicated route)
 - Event details: Modal/bottom sheet overlay
 
 **Key Features**:
+
 - Create events (Elastic/Blocker)
 - Edit events (single or recurring) - native events only
 - Delete events - native events only
@@ -24,6 +27,7 @@
 ### 2.1. Event Form Layout (Mobile)
 
 **Bottom Sheet (Mobile):**
+
 ```
 ┌─────────────────────────────────┐
 │ ═══                              │ ← Drag handle
@@ -59,6 +63,7 @@
 ```
 
 **Modal (Desktop):**
+
 - Centered modal
 - Max width: 600px
 - Same form structure
@@ -66,17 +71,20 @@
 ### 2.2. Responsive Breakpoints
 
 **Mobile (320px - 767px):**
+
 - Bottom sheet (full height or partial)
 - Native date/time pickers
 - Swipe down to dismiss
 - Full-width inputs
 
 **Tablet (768px - 1023px):**
+
 - Bottom sheet or modal
 - Larger touch targets
 - More spacing
 
 **Desktop (1024px+):**
+
 - Modal dialog
 - Keyboard shortcuts
 - Hover states
@@ -88,6 +96,7 @@
 **File**: `src/components/calendar/EventForm.tsx`
 
 **Structure:**
+
 ```typescript
 <EventForm
   event={event} // Optional, for editing
@@ -113,32 +122,38 @@
 ### 3.2. Sub-Components
 
 **TitleInput**
+
 - Text input
 - Required validation
 - Max 200 characters
 
 **DatePicker**
+
 - Native picker (mobile)
 - Calendar picker (desktop)
 - Date range validation
 
 **TimePicker**
+
 - Native picker (mobile)
 - Time input (desktop)
 - Start/end time validation
 
 **ParticipantSelector**
+
 - Multi-select component
 - Users and children combined
 - Searchable list
 - Checkbox interface
 
 **EventTypeSelector**
+
 - Radio buttons or toggle
 - Elastic vs Blocker
 - Visual distinction
 
 **RecurrenceEditor**
+
 - Collapsible section
 - Frequency selector
 - Interval input
@@ -146,6 +161,7 @@
 - Preview of occurrences
 
 **ConflictWarning**
+
 - Inline warning message (error style)
 - List of conflicting events
 - Clear message: "Cannot save: This blocker event conflicts with existing events"
@@ -214,7 +230,7 @@
    └─> If synced event (is_synced: true):
        └─> Delete action not available (swipe disabled)
            └─> Show message: "Synced events cannot be deleted"
-   
+
    └─> If native event (is_synced: false):
        └─> Delete action revealed
            └─> Tap delete
@@ -250,6 +266,7 @@
 **Endpoint**: `POST /api/events`
 
 **Request:**
+
 ```typescript
 {
   family_id: string;
@@ -271,6 +288,7 @@
 ```
 
 **Response:**
+
 ```typescript
 {
   id: string;
@@ -279,7 +297,7 @@
   start_time: string;
   end_time: string;
   is_all_day: boolean;
-  event_type: 'elastic' | 'blocker';
+  event_type: "elastic" | "blocker";
   recurrence_pattern: object | null;
   participants: Array<Participant>;
   created_at: string;
@@ -292,6 +310,7 @@
 **Endpoint**: `POST /api/events/validate`
 
 **Request:**
+
 ```typescript
 {
   family_id: string;
@@ -305,6 +324,7 @@
 ```
 
 **Response:**
+
 ```typescript
 {
   valid: boolean;
@@ -327,6 +347,7 @@
 **Endpoint**: `PATCH /api/events/:eventId?scope=this|future|all&date=YYYY-MM-DD`
 
 **Request:**
+
 ```typescript
 {
   title?: string;
@@ -347,17 +368,18 @@
 ### 6.1. Form State
 
 **Local State (useState):**
+
 ```typescript
 interface EventFormState {
   title: string;
   startTime: Date;
   endTime: Date;
   isAllDay: boolean;
-  participants: Array<{ id: string; type: 'user' | 'child' }>;
-  eventType: 'elastic' | 'blocker';
+  participants: Array<{ id: string; type: "user" | "child" }>;
+  eventType: "elastic" | "blocker";
   recurrence: {
     enabled: boolean;
-    frequency: 'daily' | 'weekly' | 'monthly';
+    frequency: "daily" | "weekly" | "monthly";
     interval: number;
     endDate: Date | null;
   };
@@ -370,20 +392,21 @@ interface EventFormState {
 ### 6.2. Validation Logic
 
 **Real-time Validation:**
+
 ```typescript
 function validateEvent(formState: EventFormState): ValidationResult {
   const errors: ValidationError[] = [];
 
   if (!formState.title.trim()) {
-    errors.push({ field: 'title', message: 'Title is required' });
+    errors.push({ field: "title", message: "Title is required" });
   }
 
   if (formState.endTime <= formState.startTime) {
-    errors.push({ field: 'endTime', message: 'End time must be after start time' });
+    errors.push({ field: "endTime", message: "End time must be after start time" });
   }
 
   if (formState.recurrence.enabled && !formState.recurrence.endDate) {
-    errors.push({ field: 'recurrence.endDate', message: 'End date is required for recurring events' });
+    errors.push({ field: "recurrence.endDate", message: "End date is required for recurring events" });
   }
 
   return { valid: errors.length === 0, errors };
@@ -393,19 +416,21 @@ function validateEvent(formState: EventFormState): ValidationResult {
 ### 6.3. Conflict Detection
 
 **Debounced Validation:**
+
 ```typescript
 const debouncedValidate = useMemo(
-  () => debounce(async (formState: EventFormState) => {
-    if (formState.eventType !== 'blocker') return;
+  () =>
+    debounce(async (formState: EventFormState) => {
+      if (formState.eventType !== "blocker") return;
 
-    setIsValidating(true);
-    try {
-      const result = await validateEvent(formState);
-      setConflicts(result.conflicts);
-    } finally {
-      setIsValidating(false);
-    }
-  }, 500),
+      setIsValidating(true);
+      try {
+        const result = await validateEvent(formState);
+        setConflicts(result.conflicts);
+      } finally {
+        setIsValidating(false);
+      }
+    }, 500),
   []
 );
 ```
@@ -434,15 +459,18 @@ const debouncedValidate = useMemo(
 ### 7.2. Recurrence Patterns
 
 **Daily:**
+
 - Every N days
 - End date required
 
 **Weekly:**
+
 - Every N weeks
 - Day of week (from start date)
 - End date required
 
 **Monthly:**
+
 - Every N months
 - Day of month (from start date)
 - End date required
@@ -450,6 +478,7 @@ const debouncedValidate = useMemo(
 ### 7.3. Occurrence Preview
 
 **Display:**
+
 - Next 3-5 occurrences
 - Dates and times
 - Helps user verify pattern
@@ -493,22 +522,26 @@ const debouncedValidate = useMemo(
 ### 9.1. Bottom Sheet Behavior
 
 **Swipe Down:**
+
 - Partial: Dismiss sheet
 - Full: Close and discard changes
 - Confirmation if form has changes
 
 **Swipe Up:**
+
 - Expand to full screen (if needed)
 - Better for long forms
 
 ### 10.2. Native Pickers
 
 **Mobile:**
+
 - Use native date/time pickers
 - Better UX on mobile
 - Platform-specific styling
 
 **Desktop:**
+
 - Custom calendar/time pickers
 - More control
 - Keyboard navigation
@@ -516,11 +549,13 @@ const debouncedValidate = useMemo(
 ### 10.3. Form Optimization
 
 **Progressive Disclosure:**
+
 - Recurrence collapsed by default
 - Expand when needed
 - Reduces form length
 
 **Smart Defaults:**
+
 - Current date/time
 - Current user as participant
 - Elastic as default type
@@ -540,13 +575,12 @@ const debouncedValidate = useMemo(
 <form aria-label="Create event">
   <label htmlFor="title">
     Title
-    <input
-      id="title"
-      aria-required="true"
-      aria-invalid={hasError}
-      aria-describedby="title-error"
-    />
-    {error && <span id="title-error" role="alert">{error}</span>}
+    <input id="title" aria-required="true" aria-invalid={hasError} aria-describedby="title-error" />
+    {error && (
+      <span id="title-error" role="alert">
+        {error}
+      </span>
+    )}
   </label>
 </form>
 ```
@@ -554,12 +588,14 @@ const debouncedValidate = useMemo(
 ## 12. Implementation Checklist
 
 ### Phase 1: Form Structure
+
 - [ ] Create EventForm component
 - [ ] Implement bottom sheet (mobile)
 - [ ] Implement modal (desktop)
 - [ ] Add form fields
 
 ### Phase 2: Basic Fields
+
 - [ ] Title input
 - [ ] Date picker
 - [ ] Time picker
@@ -567,11 +603,13 @@ const debouncedValidate = useMemo(
 - [ ] Participant selector
 
 ### Phase 3: Event Type
+
 - [ ] Event type selector
 - [ ] Visual distinction
 - [ ] Conflict detection trigger
 
 ### Phase 4: Recurrence
+
 - [ ] Recurrence toggle
 - [ ] Frequency selector
 - [ ] Interval input
@@ -579,36 +617,42 @@ const debouncedValidate = useMemo(
 - [ ] Occurrence preview
 
 ### Phase 5: Validation
+
 - [ ] Form validation
 - [ ] Real-time validation
 - [ ] Error display
 - [ ] Field-level errors
 
 ### Phase 6: Conflict Detection
+
 - [ ] Conflict validation API
 - [ ] Conflict warning component
 - [ ] Conflict list display
 - [ ] Adjust time option
 
 ### Phase 7: API Integration
+
 - [ ] Create event API
 - [ ] Update event API
 - [ ] Delete event API
 - [ ] Validate event API
 
 ### Phase 8: Edit Mode
+
 - [ ] Edit form mode
 - [ ] Scope selector (recurring)
 - [ ] Pre-fill form data
 - [ ] Handle exceptions
 
 ### Phase 9: Mobile Optimization
+
 - [ ] Bottom sheet gestures
 - [ ] Native pickers
 - [ ] Touch optimization
 - [ ] Performance
 
 ### Phase 10: Polish
+
 - [ ] Loading states
 - [ ] Success feedback
 - [ ] Error handling
@@ -651,4 +695,3 @@ src/
 - [ ] Mobile experience is smooth
 - [ ] Form validation works
 - [ ] Accessibility requirements met
-

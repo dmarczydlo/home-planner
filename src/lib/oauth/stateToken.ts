@@ -7,6 +7,7 @@ interface StateTokenPayload {
   userId: string;
   timestamp: number;
   nonce: string;
+  returnPath?: string;
 }
 
 function getStateSecret(): string {
@@ -49,16 +50,17 @@ function verifyToken(token: string): StateTokenPayload | null {
   }
 }
 
-export function generateStateToken(userId: string): string {
+export function generateStateToken(userId: string, returnPath?: string): string {
   const payload: StateTokenPayload = {
     userId,
     timestamp: Date.now(),
     nonce: randomBytes(NONCE_LENGTH).toString("hex"),
+    returnPath,
   };
   return signToken(payload);
 }
 
-export function validateStateToken(state: string): { userId: string; valid: boolean } {
+export function validateStateToken(state: string): { userId: string; returnPath?: string; valid: boolean } {
   const payload = verifyToken(state);
   if (!payload) {
     return { userId: "", valid: false };
@@ -74,7 +76,7 @@ export function validateStateToken(state: string): { userId: string; valid: bool
     return { userId: "", valid: false };
   }
 
-  return { userId: payload.userId, valid: true };
+  return { userId: payload.userId, returnPath: payload.returnPath, valid: true };
 }
 
 

@@ -1,17 +1,20 @@
 # Implementation Plan: Family Management
+
 ## Mobile-First Design
 
 ## 1. Overview
 
 **Purpose**: Manage family members, children, and invitations
 
-**Routes**: 
+**Routes**:
+
 - `/family/overview` - Family overview
 - `/family/members` - Members list
 - `/family/children` - Children list
 - `/family/invitations` - Invitations list
 
 **Key Features**:
+
 - View family members
 - Add/remove children
 - Invite family members
@@ -56,17 +59,20 @@
 ### 2.2. Responsive Breakpoints
 
 **Mobile (320px - 767px):**
+
 - Single column layout
 - Card-based lists
 - Bottom sheets for forms
 - Swipe actions
 
 **Tablet (768px - 1023px):**
+
 - Two-column layout (optional)
 - Larger cards
 - Modals for forms
 
 **Desktop (1024px+):**
+
 - Multi-column layout
 - Table view (optional)
 - Side panels
@@ -78,6 +84,7 @@
 **File**: `src/components/family/FamilyOverview.tsx`
 
 **Structure:**
+
 ```typescript
 <FamilyOverview>
   <FamilyHeader />
@@ -91,17 +98,20 @@
 ### 3.2. Sub-Views
 
 **MembersList** (`/family/members`)
+
 - List of family members
 - Role badges
 - Admin actions
 - Invite button
 
 **ChildrenList** (`/family/children`)
+
 - List of children
 - Add child button
 - Edit/delete actions
 
 **InvitationsList** (`/family/invitations`)
+
 - Pending invitations
 - Status badges
 - Cancel action
@@ -133,7 +143,7 @@
                └─> API: POST /api/families/{id}/invitations
                    ├─> Success: Show toast, update list
                    └─> Error: Show error message
-                   
+
 Note: "Invite Member" button is only visible to admins.
 Members do not see this option.
 ```
@@ -169,6 +179,7 @@ Members do not see this option.
 **Endpoint**: `GET /api/families/{familyId}`
 
 **Response:**
+
 ```typescript
 {
   id: string;
@@ -178,7 +189,7 @@ Members do not see this option.
     user_id: string;
     full_name: string;
     avatar_url: string;
-    role: 'admin' | 'member';
+    role: "admin" | "member";
     joined_at: string;
   }>;
   children: Array<{
@@ -194,6 +205,7 @@ Members do not see this option.
 **Endpoint**: `GET /api/families/{familyId}/members`
 
 **Response:**
+
 ```typescript
 {
   members: Array<Member>;
@@ -205,6 +217,7 @@ Members do not see this option.
 **Endpoint**: `GET /api/families/{familyId}/children`
 
 **Response:**
+
 ```typescript
 {
   children: Array<Child>;
@@ -216,12 +229,13 @@ Members do not see this option.
 **Endpoint**: `GET /api/families/{familyId}/invitations?status=pending`
 
 **Response:**
+
 ```typescript
 {
   invitations: Array<{
     id: string;
     invitee_email: string;
-    status: 'pending' | 'accepted' | 'expired';
+    status: "pending" | "accepted" | "expired";
     expires_at: string;
     created_at: string;
   }>;
@@ -233,6 +247,7 @@ Members do not see this option.
 **Endpoint**: `POST /api/families/{familyId}/invitations`
 
 **Request:**
+
 ```typescript
 {
   invitee_email: string;
@@ -244,6 +259,7 @@ Members do not see this option.
 **Endpoint**: `POST /api/families/{familyId}/children`
 
 **Request:**
+
 ```typescript
 {
   name: string;
@@ -255,6 +271,7 @@ Members do not see this option.
 ### 6.1. Member Card
 
 **Structure:**
+
 ```typescript
 <MemberCard member={member} isAdmin={isAdmin}>
   <Avatar />
@@ -268,6 +285,7 @@ Members do not see this option.
 ```
 
 **Actions (Admin only):**
+
 - Remove member
 - Change role
 - View profile
@@ -275,6 +293,7 @@ Members do not see this option.
 ### 6.2. Child Card
 
 **Structure:**
+
 ```typescript
 <ChildCard child={child} onEdit={handleEdit} onDelete={handleDelete}>
   <ChildName />
@@ -287,12 +306,14 @@ Members do not see this option.
 ```
 
 **Swipe Actions (Mobile):**
+
 - Swipe left: Edit
 - Swipe right: Delete
 
 ### 6.3. Invitation Card
 
 **Structure:**
+
 ```typescript
 <InvitationCard invitation={invitation} onCancel={handleCancel}>
   <Email />
@@ -303,6 +324,7 @@ Members do not see this option.
 ```
 
 **Status Badges:**
+
 - Pending: Yellow
 - Accepted: Green
 - Expired: Gray
@@ -310,6 +332,7 @@ Members do not see this option.
 ### 6.4. Invite Member Form
 
 **Bottom Sheet (Mobile):**
+
 ```
 ┌─────────────────────────────────┐
 │ Invite Family Member            │
@@ -328,6 +351,7 @@ Members do not see this option.
 ### 6.5. Add Child Form
 
 **Bottom Sheet (Mobile):**
+
 ```
 ┌─────────────────────────────────┐
 │ Add Child                       │
@@ -374,7 +398,7 @@ interface FamilyContextType {
 ```typescript
 export function useFamilyMembers(familyId: string) {
   return useQuery({
-    queryKey: ['family-members', familyId],
+    queryKey: ["family-members", familyId],
     queryFn: () => fetchMembers(familyId),
     staleTime: 60000, // 1 minute
   });
@@ -386,22 +410,26 @@ export function useFamilyMembers(familyId: string) {
 ### 8.1. Swipe Actions
 
 **Child Cards:**
+
 - Swipe left: Edit
 - Swipe right: Delete
 - Haptic feedback
 
 **Member Cards:**
+
 - Long press: Actions menu
 - Admin actions only
 
 ### 8.2. Bottom Sheets
 
 **Forms:**
+
 - Invite member form
 - Add child form
 - Edit child form
 
 **Behavior:**
+
 - Swipe down to dismiss
 - Confirmation if unsaved changes
 
@@ -440,7 +468,7 @@ export function useFamilyMembers(familyId: string) {
 
 ```tsx
 <div role="list" aria-label="Family members">
-  {members.map(member => (
+  {members.map((member) => (
     <div role="listitem" aria-label={`${member.full_name}, ${member.role}`}>
       <MemberCard member={member} />
     </div>
@@ -451,60 +479,70 @@ export function useFamilyMembers(familyId: string) {
 ## 11. Implementation Checklist
 
 ### Phase 1: Family Overview
+
 - [ ] Create FamilyOverview component
 - [ ] Add family header
 - [ ] Display family stats
 - [ ] Add navigation to sub-views
 
 ### Phase 2: Members List
+
 - [ ] Create MembersList component
 - [ ] Create MemberCard component
 - [ ] Add role badges
 - [ ] Implement admin actions
 
 ### Phase 3: Children List
+
 - [ ] Create ChildrenList component
 - [ ] Create ChildCard component
 - [ ] Add swipe actions (mobile)
 - [ ] Implement add/edit/delete
 
 ### Phase 4: Invitations List
+
 - [ ] Create InvitationsList component
 - [ ] Create InvitationCard component
 - [ ] Add status badges
 - [ ] Implement cancel action
 
 ### Phase 5: Invite Member
+
 - [ ] Create InviteMemberForm component
 - [ ] Add email validation
 - [ ] Connect to API
 - [ ] Handle success/error
 
 ### Phase 6: Add Child
+
 - [ ] Create AddChildForm component
 - [ ] Add name validation
 - [ ] Connect to API
 - [ ] Handle success/error
 
 ### Phase 7: State Management
+
 - [ ] Create FamilyContext
 - [ ] Integrate React Query
 - [ ] Implement optimistic updates
 - [ ] Add error handling
 
 ### Phase 8: Mobile Optimization
+
 - [ ] Optimize touch targets
 - [ ] Add swipe gestures
 - [ ] Implement bottom sheets
 - [ ] Test on devices
 
 ### Phase 9: Role Management
+
 - [ ] Add role-based UI
 - [ ] Implement permission checks
 - [ ] Add role change (admin)
 - [ ] Test permissions
 
 ### Phase 10: Polish
+
 - [ ] Add loading states
 - [ ] Improve error handling
 - [ ] Add accessibility features
@@ -550,4 +588,3 @@ src/
 - [ ] Mobile experience is smooth
 - [ ] Swipe actions work (mobile)
 - [ ] Accessibility requirements met
-
