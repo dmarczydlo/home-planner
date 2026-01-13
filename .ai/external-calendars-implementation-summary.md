@@ -170,5 +170,3 @@ The implementation includes:
 - Events are fetched for 90 days past and 365 days future
 - Token refresh is handled automatically before sync
 - All operations are logged for audit purposes
-
-

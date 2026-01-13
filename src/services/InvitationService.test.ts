@@ -268,5 +268,3 @@ describe("InvitationService", () => {
     });
   });
 });
-
-

@@ -12,7 +12,7 @@ export async function GET({ url, locals }: APIContext): Promise<Response> {
   const frontendUrl = import.meta.env.FRONTEND_URL || "http://localhost:4321";
 
   if (!code || !state || !provider) {
-    return Response.redirect(`${frontendUrl}/?status=error&error=missing_parameters`, 302);
+    return Response.redirect(`${frontendUrl}/onboarding/welcome?status=error&error=missing_parameters`, 302);
   }
 
   return handleApiRequest({
@@ -28,10 +28,10 @@ export async function GET({ url, locals }: APIContext): Promise<Response> {
 
       if (!result.success) {
         const errorCode = result.error.name.replace("Error", "").toLowerCase();
-        return Response.redirect(`${frontendUrl}/?status=error&error=${errorCode}`, 302);
+        return Response.redirect(`${frontendUrl}${result.data?.returnPath || "/onboarding/welcome"}?status=error&error=${errorCode}`, 302);
       }
 
-      return Response.redirect(`${frontendUrl}/?status=success&calendar_id=${result.data.calendarId}`, 302);
+      return Response.redirect(`${frontendUrl}${result.data.returnPath || "/onboarding/welcome"}?status=success&calendar_id=${result.data.calendarId}`, 302);
     },
     context: "GET /api/external-calendars/callback",
     requireAuth: false,

@@ -24,4 +24,3 @@ export async function DELETE({ params, locals }: APIContext): Promise<Response> 
     locals,
   });
 }
-

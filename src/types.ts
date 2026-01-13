@@ -694,6 +694,7 @@ export type ListExternalCalendarsResponseDTO = z.infer<typeof listExternalCalend
 export const connectCalendarCommandSchema = z
   .object({
     provider: calendarProviderSchema,
+    return_path: z.string().optional(),
   })
   .strict();
 

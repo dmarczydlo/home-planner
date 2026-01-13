@@ -21,4 +21,3 @@ export async function POST({ locals }: APIContext): Promise<Response> {
     locals,
   });
 }
-

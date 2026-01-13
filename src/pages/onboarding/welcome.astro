@@ -3,7 +3,6 @@ import Layout from "@/layouts/Layout.astro";
 import { OnboardingPage } from "@/components/onboarding/OnboardingPage";
 ---
 
-<Layout title="Welcome - Home Planner">
+<Layout title="Onboarding - Home Planner" showNavbar={false}>
   <OnboardingPage client:only="react" />
 </Layout>
-

@@ -69,7 +69,8 @@ export class ExternalCalendarService {
 
   async initiateOAuth(
     userId: string,
-    provider: string
+    provider: string,
+    returnPath?: string
   ): Promise<Result<CalendarAuthResponseDTO, DomainError>> {
     if (!userId || typeof userId !== "string") {
       return err(new ValidationError("User ID is required"));
@@ -85,7 +86,7 @@ export class ExternalCalendarService {
     }
 
     try {
-      const state = generateStateToken(userId);
+      const state = generateStateToken(userId, returnPath);
       const oauthProvider = createOAuthProvider(validationResult.data);
 
       const apiBaseUrl = import.meta.env.API_BASE_URL || import.meta.env.FRONTEND_URL || "http://localhost:4321";
@@ -107,7 +108,7 @@ export class ExternalCalendarService {
     code: string,
     state: string,
     provider: string
-  ): Promise<Result<{ calendarId: string }, DomainError>> {
+  ): Promise<Result<{ calendarId: string; returnPath?: string }, DomainError>> {
     if (!code || !state || !provider) {
       return err(new ValidationError("Missing required parameters: code, state, or provider"));
     }
@@ -118,6 +119,7 @@ export class ExternalCalendarService {
     }
 
     const userId = stateValidation.userId;
+    const returnPath = stateValidation.returnPath;
 
     const providerValidation = validateSchema(calendarProviderSchema, provider);
     if (!providerValidation.success) {
@@ -190,7 +192,7 @@ export class ExternalCalendarService {
           console.error("Failed to log external_calendar.connect:", error);
         });
 
-      return ok({ calendarId });
+      return ok({ calendarId, returnPath });
     } catch (error) {
       console.error("Failed to handle OAuth callback:", error);
       return err(new InternalError("Failed to complete OAuth flow"));

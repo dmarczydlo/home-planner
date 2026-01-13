@@ -1,18 +1,4 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import { OnboardingProvider } from "@/contexts/OnboardingContext";
-import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
-import { InviteMembersStep } from "@/components/onboarding/InviteMembersStep";
-import { AuthProviderWrapper } from "@/components/auth/AuthProviderWrapper";
+return Astro.redirect("/onboarding/welcome");
 ---
-
-<Layout title="Invite Members - Home Planner">
-  <AuthProviderWrapper client:load>
-    <OnboardingProvider client:load>
-      <OnboardingWizard client:load>
-        <InviteMembersStep client:load />
-      </OnboardingWizard>
-    </OnboardingProvider>
-  </AuthProviderWrapper>
-</Layout>
 

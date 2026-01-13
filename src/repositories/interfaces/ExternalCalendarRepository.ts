@@ -45,5 +45,3 @@ export interface ExternalCalendarRepository {
    */
   deleteEventsByCalendarId(calendarId: string): Promise<void>;
 }
-
-

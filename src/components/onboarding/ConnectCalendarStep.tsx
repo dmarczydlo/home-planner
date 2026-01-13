@@ -71,17 +71,14 @@ export function ConnectCalendarStep({ className }: ConnectCalendarStepProps) {
     setSelectedProvider(provider);
 
     try {
-      const response = await connectCalendar({ provider });
+      const returnPath = typeof window !== "undefined" ? window.location.pathname : undefined;
+      const response = await connectCalendar({ provider, return_path: returnPath });
 
       if (!response.authorization_url) {
         if (response.calendar) {
           addCalendar(response.calendar);
         }
         return;
-      }
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem("oauth_return_path", window.location.pathname);
       }
 
       window.location.href = response.authorization_url;
