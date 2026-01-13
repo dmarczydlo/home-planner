@@ -63,7 +63,8 @@ export function GoogleSignInButton({ onError }: GoogleSignInButtonProps): ReactN
       <Button
         onClick={() => handleSignIn(false)}
         disabled={isLoading}
-        className="w-full h-12 min-h-[48px] text-base font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        size="lg"
+        className="w-full h-14 text-base font-semibold bg-white dark:bg-card text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-primary/50 shadow-md hover:shadow-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         aria-label="Sign in with Google account"
         aria-describedby="signin-description"
         aria-busy={isLoading}
@@ -115,19 +116,19 @@ export function GoogleSignInButton({ onError }: GoogleSignInButtonProps): ReactN
       </p>
       {error && (
         <div
-          className="rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-sm text-red-800 dark:text-red-200 space-y-2"
+          className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive space-y-3 animate-in fade-in slide-in-from-top-2"
           role="alert"
           aria-live="polite"
         >
           <div>
-            <p className="font-medium">Sign in failed</p>
-            <p>{error}</p>
+            <p className="font-semibold">Sign in failed</p>
+            <p className="mt-1">{error}</p>
           </div>
           <Button
             onClick={() => handleSignIn(false)}
             variant="outline"
             size="sm"
-            className="w-full border-red-300 dark:border-red-700 text-red-800 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/40"
+            className="w-full border-destructive/30 text-destructive hover:bg-destructive/10"
           >
             Try Again
           </Button>

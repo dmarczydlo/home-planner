@@ -20,20 +20,30 @@ export function LoginView({ error }: LoginViewProps): ReactNode {
   const errorMessage = error ? ERROR_MESSAGES[error] || "An error occurred. Please try again." : null;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6 sm:p-8 md:p-10">
-      <div className="w-full max-w-[400px] md:max-w-[480px] space-y-8">
-        <Branding />
-        {errorMessage && (
-          <div
-            className="rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-sm text-red-800 dark:text-red-200"
-            role="alert"
-            aria-live="polite"
-          >
-            <p className="font-medium">{errorMessage}</p>
+    <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <div className="w-full max-w-[440px] space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="bg-card/80 backdrop-blur-sm border-2 border-border/50 rounded-2xl shadow-xl p-8 sm:p-10 space-y-8">
+          <Branding />
+          {errorMessage && (
+            <div
+              className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive animate-in fade-in slide-in-from-top-2"
+              role="alert"
+              aria-live="polite"
+            >
+              <p className="font-medium">{errorMessage}</p>
+            </div>
+          )}
+          <div className="space-y-6">
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl font-bold text-foreground">Welcome Back</h2>
+              <p className="text-muted-foreground">Sign in to manage your family calendar</p>
+            </div>
+            <GoogleSignInButton />
           </div>
-        )}
-        <GoogleSignInButton />
-        <LegalLinks />
+        </div>
+        <div className="text-center">
+          <LegalLinks />
+        </div>
       </div>
     </div>
   );

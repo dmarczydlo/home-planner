@@ -73,33 +73,36 @@ export function OnboardingWizard({
     <div
       className={cn(
         "flex min-h-screen flex-col",
-        "mx-auto w-full max-w-[700px]",
-        "px-4 py-6 sm:px-6 sm:py-8",
+        "bg-gradient-to-br from-primary/5 via-background to-accent/5",
         className
       )}
       role="region"
       aria-label="Onboarding wizard"
     >
-      <div className="mb-8">
-        <ProgressIndicator currentStep={state.currentStep} totalSteps={TOTAL_STEPS} />
-      </div>
+      <div className="flex-1 flex flex-col mx-auto w-full max-w-[800px] px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-8">
+          <ProgressIndicator currentStep={state.currentStep} totalSteps={TOTAL_STEPS} />
+        </div>
 
-      <div className="flex-1 space-y-6" role="group" aria-labelledby="step-content">
-        {children}
-      </div>
+        <div className="flex-1 bg-card/80 backdrop-blur-sm border-2 border-border/50 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10">
+          <div className="space-y-6" role="group" aria-labelledby="step-content">
+            {children}
+          </div>
+        </div>
 
-      <div className="mt-8">
-        <StepActions
-          currentStep={state.currentStep}
-          totalSteps={TOTAL_STEPS}
-          onBack={previousStep}
-          onNext={handleNext}
-          onSkip={skipStep}
-          onComplete={handleComplete}
-          isNextDisabled={isNextDisabled}
-          isNextLoading={isNextLoading}
-          showSkip={showSkip}
-        />
+        <div className="mt-8">
+          <StepActions
+            currentStep={state.currentStep}
+            totalSteps={TOTAL_STEPS}
+            onBack={previousStep}
+            onNext={handleNext}
+            onSkip={skipStep}
+            onComplete={handleComplete}
+            isNextDisabled={isNextDisabled}
+            isNextLoading={isNextLoading}
+            showSkip={showSkip}
+          />
+        </div>
       </div>
     </div>
   );

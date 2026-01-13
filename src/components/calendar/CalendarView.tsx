@@ -62,14 +62,16 @@ function CalendarContent({ familyId }: { familyId: string }) {
     <div className="flex flex-col h-full">
       <CalendarHeader />
 
-      <div className="px-4 py-3 space-y-3">
+      <div className="bg-card/50 border-b border-border/50 px-6 py-4 space-y-4">
         <ViewSwitcher />
         <DateNavigation />
       </div>
 
       <MemberFilter familyId={familyId} />
 
-      <div className="flex-1 overflow-auto">{renderView()}</div>
+      <div className="flex-1 overflow-auto bg-gradient-to-b from-background via-primary/5 to-background">
+        {renderView()}
+      </div>
 
       <FloatingActionButton onClick={handleCreateEvent} />
 
@@ -86,7 +88,7 @@ function CalendarContent({ familyId }: { familyId: string }) {
 export function CalendarView({ familyId, initialView = "week" }: CalendarViewProps) {
   return (
     <CalendarProvider initialView={initialView}>
-      <div className="h-screen flex flex-col bg-white dark:bg-gray-900">
+      <div className="h-screen flex flex-col bg-background">
         <CalendarContent familyId={familyId} />
       </div>
     </CalendarProvider>

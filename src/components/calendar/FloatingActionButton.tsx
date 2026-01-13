@@ -9,19 +9,21 @@ export function FloatingActionButton({ onClick }: FloatingActionButtonProps) {
     <button
       onClick={onClick}
       className="
-        fixed bottom-6 right-6 z-50
-        w-14 h-14 rounded-full
-        bg-blue-600 hover:bg-blue-700
-        dark:bg-blue-500 dark:hover:bg-blue-600
-        text-white shadow-lg hover:shadow-xl
+        fixed bottom-8 right-8 z-50
+        w-16 h-16 rounded-2xl
+        bg-gradient-to-br from-accent to-accent/80
+        hover:from-accent hover:to-accent/90
+        text-accent-foreground shadow-2xl hover:shadow-accent/50
         transition-all duration-200
         flex items-center justify-center
-        focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800
+        focus:outline-none focus:ring-4 focus:ring-accent/30
         active:scale-95
+        hover:scale-110
+        group
       "
       aria-label="Create new event"
     >
-      <Plus className="w-6 h-6" />
+      <Plus className="w-7 h-7 group-hover:rotate-90 transition-transform duration-200" />
     </button>
   );
 }

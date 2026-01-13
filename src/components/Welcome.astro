@@ -3,190 +3,275 @@ import { Branding } from "./auth/Branding";
 import { GoogleSignInButton } from "./auth/GoogleSignInButton";
 import { LegalLinks } from "./auth/LegalLinks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { CalendarDays, Users, Clock, CheckCircle2 } from "lucide-react";
 ---
 
-<div class="flex min-h-screen flex-col">
+<div class="flex min-h-screen flex-col bg-gradient-to-b from-primary/5 via-background to-background">
   <main class="flex-1">
-    <section class="container mx-auto px-4 py-12 sm:py-16 md:py-20">
-      <div class="mx-auto max-w-4xl text-center space-y-8">
-        <Branding client:load />
-        <div class="space-y-4">
-          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
-            Coordinate Your Family's Schedule
+    <section class="container mx-auto px-4 py-16 sm:py-20 md:py-28">
+      <div class="mx-auto max-w-5xl text-center space-y-10">
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+            <CalendarDays class="w-4 h-4" />
+            <span>Family Calendar Management</span>
+          </div>
+          <h1 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight">
+            Keep Your Family
+            <span class="block text-primary mt-2">In Perfect Sync</span>
           </h1>
-          <p class="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            A centralized calendar system that helps families manage children's activities, work commitments, and shared
-            events—all in one place.
+          <p class="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            The smart calendar that brings everyone together. Manage activities, prevent conflicts, and never miss a moment.
           </p>
         </div>
-        <div class="flex justify-center pt-4">
-          <div class="w-full max-w-[400px]">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+          <div class="w-full sm:w-auto">
             <GoogleSignInButton client:load />
           </div>
+          <p class="text-sm text-muted-foreground">Free to start • No credit card required</p>
         </div>
-      </div>
-    </section>
-
-    <section class="container mx-auto px-4 py-12 sm:py-16 bg-muted/30">
-      <div class="mx-auto max-w-4xl space-y-8">
-        <div class="text-center space-y-2">
-          <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl text-foreground">The Problem We Solve</h2>
-          <p class="text-muted-foreground max-w-2xl mx-auto">
-            Families struggle to coordinate complex schedules with multiple moving parts.
-          </p>
-        </div>
-
-        <div class="grid gap-6 sm:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Children's Activities</CardTitle>
-              <CardDescription>
-                Regular kindergarten schedules, extra lessons, and recurring activities create scheduling challenges.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Adult Work Schedules</CardTitle>
-              <CardDescription>
-                Different work hours, fixed meetings, and flexible time slots make coordination difficult.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card class="sm:col-span-2">
-            <CardHeader>
-              <CardTitle>Manual Calendar Management</CardTitle>
-              <CardDescription>
-                Paper calendars and separate digital calendars can't be easily shared, leading to conflicts and missed
-                coordination.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </div>
-    </section>
-
-    <section class="container mx-auto px-4 py-12 sm:py-16">
-      <div class="mx-auto max-w-4xl space-y-8">
-        <div class="text-center space-y-2">
-          <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl text-foreground">Key Features</h2>
-          <p class="text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to keep your family organized and synchronized.
-          </p>
-        </div>
-
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Multiple Calendar Views</CardTitle>
-              <CardDescription>
-                Day, Week, Month, and Agenda views optimized for desktop and mobile devices.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Smart Conflict Detection</CardTitle>
-              <CardDescription>
-                Blocker events prevent scheduling conflicts, while Elastic events allow flexible planning.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>External Calendar Sync</CardTitle>
-              <CardDescription>
-                Connect Google Calendar and Microsoft 365 to see all your events in one place.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Recurring Events</CardTitle>
-              <CardDescription>
-                Create daily, weekly, or monthly recurring events with automatic scheduling.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Family Member Filtering</CardTitle>
-              <CardDescription>
-                Filter calendar views to see schedules for specific family members or children.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Shared Family Calendar</CardTitle>
-              <CardDescription>
-                All family members can view and manage events together in a centralized system.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </div>
-    </section>
-
-    <section class="container mx-auto px-4 py-12 sm:py-16 bg-muted/30">
-      <div class="mx-auto max-w-4xl space-y-8">
-        <div class="text-center space-y-2">
-          <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl text-foreground">How It Works</h2>
-        </div>
-
-        <div class="grid gap-6 sm:grid-cols-3">
-          <div class="text-center space-y-2">
-            <div class="mx-auto size-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <span class="text-xl font-bold text-primary">1</span>
-            </div>
-            <h3 class="font-semibold text-lg">Sign In</h3>
-            <p class="text-sm text-muted-foreground">Use your Google account to quickly get started.</p>
+        <div class="flex flex-wrap justify-center gap-8 pt-8 text-sm text-muted-foreground">
+          <div class="flex items-center gap-2">
+            <CheckCircle2 class="w-5 h-5 text-success" />
+            <span>Real-time sync</span>
           </div>
+          <div class="flex items-center gap-2">
+            <CheckCircle2 class="w-5 h-5 text-success" />
+            <span>Conflict detection</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <CheckCircle2 class="w-5 h-5 text-success" />
+            <span>Mobile friendly</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="text-center space-y-2">
-            <div class="mx-auto size-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <span class="text-xl font-bold text-primary">2</span>
-            </div>
-            <h3 class="font-semibold text-lg">Set Up Your Family</h3>
-            <p class="text-sm text-muted-foreground">
-              Create your family, add children, and invite members through our simple onboarding wizard.
+    <section class="py-16 sm:py-24">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-6xl space-y-12">
+          <div class="text-center space-y-4">
+            <h2 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
+              Built for Modern Families
+            </h2>
+            <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+              We understand the challenges of coordinating busy family schedules
             </p>
           </div>
 
-          <div class="text-center space-y-2">
-            <div class="mx-auto size-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <span class="text-xl font-bold text-primary">3</span>
-            </div>
-            <h3 class="font-semibold text-lg">Start Planning</h3>
-            <p class="text-sm text-muted-foreground">
-              Connect your calendars, create events, and coordinate your family's schedule.
-            </p>
+          <div class="grid gap-8 md:grid-cols-3">
+            <Card class="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader class="space-y-4">
+                <div class="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <Users class="w-6 h-6 text-accent" />
+                </div>
+                <CardTitle class="text-xl">Children's Activities</CardTitle>
+                <CardDescription class="text-base leading-relaxed">
+                  Track kindergarten schedules, music lessons, sports practice, and all the activities that keep your kids busy.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader class="space-y-4">
+                <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Clock class="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle class="text-xl">Work Commitments</CardTitle>
+                <CardDescription class="text-base leading-relaxed">
+                  Sync work calendars, manage different schedules, and coordinate time off without missing important meetings.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader class="space-y-4">
+                <div class="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center">
+                  <CalendarDays class="w-6 h-6 text-success" />
+                </div>
+                <CardTitle class="text-xl">Smart Coordination</CardTitle>
+                <CardDescription class="text-base leading-relaxed">
+                  Automatic conflict detection prevents double-booking and helps find time slots that work for everyone.
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="container mx-auto px-4 py-12 sm:py-16">
-      <div class="mx-auto max-w-2xl text-center space-y-8">
-        <div class="space-y-4">
-          <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl text-foreground">Ready to Get Started?</h2>
-          <p class="text-lg text-muted-foreground">
-            Join families who are already using Home Planner to better coordinate their schedules and reduce conflicts.
-          </p>
-        </div>
-        <div class="flex justify-center">
-          <div class="w-full max-w-[400px]">
-            <GoogleSignInButton client:load />
+    <section class="py-16 sm:py-24 bg-muted/30">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-6xl space-y-12">
+          <div class="text-center space-y-4">
+            <h2 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
+              Everything You Need
+            </h2>
+            <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Powerful features designed to make family coordination effortless
+            </p>
+          </div>
+
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Card class="bg-background/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold">4</span>
+                  </div>
+                  Multiple Views
+                </CardTitle>
+                <CardDescription class="text-base">
+                  Day, Week, Month, and Agenda views optimized for any device.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="bg-background/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-accent font-bold">!</span>
+                  </div>
+                  Conflict Detection
+                </CardTitle>
+                <CardDescription class="text-base">
+                  Smart alerts prevent double-booking and scheduling conflicts.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="bg-background/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded bg-info/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-info font-bold">↻</span>
+                  </div>
+                  Calendar Sync
+                </CardTitle>
+                <CardDescription class="text-base">
+                  Import from Google Calendar and Microsoft 365 automatically.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="bg-background/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded bg-success/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-success font-bold">⟳</span>
+                  </div>
+                  Recurring Events
+                </CardTitle>
+                <CardDescription class="text-base">
+                  Set up repeating activities once and forget about them.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="bg-background/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded bg-warning/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-warning font-bold">⊲</span>
+                  </div>
+                  Smart Filtering
+                </CardTitle>
+                <CardDescription class="text-base">
+                  View schedules for specific family members or children.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card class="bg-background/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold">↔</span>
+                  </div>
+                  Real-time Sync
+                </CardTitle>
+                <CardDescription class="text-base">
+                  Everyone sees updates instantly across all devices.
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </div>
-        <LegalLinks client:load />
+      </div>
+    </section>
+
+    <section class="py-16 sm:py-24">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-6xl space-y-12">
+          <div class="text-center space-y-4">
+            <h2 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
+              Get Started in Minutes
+            </h2>
+            <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Three simple steps to a perfectly coordinated family schedule
+            </p>
+          </div>
+
+          <div class="grid gap-8 md:grid-cols-3">
+            <div class="relative">
+              <div class="text-center space-y-4">
+                <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+                  <span class="text-2xl font-bold text-primary-foreground">1</span>
+                </div>
+                <h3 class="font-bold text-xl text-foreground">Sign In</h3>
+                <p class="text-muted-foreground leading-relaxed">
+                  Quick and secure sign-in with your Google account. No lengthy forms to fill out.
+                </p>
+              </div>
+              <div class="hidden md:block absolute top-8 left-[calc(50%+2rem)] w-[calc(100%-2rem)] h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+            </div>
+
+            <div class="relative">
+              <div class="text-center space-y-4">
+                <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg">
+                  <span class="text-2xl font-bold text-accent-foreground">2</span>
+                </div>
+                <h3 class="font-bold text-xl text-foreground">Set Up Family</h3>
+                <p class="text-muted-foreground leading-relaxed">
+                  Add your children, invite family members, and customize your family profile in minutes.
+                </p>
+              </div>
+              <div class="hidden md:block absolute top-8 left-[calc(50%+2rem)] w-[calc(100%-2rem)] h-0.5 bg-gradient-to-r from-accent/50 to-transparent"></div>
+            </div>
+
+            <div class="text-center space-y-4">
+              <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-success to-success/60 flex items-center justify-center shadow-lg">
+                <span class="text-2xl font-bold text-success-foreground">3</span>
+              </div>
+              <h3 class="font-bold text-xl text-foreground">Start Coordinating</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Create events, sync external calendars, and enjoy a perfectly organized family life.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 sm:py-24 bg-gradient-to-t from-primary/5 to-background">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-3xl text-center space-y-10">
+          <div class="space-y-6">
+            <h2 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-foreground">
+              Ready to Bring Your Family Together?
+            </h2>
+            <p class="text-lg sm:text-xl text-muted-foreground leading-relaxed">
+              Join families who have transformed their scheduling chaos into seamless coordination.
+            </p>
+          </div>
+          <div class="flex flex-col items-center gap-6">
+            <div class="w-full sm:w-auto">
+              <GoogleSignInButton client:load />
+            </div>
+            <p class="text-sm text-muted-foreground">No credit card • Free forever for families</p>
+            <LegalLinks client:load />
+          </div>
+        </div>
       </div>
     </section>
   </main>
