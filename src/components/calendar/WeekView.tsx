@@ -1,37 +1,81 @@
-import { format, isSameDay, isToday } from "date-fns";
+import { useMemo } from "react";
+// @ts-ignore - CommonJS module compatibility
+import { Calendar } from "react-big-calendar";
 import { useCalendar } from "../../contexts/CalendarContext";
-import { EventCard } from "./EventCard";
+import { localizer } from "../../lib/calendar/localizer";
 import type { EventWithParticipantsDTO } from "../../types";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 interface WeekViewProps {
   events: EventWithParticipantsDTO[];
   isLoading: boolean;
+  onSelectEvent?: (event: EventWithParticipantsDTO) => void;
 }
 
-function getWeekDays(currentDate: Date): Date[] {
-  const days: Date[] = [];
-  const startOfWeek = new Date(currentDate);
-  startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+export function WeekView({ events, isLoading, onSelectEvent }: WeekViewProps) {
+  const { state, setCurrentDate, setView } = useCalendar();
 
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(startOfWeek);
-    day.setDate(startOfWeek.getDate() + i);
-    days.push(day);
-  }
+  const calendarEvents = useMemo(() => {
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      start: new Date(event.start_time),
+      end: new Date(event.end_time),
+      allDay: event.is_all_day,
+      resource: {
+        event_type: event.event_type,
+        has_conflict: event.has_conflict,
+        is_synced: event.is_synced,
+        participants: event.participants,
+      },
+    }));
+  }, [events]);
 
-  return days;
-}
+  const eventStyleGetter = (event: any) => {
+    const isBlocker = event.resource?.event_type === "blocker";
+    const hasConflict = event.resource?.has_conflict;
+    const isSynced = event.resource?.is_synced;
 
-function getEventsForDay(events: EventWithParticipantsDTO[], day: Date): EventWithParticipantsDTO[] {
-  return events.filter((event) => {
-    const eventDate = new Date(event.start_time);
-    return isSameDay(eventDate, day);
-  });
-}
+    let style: React.CSSProperties = {
+      backgroundColor: isBlocker
+        ? hasConflict
+          ? "#ef4444"
+          : "#3b82f6"
+        : "#6b7280",
+      color: "white",
+      borderRadius: "4px",
+      border: "none",
+      padding: "2px 4px",
+      fontSize: "12px",
+    };
 
-export function WeekView({ events, isLoading }: WeekViewProps) {
-  const { state } = useCalendar();
-  const weekDays = getWeekDays(state.currentDate);
+    if (isSynced) {
+      style.opacity = 0.8;
+    }
+
+    return { style };
+  };
+
+  const handleSelectSlot = ({ start }: { start: Date }) => {
+    setCurrentDate(start);
+    setView("day");
+  };
+
+  const handleSelectEvent = (event: any) => {
+    const originalEvent = events.find((e) => e.id === event.id);
+    if (originalEvent && onSelectEvent) {
+      // For recurring events, store the occurrence date in the event object
+      const eventWithOccurrence = {
+        ...originalEvent,
+        _occurrenceDate: event.start ? new Date(event.start).toISOString().split("T")[0] : undefined,
+      };
+      onSelectEvent(eventWithOccurrence);
+    }
+  };
+
+  const handleNavigate = (date: Date) => {
+    setCurrentDate(date);
+  };
 
   if (isLoading) {
     return (
@@ -42,66 +86,26 @@ export function WeekView({ events, isLoading }: WeekViewProps) {
   }
 
   return (
-    <div className="p-4">
-      {/* Week days grid */}
-      <div className="grid grid-cols-7 gap-2">
-        {weekDays.map((day) => {
-          const dayEvents = getEventsForDay(events, day);
-          const isDayToday = isToday(day);
-
-          return (
-            <div
-              key={day.toISOString()}
-              className="flex flex-col min-h-[120px]"
-            >
-              {/* Day header */}
-              <div
-                className={`
-                  text-center py-2 mb-2 rounded-lg
-                  ${
-                    isDayToday
-                      ? "bg-blue-100 dark:bg-blue-900/30"
-                      : "bg-gray-50 dark:bg-gray-800"
-                  }
-                `}
-              >
-                <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-                  {format(day, "EEE")}
-                </div>
-                <div
-                  className={`
-                    text-lg font-bold
-                    ${
-                      isDayToday
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-900 dark:text-white"
-                    }
-                  `}
-                >
-                  {format(day, "d")}
-                </div>
-              </div>
-
-              {/* Events for this day */}
-              <div className="space-y-2 flex-1">
-                {dayEvents.length === 0 ? (
-                  <div className="text-xs text-gray-400 dark:text-gray-600 text-center py-4">
-                    No events
-                  </div>
-                ) : (
-                  dayEvents.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      compact={true}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+    <div className="h-full p-4">
+      <Calendar
+        localizer={localizer}
+        events={calendarEvents}
+        startAccessor="start"
+        endAccessor="end"
+        view="week"
+        date={state.currentDate}
+        onNavigate={handleNavigate}
+        onView={() => {}}
+        eventPropGetter={eventStyleGetter}
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
+        selectable
+        popup
+        components={{
+          toolbar: () => null,
+        }}
+        className="rbc-calendar"
+      />
     </div>
   );
 }

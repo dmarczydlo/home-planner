@@ -69,7 +69,7 @@ export function Navbar() {
                   Calendar
                 </a>
                 <a
-                  href="/onboarding/welcome"
+                  href="/settings/calendars"
                   className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                 >
                   Settings

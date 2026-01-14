@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { FamilyOverview } from "../../components/family/FamilyOverview";
+import { FamilyOverviewWrapper } from "../../components/family/FamilyOverviewWrapper";
 
 export const prerender = false;
 
@@ -25,5 +25,5 @@ const primaryFamily = userProfile.families[0];
 ---
 
 <Layout title="Invitations - Home Planner">
-  <FamilyOverview client:load familyId={primaryFamily.family_id} />
+  <FamilyOverviewWrapper client:only="react" familyId={primaryFamily.family_id} />
 </Layout>

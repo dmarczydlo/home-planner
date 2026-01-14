@@ -15,6 +15,7 @@ export async function POST({ request }: APIContext): Promise<Response> {
   supabaseCookies.forEach((name) => {
     headers.append("Set-Cookie", `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax`);
   });
+  headers.append("Set-Cookie", "hp_access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax");
 
   return new Response(JSON.stringify({ success: true }), {
     status: 200,

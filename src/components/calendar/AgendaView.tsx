@@ -1,48 +1,82 @@
-import { format, isSameDay, isToday, parseISO } from "date-fns";
-import { EventCard } from "./EventCard";
+import { useMemo } from "react";
+// @ts-ignore - CommonJS module compatibility
+import { Calendar } from "react-big-calendar";
+import { useCalendar } from "../../contexts/CalendarContext";
+import { localizer } from "../../lib/calendar/localizer";
 import type { EventWithParticipantsDTO } from "../../types";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 interface AgendaViewProps {
   events: EventWithParticipantsDTO[];
   isLoading: boolean;
+  onSelectEvent?: (event: EventWithParticipantsDTO) => void;
 }
 
-interface GroupedEvents {
-  [dateKey: string]: {
-    date: Date;
-    events: EventWithParticipantsDTO[];
-  };
-}
+export function AgendaView({ events, isLoading, onSelectEvent }: AgendaViewProps) {
+  const { state, setCurrentDate, setView } = useCalendar();
 
-function groupEventsByDate(events: EventWithParticipantsDTO[]): GroupedEvents {
-  const grouped: GroupedEvents = {};
+  const calendarEvents = useMemo(() => {
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      start: new Date(event.start_time),
+      end: new Date(event.end_time),
+      allDay: event.is_all_day,
+      resource: {
+        event_type: event.event_type,
+        has_conflict: event.has_conflict,
+        is_synced: event.is_synced,
+        participants: event.participants,
+      },
+    }));
+  }, [events]);
 
-  events.forEach((event) => {
-    const eventDate = parseISO(event.start_time);
-    const dateKey = format(eventDate, "yyyy-MM-dd");
+  const eventStyleGetter = (event: any) => {
+    const isBlocker = event.resource?.event_type === "blocker";
+    const hasConflict = event.resource?.has_conflict;
+    const isSynced = event.resource?.is_synced;
 
-    if (!grouped[dateKey]) {
-      grouped[dateKey] = {
-        date: eventDate,
-        events: [],
-      };
+    let style: React.CSSProperties = {
+      backgroundColor: isBlocker
+        ? hasConflict
+          ? "#ef4444"
+          : "#3b82f6"
+        : "#6b7280",
+      color: "white",
+      borderRadius: "4px",
+      border: "none",
+      padding: "2px 4px",
+      fontSize: "12px",
+    };
+
+    if (isSynced) {
+      style.opacity = 0.8;
     }
 
-    grouped[dateKey].events.push(event);
-  });
+    return { style };
+  };
 
-  return grouped;
-}
+  const handleSelectSlot = ({ start }: { start: Date }) => {
+    setCurrentDate(start);
+    setView("day");
+  };
 
-function sortEventsByTime(events: EventWithParticipantsDTO[]): EventWithParticipantsDTO[] {
-  return [...events].sort((a, b) => {
-    const timeA = new Date(a.start_time).getTime();
-    const timeB = new Date(b.start_time).getTime();
-    return timeA - timeB;
-  });
-}
+  const handleSelectEvent = (event: any) => {
+    const originalEvent = events.find((e) => e.id === event.id);
+    if (originalEvent && onSelectEvent) {
+      // For recurring events, store the occurrence date in the event object
+      const eventWithOccurrence = {
+        ...originalEvent,
+        _occurrenceDate: event.start ? new Date(event.start).toISOString().split("T")[0] : undefined,
+      };
+      onSelectEvent(eventWithOccurrence);
+    }
+  };
 
-export function AgendaView({ events, isLoading }: AgendaViewProps) {
+  const handleNavigate = (date: Date) => {
+    setCurrentDate(date);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -51,72 +85,27 @@ export function AgendaView({ events, isLoading }: AgendaViewProps) {
     );
   }
 
-  if (events.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400 font-medium">
-            No upcoming events
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            Your calendar is clear for the next 30 days
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const sortedEvents = sortEventsByTime(events);
-  const groupedEvents = groupEventsByDate(sortedEvents);
-  const dateKeys = Object.keys(groupedEvents).sort();
-
   return (
-    <div className="p-4">
-      <div className="max-w-3xl mx-auto space-y-6">
-        {dateKeys.map((dateKey) => {
-          const group = groupedEvents[dateKey];
-          const isDayToday = isToday(group.date);
-
-          return (
-            <div key={dateKey} className="space-y-3">
-              {/* Date header */}
-              <div
-                className={`
-                  sticky top-0 z-10 py-2 px-4 -mx-4 backdrop-blur-sm
-                  ${
-                    isDayToday
-                      ? "bg-blue-50/90 dark:bg-blue-900/30"
-                      : "bg-gray-50/90 dark:bg-gray-800/90"
-                  }
-                `}
-              >
-                <h3
-                  className={`
-                    text-lg font-semibold
-                    ${
-                      isDayToday
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-900 dark:text-white"
-                    }
-                  `}
-                >
-                  {isDayToday ? "Today" : format(group.date, "EEEE, MMMM d")}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {group.events.length} {group.events.length === 1 ? "event" : "events"}
-                </p>
-              </div>
-
-              {/* Events list */}
-              <div className="space-y-3">
-                {group.events.map((event) => (
-                  <EventCard key={event.id} event={event} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+    <div className="h-full p-4">
+      <Calendar
+        localizer={localizer}
+        events={calendarEvents}
+        startAccessor="start"
+        endAccessor="end"
+        view="agenda"
+        date={state.currentDate}
+        onNavigate={handleNavigate}
+        onView={() => {}}
+        eventPropGetter={eventStyleGetter}
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
+        selectable
+        popup
+        components={{
+          toolbar: () => null,
+        }}
+        className="rbc-calendar"
+      />
     </div>
   );
 }

@@ -38,8 +38,8 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
         body: JSON.stringify({
           family_id: familyId,
           title: formData.title,
-          start_time: convertToISOTimestamp(formData.startTime, formData.isAllDay),
-          end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay),
+          start_time: convertToISOTimestamp(formData.startTime, formData.isAllDay, false),
+          end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay, true),
           is_all_day: formData.isAllDay,
           event_type: formData.eventType,
         }),
@@ -87,10 +87,15 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     return now.toISOString().slice(0, 16);
   };
 
-  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean): string => {
+  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime: boolean = false): string => {
     if (isAllDay) {
       const date = new Date(dateTimeString);
-      date.setHours(0, 0, 0, 0);
+      if (isEndTime) {
+        // For all-day events, set end time to end of day
+        date.setHours(23, 59, 59, 999);
+      } else {
+        date.setHours(0, 0, 0, 0);
+      }
       return date.toISOString();
     }
     const date = new Date(dateTimeString);
@@ -150,7 +155,21 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               type="checkbox"
               id="isAllDay"
               checked={formData.isAllDay}
-              onChange={(e) => setFormData({ ...formData, isAllDay: e.target.checked })}
+              onChange={(e) => {
+                const isAllDay = e.target.checked;
+                let newEndTime = formData.endTime;
+                
+                // If enabling all-day and start/end are same date, keep them the same
+                if (isAllDay && formData.startTime && formData.endTime) {
+                  const startDate = new Date(formData.startTime);
+                  const endDate = new Date(formData.endTime);
+                  if (startDate.toDateString() === endDate.toDateString()) {
+                    newEndTime = formData.startTime;
+                  }
+                }
+                
+                setFormData({ ...formData, isAllDay, endTime: newEndTime });
+              }}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               disabled={isSubmitting}
             />
@@ -169,7 +188,19 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               id="startTime"
               required
               value={formData.startTime || getDefaultStartTime()}
-              onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+              onChange={(e) => {
+                const newStartTime = e.target.value;
+                // If all-day and end time is same as old start time, update end time too
+                let newEndTime = formData.endTime;
+                if (formData.isAllDay && formData.startTime && formData.endTime) {
+                  const oldStartDate = new Date(formData.startTime);
+                  const oldEndDate = new Date(formData.endTime);
+                  if (oldStartDate.toDateString() === oldEndDate.toDateString()) {
+                    newEndTime = newStartTime;
+                  }
+                }
+                setFormData({ ...formData, startTime: newStartTime, endTime: newEndTime });
+              }}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={isSubmitting}
             />

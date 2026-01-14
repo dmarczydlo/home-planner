@@ -98,8 +98,22 @@ export const prerender = false;
           }
 
           const accessToken = data.session.access_token;
+          const expiresAt = data.session.expires_at;
+          const expiresIn = data.session.expires_in;
 
           window.history.replaceState(null, "", window.location.pathname);
+
+          await fetch("/api/auth/set-session", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              access_token: accessToken,
+              expires_at: expiresAt,
+              expires_in: expiresIn,
+            }),
+          });
 
           const response = await fetch("/api/users/me", {
             headers: {

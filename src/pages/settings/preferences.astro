@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { FamilyOverviewWrapper } from "../../components/family/FamilyOverviewWrapper";
+import { SettingsView } from "../../components/settings/SettingsView";
 
 export const prerender = false;
 
@@ -22,8 +22,9 @@ if (!userProfile.families || userProfile.families.length === 0) {
 }
 
 const primaryFamily = userProfile.families[0];
+const isAdmin = primaryFamily.role === "admin";
 ---
 
-<Layout title="Family - Home Planner">
-  <FamilyOverviewWrapper client:only="react" familyId={primaryFamily.family_id} />
+<Layout title="Settings - Preferences">
+  <SettingsView client:load familyId={primaryFamily.family_id} isAdmin={isAdmin} initialTab="preferences" />
 </Layout>
