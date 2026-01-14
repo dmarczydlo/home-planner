@@ -6,11 +6,13 @@ import { DateNavigation } from "./DateNavigation";
 import { MemberFilter } from "./MemberFilter";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { EventCreateModal } from "./EventCreateModal";
+import { EventEditModal } from "./EventEditModal";
 import { useCalendarEvents } from "../../hooks/useCalendarEvents";
 import { DayView } from "./DayView";
 import { WeekView } from "./WeekView";
 import { MonthView } from "./MonthView";
 import { AgendaView } from "./AgendaView";
+import type { EventWithParticipantsDTO } from "../../types";
 
 interface CalendarViewProps {
   familyId: string;
@@ -21,6 +23,8 @@ function CalendarContent({ familyId }: { familyId: string }) {
   const { state } = useCalendar();
   const { events, isLoading, error, refetch } = useCalendarEvents(familyId);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventWithParticipantsDTO | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleCreateEvent = () => {
     setIsCreateModalOpen(true);
@@ -30,8 +34,26 @@ function CalendarContent({ familyId }: { familyId: string }) {
     refetch();
   };
 
+  const handleSelectEvent = (event: EventWithParticipantsDTO) => {
+    setSelectedEvent(event);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEventUpdated = () => {
+    refetch();
+  };
+
+  const handleEventDeleted = () => {
+    refetch();
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedEvent(null);
+  };
+
   const renderView = () => {
-    const viewProps = { events, isLoading };
+    const viewProps = { events, isLoading, onSelectEvent: handleSelectEvent };
 
     switch (state.view) {
       case "day":
@@ -80,6 +102,15 @@ function CalendarContent({ familyId }: { familyId: string }) {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onEventCreated={handleEventCreated}
+      />
+
+      <EventEditModal
+        event={selectedEvent}
+        familyId={familyId}
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        onEventUpdated={handleEventUpdated}
+        onEventDeleted={handleEventDeleted}
       />
     </div>
   );

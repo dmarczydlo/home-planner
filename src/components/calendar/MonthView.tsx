@@ -1,46 +1,80 @@
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameMonth,
-  isToday,
-  isSameDay,
-} from "date-fns";
+import { useMemo } from "react";
+// @ts-ignore - CommonJS module compatibility
+import { Calendar } from "react-big-calendar";
 import { useCalendar } from "../../contexts/CalendarContext";
+import { localizer } from "../../lib/calendar/localizer";
 import type { EventWithParticipantsDTO } from "../../types";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 interface MonthViewProps {
   events: EventWithParticipantsDTO[];
   isLoading: boolean;
+  onSelectEvent?: (event: EventWithParticipantsDTO) => void;
 }
 
-function getMonthDays(currentDate: Date): Date[] {
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+export function MonthView({ events, isLoading, onSelectEvent }: MonthViewProps) {
+  const { state, setCurrentDate, setView } = useCalendar();
 
-  return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-}
+  const calendarEvents = useMemo(() => {
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      start: new Date(event.start_time),
+      end: new Date(event.end_time),
+      allDay: event.is_all_day,
+      resource: {
+        event_type: event.event_type,
+        has_conflict: event.has_conflict,
+        is_synced: event.is_synced,
+        participants: event.participants,
+      },
+    }));
+  }, [events]);
 
-function getEventsForDay(events: EventWithParticipantsDTO[], day: Date): EventWithParticipantsDTO[] {
-  return events.filter((event) => {
-    const eventDate = new Date(event.start_time);
-    return isSameDay(eventDate, day);
-  });
-}
+  const eventStyleGetter = (event: any) => {
+    const isBlocker = event.resource?.event_type === "blocker";
+    const hasConflict = event.resource?.has_conflict;
+    const isSynced = event.resource?.is_synced;
 
-export function MonthView({ events, isLoading }: MonthViewProps) {
-  const { state, setView, setCurrentDate } = useCalendar();
-  const currentDate = state.currentDate;
-  const monthDays = getMonthDays(currentDate);
+    let style: React.CSSProperties = {
+      backgroundColor: isBlocker
+        ? hasConflict
+          ? "#ef4444"
+          : "#3b82f6"
+        : "#6b7280",
+      color: "white",
+      borderRadius: "4px",
+      border: "none",
+      padding: "2px 4px",
+      fontSize: "12px",
+    };
 
-  const handleDayClick = (day: Date) => {
-    setCurrentDate(day);
+    if (isSynced) {
+      style.opacity = 0.8;
+    }
+
+    return { style };
+  };
+
+  const handleSelectSlot = ({ start }: { start: Date }) => {
+    setCurrentDate(start);
     setView("day");
+  };
+
+  const handleSelectEvent = (event: any) => {
+    const originalEvent = events.find((e) => e.id === event.id);
+    if (originalEvent && onSelectEvent) {
+      // For recurring events, store the occurrence date in the event object
+      const eventWithOccurrence = {
+        ...originalEvent,
+        _occurrenceDate: event.start ? new Date(event.start).toISOString().split("T")[0] : undefined,
+      };
+      onSelectEvent(eventWithOccurrence);
+    }
+  };
+
+  const handleNavigate = (date: Date) => {
+    setCurrentDate(date);
   };
 
   if (isLoading) {
@@ -51,86 +85,27 @@ export function MonthView({ events, isLoading }: MonthViewProps) {
     );
   }
 
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
   return (
-    <div className="p-4">
-      {/* Week day headers */}
-      <div className="grid grid-cols-7 gap-2 mb-2">
-        {weekDays.map((day) => (
-          <div key={day} className="text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase py-2">
-            {day}
-          </div>
-        ))}
-      </div>
-
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-2">
-        {monthDays.map((day) => {
-          const dayEvents = getEventsForDay(events, day);
-          const isDayToday = isToday(day);
-          const isCurrentMonth = isSameMonth(day, currentDate);
-
-          return (
-            <button
-              key={day.toISOString()}
-              onClick={() => handleDayClick(day)}
-              className={`
-                min-h-[80px] sm:min-h-[100px] p-2 rounded-lg border transition-all
-                ${
-                  isDayToday
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-                }
-                ${!isCurrentMonth ? "opacity-50" : ""}
-              `}
-            >
-              {/* Day number */}
-              <div
-                className={`
-                  text-sm font-semibold mb-1
-                  ${
-                    isDayToday
-                      ? "text-blue-600 dark:text-blue-400"
-                      : isCurrentMonth
-                        ? "text-gray-900 dark:text-white"
-                        : "text-gray-400 dark:text-gray-600"
-                  }
-                `}
-              >
-                {format(day, "d")}
-              </div>
-
-              {/* Event indicators */}
-              {dayEvents.length > 0 && (
-                <div className="space-y-1">
-                  {dayEvents.slice(0, 3).map((event) => (
-                    <div
-                      key={event.id}
-                      className={`
-                        text-xs truncate px-1 py-0.5 rounded
-                        ${
-                          event.event_type === "blocker"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                        }
-                      `}
-                      title={event.title}
-                    >
-                      {event.title}
-                    </div>
-                  ))}
-                  {dayEvents.length > 3 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      +{dayEvents.length - 3} more
-                    </div>
-                  )}
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
+    <div className="h-full p-4">
+      <Calendar
+        localizer={localizer}
+        events={calendarEvents}
+        startAccessor="start"
+        endAccessor="end"
+        view="month"
+        date={state.currentDate}
+        onNavigate={handleNavigate}
+        onView={() => {}}
+        eventPropGetter={eventStyleGetter}
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
+        selectable
+        popup
+        components={{
+          toolbar: () => null,
+        }}
+        className="rbc-calendar"
+      />
     </div>
   );
 }

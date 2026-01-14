@@ -13,6 +13,12 @@ export default defineConfig({
   server: { port: 3000 },
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ["react-big-calendar"],
+    },
+    ssr: {
+      noExternal: ["react-big-calendar"],
+    },
   },
   adapter: node({
     mode: "standalone",

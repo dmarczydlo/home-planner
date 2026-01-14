@@ -103,6 +103,91 @@ export function isEventHappening(event: EventWithParticipantsDTO): boolean {
 }
 
 /**
+ * Check if an event spans a given day (for multi-day events)
+ * An event spans a day if it starts on or before the day and ends on or after the day
+ */
+export function eventSpansDay(event: EventWithParticipantsDTO, day: Date): boolean {
+  const eventStart = new Date(event.start_time);
+  const eventEnd = new Date(event.end_time);
+  
+  // Normalize dates to start of day for comparison
+  const dayStart = new Date(day);
+  dayStart.setHours(0, 0, 0, 0);
+  
+  const dayEnd = new Date(day);
+  dayEnd.setHours(23, 59, 59, 999);
+  
+  // For all-day events, compare dates only
+  if (event.is_all_day) {
+    const eventStartDate = new Date(eventStart);
+    eventStartDate.setHours(0, 0, 0, 0);
+    
+    const eventEndDate = new Date(eventEnd);
+    eventEndDate.setHours(23, 59, 59, 999);
+    
+    return eventStartDate <= dayEnd && eventEndDate >= dayStart;
+  }
+  
+  // For timed events, check if the event overlaps with the day
+  return eventStart <= dayEnd && eventEnd >= dayStart;
+}
+
+/**
+ * Check if an event spans multiple days
+ */
+export function isMultiDayEvent(event: EventWithParticipantsDTO): boolean {
+  const start = new Date(event.start_time);
+  const end = new Date(event.end_time);
+  
+  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  
+  return startDate.getTime() !== endDate.getTime();
+}
+
+/**
+ * Get the number of days an event spans
+ */
+export function getEventDaySpan(event: EventWithParticipantsDTO): number {
+  const start = new Date(event.start_time);
+  const end = new Date(event.end_time);
+  
+  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  
+  const diffTime = endDate.getTime() - startDate.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return Math.max(1, diffDays + 1); // At least 1 day
+}
+
+/**
+ * Check if an event starts on a given day
+ */
+export function eventStartsOnDay(event: EventWithParticipantsDTO, day: Date): boolean {
+  const eventStart = new Date(event.start_time);
+  const dayStart = new Date(day);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(day);
+  dayEnd.setHours(23, 59, 59, 999);
+  
+  return eventStart >= dayStart && eventStart <= dayEnd;
+}
+
+/**
+ * Check if an event ends on a given day
+ */
+export function eventEndsOnDay(event: EventWithParticipantsDTO, day: Date): boolean {
+  const eventEnd = new Date(event.end_time);
+  const dayStart = new Date(day);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(day);
+  dayEnd.setHours(23, 59, 59, 999);
+  
+  return eventEnd >= dayStart && eventEnd <= dayEnd;
+}
+
+/**
  * Get event color based on type and status
  */
 export function getEventColor(event: EventWithParticipantsDTO): {

@@ -22,6 +22,46 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
   <body>
     {showNavbar && <Navbar client:load />}
     <slot />
+    <script>
+      (function syncAuthCookie() {
+        if (typeof window === "undefined") return;
+        
+        const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+        if (!supabaseUrl) return;
+        
+        const storageKey = `sb-${supabaseUrl.split("//")[1].split(".")[0]}-auth-token`;
+        const storedSession = localStorage.getItem(storageKey);
+        
+        if (storedSession) {
+          try {
+            const session = JSON.parse(storedSession);
+            if (session?.access_token) {
+              const existingCookie = document.cookie
+                .split(";")
+                .find((c) => c.trim().startsWith("hp_access_token="));
+              
+              if (!existingCookie) {
+                fetch("/api/auth/set-session", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    access_token: session.access_token,
+                    expires_at: session.expires_at,
+                    expires_in: session.expires_in,
+                  }),
+                }).catch(() => {
+                  // Silently fail - cookie sync is best effort
+                });
+              }
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+        }
+      })();
+    </script>
   </body>
 </html>
 
