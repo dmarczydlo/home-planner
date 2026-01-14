@@ -45,6 +45,21 @@ export function EventEditModal({
     scope: "all" as "this" | "future" | "all",
   });
 
+  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime: boolean = false): string => {
+    if (isAllDay) {
+      const date = new Date(dateTimeString);
+      if (isEndTime) {
+        // For all-day events, set end time to end of day
+        date.setHours(23, 59, 59, 999);
+      } else {
+        date.setHours(0, 0, 0, 0);
+      }
+      return date.toISOString();
+    }
+    const date = new Date(dateTimeString);
+    return date.toISOString();
+  };
+
   const validateEvent = useCallback(
     async (debounceMs: number = 500) => {
       if (
@@ -103,7 +118,6 @@ export function EventEditModal({
     },
     [familyId, formData, participants, event]
   );
-
   useEffect(() => {
     if (event) {
       const startDate = new Date(event.start_time);
@@ -167,7 +181,6 @@ export function EventEditModal({
       setConflicts([]);
     }
   }, [formData.eventType, formData.title, formData.startTime, formData.endTime, formData.isAllDay, participants, event, validateEvent]);
-
   if (!isOpen || !event) return null;
 
   const canEdit = !event.is_synced;
@@ -275,21 +288,6 @@ export function EventEditModal({
       setError(null);
       setShowDeleteConfirm(false);
     }
-  };
-
-  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime: boolean = false): string => {
-    if (isAllDay) {
-      const date = new Date(dateTimeString);
-      if (isEndTime) {
-        // For all-day events, set end time to end of day
-        date.setHours(23, 59, 59, 999);
-      } else {
-        date.setHours(0, 0, 0, 0);
-      }
-      return date.toISOString();
-    }
-    const date = new Date(dateTimeString);
-    return date.toISOString();
   };
 
   return (
