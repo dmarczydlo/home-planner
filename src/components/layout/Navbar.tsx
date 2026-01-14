@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { User as UserIcon } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { Button } from "@/components/ui/button";
 import { createSupabaseClientForAuth } from "@/lib/auth/supabaseAuth";
@@ -69,10 +70,22 @@ export function Navbar() {
                   Calendar
                 </a>
                 <a
+                  href="/family/overview"
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                >
+                  Family
+                </a>
+                <a
                   href="/settings/calendars"
                   className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                 >
                   Settings
+                </a>
+                <a
+                  href="/profile/me"
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                >
+                  Profile
                 </a>
               </div>
             )}
@@ -81,7 +94,21 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <span className="text-sm text-gray-700 dark:text-gray-300 hidden sm:inline">{user.email}</span>
+                <a
+                  href="/profile/me"
+                  className="text-sm text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hidden sm:inline"
+                >
+                  {user.email}
+                </a>
+                <a
+                  href="/profile/me"
+                  className="md:hidden"
+                  aria-label="Profile"
+                >
+                  <Button variant="ghost" size="icon">
+                    <UserIcon className="h-5 w-5" />
+                  </Button>
+                </a>
                 <LogoutButton variant="outline" size="sm" />
               </>
             ) : (

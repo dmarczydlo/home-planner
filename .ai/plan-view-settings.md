@@ -406,7 +406,55 @@ export function useExternalCalendars() {
 </div>
 ```
 
-## 11. Implementation Checklist
+## 11. Performance Optimization
+
+### 11.1. Calendar Sync
+
+- **Background Sync**: Sync calendars in background
+- **Rate Limiting**: Respect API rate limits
+- **Incremental Sync**: Only sync changed events
+- **Caching**: Sync status cached to reduce API calls
+
+### 11.2. OAuth Flow
+
+- **Lazy Loading**: OAuth SDK loaded only when needed
+- **State Management**: OAuth state cached securely
+- **Error Recovery**: Retry failed OAuth flows
+
+## 12. Testing Strategy
+
+### 12.1. Unit Tests
+
+- Calendar card rendering
+- Sync status display
+- OAuth flow state management
+- Error handling
+
+### 12.2. Integration Tests
+
+- List calendars API
+- Connect calendar API
+- Sync calendar API
+- Disconnect calendar API
+
+### 12.3. E2E Tests (Playwright)
+
+- Connect calendar flow
+- Sync calendar flow
+- Disconnect calendar flow
+- OAuth callback handling
+
+## 13. Dependencies
+
+```json
+{
+  "@tanstack/react-query": "^5.0.0",
+  "react": "^19.1.1",
+  "lucide-react": "^0.487.0"
+}
+```
+
+## 14. Implementation Checklist
 
 ### Phase 1: Settings Structure
 - [ ] Create SettingsView component
@@ -469,7 +517,7 @@ export function useExternalCalendars() {
 - [ ] Add accessibility features
 - [ ] Final testing
 
-## 12. File Structure
+## 15. File Structure
 
 ```
 src/
@@ -495,7 +543,7 @@ src/
     └── useCalendarSync.ts
 ```
 
-## 13. Success Criteria
+## 16. Success Criteria
 
 - [ ] User can connect calendars
 - [ ] User can sync calendars
