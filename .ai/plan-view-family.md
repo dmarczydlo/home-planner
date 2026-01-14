@@ -476,7 +476,54 @@ export function useFamilyMembers(familyId: string) {
 </div>
 ```
 
-## 11. Implementation Checklist
+## 11. Performance Optimization
+
+### 11.1. Family Data Loading
+
+- **Lazy Loading**: Family data loaded on demand
+- **Caching**: Family members and children cached in React Query
+- **Optimistic Updates**: Immediate UI feedback on add/remove
+
+### 11.2. List Rendering
+
+- **Virtual Scrolling**: For large member/child lists
+- **Pagination**: Load members/children in batches if needed
+- **Debounced Search**: Search debounced to reduce API calls
+
+## 12. Testing Strategy
+
+### 12.1. Unit Tests
+
+- Member card rendering
+- Child card rendering
+- Invitation status logic
+- Role-based UI logic
+
+### 12.2. Integration Tests
+
+- Get family API
+- Add child API
+- Invite member API
+- Remove member API
+
+### 12.3. E2E Tests (Playwright)
+
+- View family overview
+- Add child flow
+- Invite member flow (admin)
+- Remove member flow (admin)
+
+## 13. Dependencies
+
+```json
+{
+  "@tanstack/react-query": "^5.0.0",
+  "react": "^19.1.1",
+  "lucide-react": "^0.487.0"
+}
+```
+
+## 14. Implementation Checklist
 
 ### Phase 1: Family Overview
 
@@ -548,7 +595,7 @@ export function useFamilyMembers(familyId: string) {
 - [ ] Add accessibility features
 - [ ] Final testing
 
-## 12. File Structure
+## 15. File Structure
 
 ```
 src/
@@ -578,7 +625,7 @@ src/
     └── useFamilyChildren.ts
 ```
 
-## 13. Success Criteria
+## 16. Success Criteria
 
 - [ ] User can view family members
 - [ ] User can add children

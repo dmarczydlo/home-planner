@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Trash2 } from "lucide-react";
-import type { EventWithParticipantsDTO } from "../../types";
+import { ParticipantSelector } from "./ParticipantSelector";
+import { ConflictWarning } from "./ConflictWarning";
+import { RecurrenceEditor } from "./RecurrenceEditor";
+import { createSupabaseClientForAuth } from "@/lib/auth/supabaseAuth";
+import type { EventWithParticipantsDTO, ConflictingEventDTO } from "../../types";
 
 interface EventEditModalProps {
   event: EventWithParticipantsDTO | null;
@@ -23,6 +27,14 @@ export function EventEditModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [conflicts, setConflicts] = useState<ConflictingEventDTO[]>([]);
+  const [isValidating, setIsValidating] = useState(false);
+  const [participants, setParticipants] = useState<Array<{ id: string; type: "user" | "child" }>>([]);
+  const [recurrence, setRecurrence] = useState<{
+    frequency: "daily" | "weekly" | "monthly";
+    interval: number;
+    end_date: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -32,6 +44,65 @@ export function EventEditModal({
     eventType: "elastic" as "elastic" | "blocker",
     scope: "all" as "this" | "future" | "all",
   });
+
+  const validateEvent = useCallback(
+    async (debounceMs: number = 500) => {
+      if (
+        formData.eventType !== "blocker" ||
+        !formData.title ||
+        !formData.startTime ||
+        !formData.endTime ||
+        !event
+      ) {
+        setConflicts([]);
+        return;
+      }
+
+      setIsValidating(true);
+      setConflicts([]);
+
+      await new Promise((resolve) => setTimeout(resolve, debounceMs));
+
+      try {
+        const supabase = createSupabaseClientForAuth();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          return;
+        }
+
+        const response = await fetch("/api/events/validate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            family_id: familyId,
+            title: formData.title,
+            start_time: convertToISOTimestamp(formData.startTime, formData.isAllDay, false),
+            end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay, true),
+            is_all_day: formData.isAllDay,
+            event_type: formData.eventType,
+            participants: participants.length > 0 ? participants : undefined,
+            exclude_event_id: event.id,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setConflicts(data.conflicts || []);
+        }
+      } catch (err) {
+        console.error("Failed to validate event:", err);
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [familyId, formData, participants, event]
+  );
 
   useEffect(() => {
     if (event) {
@@ -51,15 +122,57 @@ export function EventEditModal({
         eventType: event.event_type,
         scope: isRecurring ? "all" : "all",
       });
+
+      setParticipants(
+        event.participants.map((p) => ({
+          id: p.id,
+          type: p.type,
+        }))
+      );
+
+      if (event.recurrence_pattern) {
+        const startDate = new Date(event.start_time);
+        const defaultEndDate = new Date(startDate);
+        defaultEndDate.setMonth(defaultEndDate.getMonth() + 3);
+        
+        setRecurrence({
+          frequency: event.recurrence_pattern.frequency,
+          interval: event.recurrence_pattern.interval || 1,
+          end_date: event.recurrence_pattern.end_date || defaultEndDate.toISOString().slice(0, 10),
+        });
+      } else {
+        setRecurrence(null);
+      }
+
       setError(null);
       setShowDeleteConfirm(false);
+      setConflicts([]);
     }
   }, [event]);
+
+  useEffect(() => {
+    if (
+      formData.eventType === "blocker" &&
+      formData.title &&
+      formData.startTime &&
+      formData.endTime &&
+      event
+    ) {
+      const timeoutId = setTimeout(() => {
+        validateEvent();
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setConflicts([]);
+    }
+  }, [formData.eventType, formData.title, formData.startTime, formData.endTime, formData.isAllDay, participants, event, validateEvent]);
 
   if (!isOpen || !event) return null;
 
   const canEdit = !event.is_synced;
   const canDelete = !event.is_synced;
+  const hasConflicts = conflicts.length > 0 && formData.eventType === "blocker";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,10 +197,20 @@ export function EventEditModal({
         url.searchParams.set("date", occurrenceDate);
       }
 
+      const supabase = createSupabaseClientForAuth();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error("Not authenticated");
+      }
+
       const response = await fetch(url.toString(), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           title: formData.title,
@@ -95,6 +218,14 @@ export function EventEditModal({
           end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay, true),
           is_all_day: formData.isAllDay,
           event_type: formData.eventType,
+          participants: participants.length > 0 ? participants : undefined,
+          recurrence_pattern: recurrence
+            ? {
+                frequency: recurrence.frequency,
+                interval: recurrence.interval,
+                end_date: recurrence.end_date,
+              }
+            : undefined,
         }),
       });
 
@@ -283,6 +414,24 @@ export function EventEditModal({
             </p>
           </div>
 
+          {/* Participants */}
+          {canEdit && (
+            <ParticipantSelector
+              familyId={familyId}
+              selectedParticipants={participants}
+              onSelectionChange={setParticipants}
+            />
+          )}
+
+          {/* Recurrence */}
+          {canEdit && (
+            <RecurrenceEditor
+              value={recurrence}
+              onChange={setRecurrence}
+              startDate={formData.startTime || new Date().toISOString().slice(0, 10)}
+            />
+          )}
+
           {/* Scope Selection (only for recurring events) */}
           {event?.recurrence_pattern && (
             <div>
@@ -306,6 +455,11 @@ export function EventEditModal({
                 {formData.scope === "all" && "Updates all occurrences of this recurring event"}
               </p>
             </div>
+          )}
+
+          {/* Conflict Warning */}
+          {canEdit && formData.eventType === "blocker" && (
+            <ConflictWarning conflicts={conflicts} isValidating={isValidating} />
           )}
 
           {/* Actions */}
@@ -332,7 +486,7 @@ export function EventEditModal({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !canEdit}
+              disabled={isSubmitting || !canEdit || hasConflicts}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Updating..." : "Update Event"}

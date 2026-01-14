@@ -342,14 +342,14 @@ export function useUpdateProfile() {
 
 ## 9. Accessibility
 
-### 10.1. WCAG AA Compliance
+### 9.1. WCAG AA Compliance
 
 - **Keyboard Navigation**: All actions accessible
 - **Screen Reader**: Announce profile changes
 - **Focus Management**: Focus on edited fields
 - **ARIA Labels**: Proper labels
 
-### 10.2. ARIA Implementation
+### 9.2. ARIA Implementation
 
 ```tsx
 <div role="main" aria-label="User profile">
@@ -369,7 +369,53 @@ export function useUpdateProfile() {
 </div>
 ```
 
-## 11. Implementation Checklist
+## 10. Performance Optimization
+
+### 10.1. Profile Loading
+
+- **Lazy Loading**: Profile data loaded on demand
+- **Caching**: Profile cached in React Query
+- **Optimistic Updates**: Immediate UI feedback on edit
+
+### 10.2. Avatar Optimization
+
+- **Image Optimization**: Avatar images optimized
+- **Lazy Loading**: Avatars loaded on scroll
+- **Fallback Handling**: Default avatars without network requests
+
+## 11. Testing Strategy
+
+### 11.1. Unit Tests
+
+- Profile display logic
+- Edit form validation
+- Family switching logic
+- Avatar handling
+
+### 11.2. Integration Tests
+
+- Get user profile API
+- Update profile API
+- Family memberships API
+
+### 11.3. E2E Tests (Playwright)
+
+- View profile flow
+- Edit profile flow
+- Switch family flow
+- Logout flow
+
+## 12. Dependencies
+
+```json
+{
+  "@tanstack/react-query": "^5.0.0",
+  "react": "^19.1.1",
+  "lucide-react": "^0.487.0"
+}
+```
+
+## 13. Implementation Checklist
 
 ### Phase 1: Profile Structure
 - [ ] Create ProfileView component
@@ -425,7 +471,7 @@ export function useUpdateProfile() {
 - [ ] Add accessibility features
 - [ ] Final testing
 
-## 12. File Structure
+## 14. File Structure
 
 ```
 src/
@@ -450,7 +496,7 @@ src/
         └── avatarUtils.ts
 ```
 
-## 13. Success Criteria
+## 15. Success Criteria
 
 - [ ] User can view profile
 - [ ] User can edit profile

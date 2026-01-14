@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { useCalendar } from "../../contexts/CalendarContext";
+import { ParticipantSelector } from "./ParticipantSelector";
+import { ConflictWarning } from "./ConflictWarning";
+import { RecurrenceEditor } from "./RecurrenceEditor";
+import { createSupabaseClientForAuth } from "@/lib/auth/supabaseAuth";
+import type { ConflictingEventDTO } from "@/types";
 
 interface EventCreateModalProps {
   familyId: string;
@@ -13,6 +18,14 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
   const { state } = useCalendar();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [conflicts, setConflicts] = useState<ConflictingEventDTO[]>([]);
+  const [isValidating, setIsValidating] = useState(false);
+  const [participants, setParticipants] = useState<Array<{ id: string; type: "user" | "child" }>>([]);
+  const [recurrence, setRecurrence] = useState<{
+    frequency: "daily" | "weekly" | "monthly";
+    interval: number;
+    end_date: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -22,7 +35,73 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     eventType: "elastic" as "elastic" | "blocker",
   });
 
+  const validateEvent = useCallback(
+    async (debounceMs: number = 500) => {
+      if (formData.eventType !== "blocker" || !formData.title || !formData.startTime || !formData.endTime) {
+        setConflicts([]);
+        return;
+      }
+
+      setIsValidating(true);
+      setConflicts([]);
+
+      await new Promise((resolve) => setTimeout(resolve, debounceMs));
+
+      try {
+        const supabase = createSupabaseClientForAuth();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          return;
+        }
+
+        const response = await fetch("/api/events/validate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            family_id: familyId,
+            title: formData.title,
+            start_time: convertToISOTimestamp(formData.startTime, formData.isAllDay, false),
+            end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay, true),
+            is_all_day: formData.isAllDay,
+            event_type: formData.eventType,
+            participants: participants.length > 0 ? participants : undefined,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setConflicts(data.conflicts || []);
+        }
+      } catch (err) {
+        console.error("Failed to validate event:", err);
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [familyId, formData, participants]
+  );
+
+  useEffect(() => {
+    if (formData.eventType === "blocker" && formData.title && formData.startTime && formData.endTime) {
+      const timeoutId = setTimeout(() => {
+        validateEvent();
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setConflicts([]);
+    }
+  }, [formData.eventType, formData.title, formData.startTime, formData.endTime, formData.isAllDay, participants, validateEvent]);
+
   if (!isOpen) return null;
+
+  const hasConflicts = conflicts.length > 0 && formData.eventType === "blocker";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +109,20 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     setError(null);
 
     try {
+      const supabase = createSupabaseClientForAuth();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error("Not authenticated");
+      }
+
       const response = await fetch("/api/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           family_id: familyId,
@@ -42,6 +131,14 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
           end_time: convertToISOTimestamp(formData.endTime, formData.isAllDay, true),
           is_all_day: formData.isAllDay,
           event_type: formData.eventType,
+          participants: participants.length > 0 ? participants : undefined,
+          recurrence_pattern: recurrence
+            ? {
+                frequency: recurrence.frequency,
+                interval: recurrence.interval,
+                end_date: recurrence.end_date,
+              }
+            : undefined,
         }),
       });
 
@@ -60,6 +157,9 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
         isAllDay: false,
         eventType: "elastic",
       });
+      setParticipants([]);
+      setRecurrence(null);
+      setConflicts([]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create event");
     } finally {
@@ -242,6 +342,25 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             </p>
           </div>
 
+          {/* Participants */}
+          <ParticipantSelector
+            familyId={familyId}
+            selectedParticipants={participants}
+            onSelectionChange={setParticipants}
+          />
+
+          {/* Recurrence */}
+          <RecurrenceEditor
+            value={recurrence}
+            onChange={setRecurrence}
+            startDate={formData.startTime || getDefaultStartTime()}
+          />
+
+          {/* Conflict Warning */}
+          {formData.eventType === "blocker" && (
+            <ConflictWarning conflicts={conflicts} isValidating={isValidating} />
+          )}
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
@@ -254,7 +373,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || hasConflicts}
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Creating..." : "Create Event"}

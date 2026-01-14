@@ -532,7 +532,7 @@ const debouncedValidate = useMemo(
 - Expand to full screen (if needed)
 - Better for long forms
 
-### 10.2. Native Pickers
+### 9.2. Native Pickers
 
 **Mobile:**
 
@@ -546,7 +546,7 @@ const debouncedValidate = useMemo(
 - More control
 - Keyboard navigation
 
-### 10.3. Form Optimization
+### 9.3. Form Optimization
 
 **Progressive Disclosure:**
 
@@ -559,6 +559,20 @@ const debouncedValidate = useMemo(
 - Current date/time
 - Current user as participant
 - Elastic as default type
+
+## 10. Performance Optimization
+
+### 10.1. Form Performance
+
+- **Debounced Validation**: Conflict detection debounced to avoid excessive API calls
+- **Lazy Loading**: Recurrence editor loaded only when needed
+- **Optimistic Updates**: Immediate UI feedback on save
+
+### 10.2. Bundle Size
+
+- **Code Splitting**: Event form in separate bundle
+- **Tree Shaking**: Remove unused form components
+- **Minimal Dependencies**: Only required form libraries
 
 ## 11. Accessibility
 
@@ -585,7 +599,42 @@ const debouncedValidate = useMemo(
 </form>
 ```
 
-## 12. Implementation Checklist
+## 12. Testing Strategy
+
+### 12.1. Unit Tests
+
+- Form validation logic
+- Conflict detection
+- Recurrence calculations
+- Date/time handling
+
+### 12.2. Integration Tests
+
+- Create event API
+- Update event API
+- Delete event API
+- Conflict validation API
+
+### 12.3. E2E Tests (Playwright)
+
+- Complete event creation flow
+- Edit event flow
+- Delete event flow
+- Conflict detection flow
+- Recurring event handling
+
+## 13. Dependencies
+
+```json
+{
+  "@tanstack/react-query": "^5.0.0",
+  "date-fns": "^2.30.0",
+  "react": "^19.1.1",
+  "lucide-react": "^0.487.0"
+}
+```
+
+## 14. Implementation Checklist
 
 ### Phase 1: Form Structure
 
@@ -658,7 +707,7 @@ const debouncedValidate = useMemo(
 - [ ] Error handling
 - [ ] Accessibility
 
-## 13. File Structure
+## 15. File Structure
 
 ```
 src/
@@ -684,7 +733,7 @@ src/
         └── recurrence.ts
 ```
 
-## 14. Success Criteria
+## 16. Success Criteria
 
 - [ ] User can create events
 - [ ] User can edit events
