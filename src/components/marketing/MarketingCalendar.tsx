@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createCalendar, viewWeek, viewDay, viewMonthGrid } from "@schedule-x/calendar";
+import { createCalendar, viewWeek, viewDay } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
 import "../../styles/schedule-x-custom.css";
 import { Calendar, Users, Filter, ChevronDown } from "lucide-react";
@@ -87,44 +87,50 @@ export function MarketingCalendar() {
   const [currentView, setCurrentView] = useState<"week" | "day">("week");
   const [showFilters, setShowFilters] = useState(false);
   const [calendarInstance, setCalendarInstance] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!calendarRef.current) return;
 
-    const filteredEvents = dummyEvents
-      .filter((event) => selectedMembers.includes(event.person))
-      .map((event) => ({
-        id: event.id,
-        title: event.title,
-        start: new Date(event.start).toISOString().slice(0, 16),
-        end: new Date(event.end).toISOString().slice(0, 16),
-        style: {
-          backgroundColor: event.color,
-          color: "#ffffff",
-        },
-      }));
+    setIsLoading(true);
 
-    const calendar = createCalendar({
-      locale: "en-US",
-      views: [viewWeek, viewDay, viewMonthGrid],
-      defaultView: currentView,
-      events: filteredEvents,
-      calendars: {
-        family: {
-          colorName: "family",
-          lightColors: {
-            main: "#8b5cf6",
-            container: "#f3e8ff",
-            onContainer: "#5b21b6",
+    try {
+      const filteredEvents = dummyEvents
+        .filter((event) => selectedMembers.includes(event.person))
+        .map((event) => ({
+          id: event.id,
+          title: event.title,
+          start: new Date(event.start).toISOString().slice(0, 16),
+          end: new Date(event.end).toISOString().slice(0, 16),
+          calendarId: "family",
+        }));
+
+      const calendar = createCalendar({
+        locale: "en-US",
+        views: [viewWeek, viewDay],
+        defaultView: currentView,
+        selectedDate: new Date().toISOString().slice(0, 10),
+        events: filteredEvents,
+        calendars: {
+          family: {
+            colorName: "family",
+            lightColors: {
+              main: "#8b5cf6",
+              container: "#f3e8ff",
+              onContainer: "#5b21b6",
+            },
           },
         },
-      },
-      plugins: [],
-    });
+      });
 
-    calendarRef.current.innerHTML = "";
-    calendar.render(calendarRef.current);
-    setCalendarInstance(calendar);
+      calendarRef.current.innerHTML = "";
+      calendar.render(calendarRef.current);
+      setCalendarInstance(calendar);
+      setTimeout(() => setIsLoading(false), 300);
+    } catch (error) {
+      console.error("Error rendering calendar:", error);
+      setIsLoading(false);
+    }
 
     return () => {
       if (calendarRef.current) {
@@ -273,14 +279,24 @@ export function MarketingCalendar() {
           </div>
         </div>
 
-        <div
-          ref={calendarRef}
-          className="sx-react-calendar-wrapper p-4 bg-background/50 backdrop-blur-sm min-h-[400px] animate-fade-in"
-          style={{
-            "--sx-color-primary": "139 92 246",
-            "--sx-color-on-primary": "255 255 255",
-          } as React.CSSProperties}
-        ></div>
+        <div className="relative">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-20">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-12 h-12 rounded-full border-4 border-primary/30 border-t-primary animate-spin"></div>
+                <span className="text-sm text-muted-foreground font-medium">Loading calendar...</span>
+              </div>
+            </div>
+          )}
+          <div
+            ref={calendarRef}
+            className="sx-react-calendar-wrapper p-4 bg-background/50 backdrop-blur-sm min-h-[400px] animate-fade-in"
+            style={{
+              "--sx-color-primary": "139 92 246",
+              "--sx-color-on-primary": "255 255 255",
+            } as React.CSSProperties}
+          ></div>
+        </div>
 
         <div className="absolute bottom-4 right-4 flex flex-col gap-2 animate-slide-up">
           <div className="glass-effect rounded-xl px-4 py-2 border border-primary/30 shadow-xl">
