@@ -523,7 +523,44 @@ export function useCalendarEvents(
 </div>
 ```
 
-## 11. Implementation Checklist
+## 11. Performance Optimization
+
+### 11.1. Calendar Rendering
+
+- **Virtual Scrolling**: For long event lists in agenda view
+- **Lazy Loading**: Events loaded as user navigates dates
+- **Debounced Filtering**: Filter changes debounced to reduce API calls
+- **Date Range Caching**: Cached date ranges to avoid redundant fetches
+
+### 11.2. Bundle Size
+
+- **Code Splitting**: Calendar views in separate bundles
+- **Tree Shaking**: Remove unused calendar utilities
+- **Minimal Dependencies**: Only required date/calendar libraries
+
+## 12. Testing Strategy
+
+### 12.1. Unit Tests
+
+- Date range calculations
+- Event filtering logic
+- View switching
+- Date navigation
+
+### 12.2. Integration Tests
+
+- Fetch events API
+- Filter by participants
+- Date range queries
+
+### 12.3. E2E Tests (Playwright)
+
+- View calendar in all views
+- Navigate dates
+- Filter events
+- Switch views
+
+## 13. Implementation Checklist
 
 ### Phase 1: Calendar Structure
 - [ ] Create CalendarView component
@@ -585,7 +622,7 @@ export function useCalendarEvents(
 - [ ] Add accessibility features
 - [ ] Performance optimization
 
-## 12. File Structure
+## 14. File Structure
 
 ```
 src/
@@ -621,7 +658,7 @@ src/
         └── eventUtils.ts
 ```
 
-## 13. Dependencies
+## 15. Dependencies
 
 ```json
 {
@@ -632,7 +669,7 @@ src/
 }
 ```
 
-## 14. Success Criteria
+## 16. Success Criteria
 
 - [ ] All four views work correctly
 - [ ] Events display accurately

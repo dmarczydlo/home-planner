@@ -1,0 +1,30 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { ProfileViewWrapper } from "../../components/profile/ProfileViewWrapper";
+
+export const prerender = false;
+
+if (!Astro.locals.user) {
+  return Astro.redirect("/auth/login");
+}
+
+const userService = new (await import("../../services/UserService")).UserService(Astro.locals.repositories.user);
+const result = await userService.getUserProfile(Astro.locals.user.id);
+
+if (!result.success) {
+  return Astro.redirect("/");
+}
+
+const userProfile = result.data;
+
+if (!userProfile.families || userProfile.families.length === 0) {
+  return Astro.redirect("/onboarding/welcome");
+}
+
+const primaryFamily = userProfile.families[0];
+const familyId = Astro.url.searchParams.get("family") || primaryFamily.family_id;
+---
+
+<Layout title="Family Memberships - Home Planner">
+  <ProfileViewWrapper client:only="react" currentFamilyId={familyId} />
+</Layout>
