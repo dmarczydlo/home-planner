@@ -1,6 +1,7 @@
 ---
 import { GoogleSignInButton } from "./auth/GoogleSignInButton";
 import { LegalLinks } from "./auth/LegalLinks";
+import { MarketingCalendar } from "./marketing/MarketingCalendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import {
@@ -82,8 +83,8 @@ import {
           </div>
 
           <div class="mt-20 relative">
-            <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10"></div>
-            <div class="glass-effect rounded-3xl p-2 shadow-2xl glow-effect border-2 border-primary/30 transform hover:scale-[1.02] transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none"></div>
+            <div class="glass-effect rounded-3xl p-2 shadow-2xl glow-effect border-2 border-primary/30 transform hover:scale-[1.02] transition-transform duration-500 animate-slide-up">
               <div class="rounded-2xl overflow-hidden bg-card border border-border">
                 <div class="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border">
                   <div class="flex gap-2">
@@ -96,35 +97,8 @@ import {
                   </div>
                 </div>
 
-                <div class="p-8 space-y-4 bg-gradient-to-br from-card via-muted/30 to-card">
-                  <div class="grid grid-cols-7 gap-2 animate-fade-in">
-                    {Array.from({ length: 35 }).map((_, i) => {
-                      const hasEvent = Math.random() > 0.7;
-                      const isPrimary = hasEvent && Math.random() > 0.5;
-                      return (
-                        <div class={`aspect-square rounded-lg border ${hasEvent ? (isPrimary ? 'bg-primary/20 border-primary/40' : 'bg-secondary/20 border-secondary/40') : 'bg-muted/50 border-border'} flex items-center justify-center text-xs ${hasEvent ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
-                          {(i % 7) + 1}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div class="grid gap-3 animate-scale-in" style="animation-delay: 0.2s;">
-                    {[
-                      { title: "Piano Lesson - Emma", time: "Today 4:00 PM", color: "primary" },
-                      { title: "Soccer Practice - Jack", time: "Wed 5:30 PM", color: "secondary" },
-                      { title: "Family Dinner", time: "Fri 6:00 PM", color: "accent" }
-                    ].map(event => (
-                      <div class={`flex items-center gap-4 p-4 rounded-xl bg-${event.color}/10 border border-${event.color}/30 backdrop-blur-sm`}>
-                        <div class={`w-2 h-2 rounded-full bg-${event.color} animate-pulse`}></div>
-                        <div class="flex-1">
-                          <div class="text-sm font-semibold text-foreground">{event.title}</div>
-                          <div class="text-xs text-muted-foreground">{event.time}</div>
-                        </div>
-                        <Badge variant="outline" class={`bg-${event.color}/10`}>Active</Badge>
-                      </div>
-                    ))}
-                  </div>
+                <div class="h-[500px] overflow-hidden">
+                  <MarketingCalendar client:load />
                 </div>
               </div>
             </div>

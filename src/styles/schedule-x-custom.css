@@ -1,0 +1,177 @@
+.sx-react-calendar-wrapper {
+  font-family: inherit;
+}
+
+.sx-react-calendar-wrapper .sx__calendar-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__events {
+  border-right: 1px solid oklch(0.25 0.02 280 / 0.3);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day:last-child .sx__time-grid-day__events {
+  border-right: none;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__header {
+  background: oklch(0.15 0.02 280 / 0.5);
+  border-bottom: 1px solid oklch(0.25 0.02 280);
+  padding: 12px 8px;
+  font-weight: 600;
+  color: oklch(0.98 0.005 280);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__header-date {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__header-day-name {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: oklch(0.65 0.01 280);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header {
+  background: linear-gradient(135deg, oklch(0.65 0.25 280 / 0.2), oklch(0.55 0.28 300 / 0.2));
+  border-color: oklch(0.65 0.25 280 / 0.5);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header-date {
+  color: oklch(0.65 0.25 280);
+}
+
+.sx-react-calendar-wrapper .sx__event {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.sx-react-calendar-wrapper .sx__event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  z-index: 10;
+}
+
+.sx-react-calendar-wrapper .sx__event-title {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis {
+  background: oklch(0.15 0.02 280 / 0.3);
+  border-right: 1px solid oklch(0.25 0.02 280);
+  color: oklch(0.65 0.01 280);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis-hour {
+  border-top: 1px solid oklch(0.25 0.02 280 / 0.5);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis-hour:first-child {
+  border-top: none;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-hour {
+  border-top: 1px solid oklch(0.25 0.02 280 / 0.3);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-hour:first-child {
+  border-top: none;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day {
+  border: 1px solid oklch(0.25 0.02 280 / 0.3);
+  background: oklch(0.15 0.02 280 / 0.2);
+  transition: all 0.2s ease;
+  min-height: 80px;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day:hover {
+  background: oklch(0.15 0.02 280 / 0.4);
+  border-color: oklch(0.65 0.25 280 / 0.5);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day__header {
+  padding: 8px;
+  font-weight: 600;
+  color: oklch(0.98 0.005 280);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day.sx__is-today {
+  background: linear-gradient(135deg, oklch(0.65 0.25 280 / 0.15), oklch(0.55 0.28 300 / 0.15));
+  border-color: oklch(0.65 0.25 280 / 0.6);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day.sx__is-today .sx__month-grid-day__header {
+  color: oklch(0.65 0.25 280);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day__events {
+  padding: 4px;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-event {
+  border-radius: 6px;
+  margin-bottom: 2px;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-event:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day {
+  border: 1px solid oklch(0.25 0.02 280 / 0.3);
+  background: oklch(0.15 0.02 280 / 0.2);
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day__header {
+  background: oklch(0.15 0.02 280 / 0.5);
+  padding: 12px;
+  border-bottom: 1px solid oklch(0.25 0.02 280);
+  font-weight: 700;
+  font-size: 16px;
+  color: oklch(0.98 0.005 280);
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day.sx__is-today .sx__date-grid-day__header {
+  background: linear-gradient(135deg, oklch(0.65 0.25 280 / 0.2), oklch(0.55 0.28 300 / 0.2));
+  color: oklch(0.65 0.25 280);
+  border-bottom-color: oklch(0.65 0.25 280 / 0.5);
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar-track {
+  background: oklch(0.15 0.02 280);
+  border-radius: 4px;
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar-thumb {
+  background: oklch(0.65 0.25 280 / 0.5);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.65 0.25 280 / 0.7);
+}

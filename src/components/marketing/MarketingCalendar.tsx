@@ -1,0 +1,298 @@
+import { useEffect, useRef, useState } from "react";
+import { createCalendar, viewWeek, viewDay, viewMonthGrid } from "@schedule-x/calendar";
+import "@schedule-x/theme-default/dist/index.css";
+import "../../styles/schedule-x-custom.css";
+import { Calendar, Users, Filter, ChevronDown } from "lucide-react";
+import { Badge } from "../ui/badge";
+
+const familyMembers = [
+  { id: "mom", name: "Sarah", color: "#8b5cf6", emoji: "👩" },
+  { id: "dad", name: "Mike", color: "#06b6d4", emoji: "👨" },
+  { id: "emma", name: "Emma", color: "#ec4899", emoji: "👧" },
+  { id: "jack", name: "Jack", color: "#10b981", emoji: "👦" },
+];
+
+const dummyEvents = [
+  {
+    id: "1",
+    title: "🎹 Piano Lesson",
+    start: new Date().setHours(16, 0, 0, 0),
+    end: new Date().setHours(17, 0, 0, 0),
+    person: "emma",
+    color: "#ec4899",
+  },
+  {
+    id: "2",
+    title: "⚽ Soccer Practice",
+    start: new Date(Date.now() + 86400000).setHours(17, 30, 0, 0),
+    end: new Date(Date.now() + 86400000).setHours(19, 0, 0, 0),
+    person: "jack",
+    color: "#10b981",
+  },
+  {
+    id: "3",
+    title: "👨‍💼 Team Meeting",
+    start: new Date().setHours(10, 0, 0, 0),
+    end: new Date().setHours(11, 30, 0, 0),
+    person: "dad",
+    color: "#06b6d4",
+  },
+  {
+    id: "4",
+    title: "🍽️ Family Dinner",
+    start: new Date(Date.now() + 2 * 86400000).setHours(18, 0, 0, 0),
+    end: new Date(Date.now() + 2 * 86400000).setHours(19, 30, 0, 0),
+    person: "mom",
+    color: "#8b5cf6",
+  },
+  {
+    id: "5",
+    title: "🏊 Swimming Lesson",
+    start: new Date(Date.now() + 3 * 86400000).setHours(15, 0, 0, 0),
+    end: new Date(Date.now() + 3 * 86400000).setHours(16, 0, 0, 0),
+    person: "emma",
+    color: "#ec4899",
+  },
+  {
+    id: "6",
+    title: "📚 Book Club",
+    start: new Date(Date.now() + 4 * 86400000).setHours(19, 0, 0, 0),
+    end: new Date(Date.now() + 4 * 86400000).setHours(20, 30, 0, 0),
+    person: "mom",
+    color: "#8b5cf6",
+  },
+  {
+    id: "7",
+    title: "🎨 Art Class",
+    start: new Date(Date.now() + 5 * 86400000).setHours(14, 0, 0, 0),
+    end: new Date(Date.now() + 5 * 86400000).setHours(15, 30, 0, 0),
+    person: "jack",
+    color: "#10b981",
+  },
+  {
+    id: "8",
+    title: "💼 Client Presentation",
+    start: new Date(Date.now() + 1 * 86400000).setHours(14, 0, 0, 0),
+    end: new Date(Date.now() + 1 * 86400000).setHours(16, 0, 0, 0),
+    person: "dad",
+    color: "#06b6d4",
+  },
+];
+
+export function MarketingCalendar() {
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const [selectedMembers, setSelectedMembers] = useState<string[]>(
+    familyMembers.map((m) => m.id)
+  );
+  const [currentView, setCurrentView] = useState<"week" | "day">("week");
+  const [showFilters, setShowFilters] = useState(false);
+  const [calendarInstance, setCalendarInstance] = useState<any>(null);
+
+  useEffect(() => {
+    if (!calendarRef.current) return;
+
+    const filteredEvents = dummyEvents
+      .filter((event) => selectedMembers.includes(event.person))
+      .map((event) => ({
+        id: event.id,
+        title: event.title,
+        start: new Date(event.start).toISOString().slice(0, 16),
+        end: new Date(event.end).toISOString().slice(0, 16),
+        style: {
+          backgroundColor: event.color,
+          color: "#ffffff",
+        },
+      }));
+
+    const calendar = createCalendar({
+      locale: "en-US",
+      views: [viewWeek, viewDay, viewMonthGrid],
+      defaultView: currentView,
+      events: filteredEvents,
+      calendars: {
+        family: {
+          colorName: "family",
+          lightColors: {
+            main: "#8b5cf6",
+            container: "#f3e8ff",
+            onContainer: "#5b21b6",
+          },
+        },
+      },
+      plugins: [],
+    });
+
+    calendarRef.current.innerHTML = "";
+    calendar.render(calendarRef.current);
+    setCalendarInstance(calendar);
+
+    return () => {
+      if (calendarRef.current) {
+        calendarRef.current.innerHTML = "";
+      }
+    };
+  }, [selectedMembers, currentView]);
+
+  const toggleMember = (memberId: string) => {
+    setSelectedMembers((prev) =>
+      prev.includes(memberId)
+        ? prev.filter((id) => id !== memberId)
+        : [...prev, memberId]
+    );
+  };
+
+  const toggleAllMembers = () => {
+    if (selectedMembers.length === familyMembers.length) {
+      setSelectedMembers([]);
+    } else {
+      setSelectedMembers(familyMembers.map((m) => m.id));
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+
+      <div className="relative">
+        <div className="flex items-center justify-between p-4 border-b border-border/50 bg-card/80 backdrop-blur-xl">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-lg blur-sm opacity-60 animate-pulse"></div>
+              <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">Family Calendar</h3>
+              <p className="text-xs text-muted-foreground">This week's schedule</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentView("day")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-300 ${
+                currentView === "day"
+                  ? "bg-primary text-white shadow-lg scale-105"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Day
+            </button>
+            <button
+              onClick={() => setCurrentView("week")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-300 ${
+                currentView === "week"
+                  ? "bg-primary text-white shadow-lg scale-105"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Week
+            </button>
+          </div>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full flex items-center justify-between px-4 py-3 border-b border-border/50 bg-card/60 backdrop-blur-sm hover:bg-card/80 transition-all duration-300"
+          >
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-foreground">
+                Filter Members
+              </span>
+              {selectedMembers.length > 0 && selectedMembers.length < familyMembers.length && (
+                <Badge variant="secondary" className="text-xs animate-scale-in">
+                  {selectedMembers.length} of {familyMembers.length}
+                </Badge>
+              )}
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${
+                showFilters ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          <div
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              showFilters ? "max-h-64" : "max-h-0"
+            }`}
+          >
+            <div className="p-4 space-y-3 bg-card/40 backdrop-blur-sm border-b border-border/50">
+              <button
+                onClick={toggleAllMembers}
+                className="w-full text-left px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200 text-xs font-medium text-foreground"
+              >
+                {selectedMembers.length === familyMembers.length
+                  ? "Deselect All"
+                  : "Select All"}
+              </button>
+
+              <div className="grid grid-cols-2 gap-2">
+                {familyMembers.map((member) => {
+                  const isSelected = selectedMembers.includes(member.id);
+                  return (
+                    <button
+                      key={member.id}
+                      onClick={() => toggleMember(member.id)}
+                      className={`relative overflow-hidden group px-3 py-2.5 rounded-xl border-2 transition-all duration-300 ${
+                        isSelected
+                          ? "border-primary/50 bg-primary/10 shadow-lg scale-105"
+                          : "border-border/50 bg-card/50 hover:border-primary/30"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg transition-all duration-300 ${
+                            isSelected
+                              ? "scale-110"
+                              : "scale-100 group-hover:scale-110"
+                          }`}
+                          style={{ backgroundColor: member.color + "20" }}
+                        >
+                          {member.emoji}
+                        </div>
+                        <span
+                          className={`text-xs font-semibold transition-colors duration-300 ${
+                            isSelected ? "text-foreground" : "text-muted-foreground"
+                          }`}
+                        >
+                          {member.name}
+                        </span>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 animate-shimmer"></div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          ref={calendarRef}
+          className="sx-react-calendar-wrapper p-4 bg-background/50 backdrop-blur-sm min-h-[400px] animate-fade-in"
+          style={{
+            "--sx-color-primary": "139 92 246",
+            "--sx-color-on-primary": "255 255 255",
+          } as React.CSSProperties}
+        ></div>
+
+        <div className="absolute bottom-4 right-4 flex flex-col gap-2 animate-slide-up">
+          <div className="glass-effect rounded-xl px-4 py-2 border border-primary/30 shadow-xl">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              <span className="text-xs font-semibold text-foreground">
+                {dummyEvents.filter((e) => selectedMembers.includes(e.person)).length} Events
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
