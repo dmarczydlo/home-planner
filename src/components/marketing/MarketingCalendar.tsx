@@ -12,68 +12,75 @@ const familyMembers = [
   { id: "jack", name: "Jack", color: "#10b981", emoji: "👦" },
 ];
 
+const getDateWithTime = (daysOffset: number, hours: number, minutes: number = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() + daysOffset);
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+};
+
 const dummyEvents = [
   {
     id: "1",
     title: "🎹 Piano Lesson",
-    start: new Date().setHours(16, 0, 0, 0),
-    end: new Date().setHours(17, 0, 0, 0),
+    start: getDateWithTime(0, 16, 0),
+    end: getDateWithTime(0, 17, 0),
     person: "emma",
     color: "#ec4899",
   },
   {
     id: "2",
     title: "⚽ Soccer Practice",
-    start: new Date(Date.now() + 86400000).setHours(17, 30, 0, 0),
-    end: new Date(Date.now() + 86400000).setHours(19, 0, 0, 0),
+    start: getDateWithTime(1, 17, 30),
+    end: getDateWithTime(1, 19, 0),
     person: "jack",
     color: "#10b981",
   },
   {
     id: "3",
     title: "👨‍💼 Team Meeting",
-    start: new Date().setHours(10, 0, 0, 0),
-    end: new Date().setHours(11, 30, 0, 0),
+    start: getDateWithTime(0, 10, 0),
+    end: getDateWithTime(0, 11, 30),
     person: "dad",
     color: "#06b6d4",
   },
   {
     id: "4",
     title: "🍽️ Family Dinner",
-    start: new Date(Date.now() + 2 * 86400000).setHours(18, 0, 0, 0),
-    end: new Date(Date.now() + 2 * 86400000).setHours(19, 30, 0, 0),
+    start: getDateWithTime(2, 18, 0),
+    end: getDateWithTime(2, 19, 30),
     person: "mom",
     color: "#8b5cf6",
   },
   {
     id: "5",
     title: "🏊 Swimming Lesson",
-    start: new Date(Date.now() + 3 * 86400000).setHours(15, 0, 0, 0),
-    end: new Date(Date.now() + 3 * 86400000).setHours(16, 0, 0, 0),
+    start: getDateWithTime(3, 15, 0),
+    end: getDateWithTime(3, 16, 0),
     person: "emma",
     color: "#ec4899",
   },
   {
     id: "6",
     title: "📚 Book Club",
-    start: new Date(Date.now() + 4 * 86400000).setHours(19, 0, 0, 0),
-    end: new Date(Date.now() + 4 * 86400000).setHours(20, 30, 0, 0),
+    start: getDateWithTime(4, 19, 0),
+    end: getDateWithTime(4, 20, 30),
     person: "mom",
     color: "#8b5cf6",
   },
   {
     id: "7",
     title: "🎨 Art Class",
-    start: new Date(Date.now() + 5 * 86400000).setHours(14, 0, 0, 0),
-    end: new Date(Date.now() + 5 * 86400000).setHours(15, 30, 0, 0),
+    start: getDateWithTime(5, 14, 0),
+    end: getDateWithTime(5, 15, 30),
     person: "jack",
     color: "#10b981",
   },
   {
     id: "8",
     title: "💼 Client Presentation",
-    start: new Date(Date.now() + 1 * 86400000).setHours(14, 0, 0, 0),
-    end: new Date(Date.now() + 1 * 86400000).setHours(16, 0, 0, 0),
+    start: getDateWithTime(1, 14, 0),
+    end: getDateWithTime(1, 16, 0),
     person: "dad",
     color: "#06b6d4",
   },
@@ -97,13 +104,35 @@ export function MarketingCalendar() {
     try {
       const filteredEvents = dummyEvents
         .filter((event) => selectedMembers.includes(event.person))
-        .map((event) => ({
-          id: event.id,
-          title: event.title,
-          start: new Date(event.start).toISOString().slice(0, 16),
-          end: new Date(event.end).toISOString().slice(0, 16),
-          calendarId: "family",
-        }));
+        .map((event) => {
+          const member = familyMembers.find((m) => m.id === event.person);
+          return {
+            id: event.id,
+            title: event.title,
+            start: event.start.toISOString().slice(0, 16),
+            end: event.end.toISOString().slice(0, 16),
+            calendarId: event.person,
+          };
+        });
+
+      console.log("Filtered events:", filteredEvents);
+
+      const calendarsConfig = familyMembers.reduce((acc, member) => {
+        acc[member.id] = {
+          colorName: member.name,
+          lightColors: {
+            main: member.color,
+            container: member.color,
+            onContainer: "#ffffff",
+          },
+          darkColors: {
+            main: member.color,
+            container: member.color,
+            onContainer: "#ffffff",
+          },
+        };
+        return acc;
+      }, {} as Record<string, any>);
 
       const calendar = createCalendar({
         locale: "en-US",
@@ -111,16 +140,7 @@ export function MarketingCalendar() {
         defaultView: currentView,
         selectedDate: new Date().toISOString().slice(0, 10),
         events: filteredEvents,
-        calendars: {
-          family: {
-            colorName: "family",
-            lightColors: {
-              main: "#8b5cf6",
-              container: "#f3e8ff",
-              onContainer: "#5b21b6",
-            },
-          },
-        },
+        calendars: calendarsConfig,
       });
 
       calendarRef.current.innerHTML = "";
