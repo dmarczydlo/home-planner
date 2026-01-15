@@ -191,7 +191,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     if (isAllDay) {
       const date = new Date(dateTimeString);
       if (isEndTime) {
-        // For all-day events, set end time to end of day
         date.setHours(23, 59, 59, 999);
       } else {
         date.setHours(0, 0, 0, 0);
@@ -211,7 +210,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
         className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-primary/20">
           <h2 className="text-xl font-semibold text-foreground">Create New Event</h2>
           <button
@@ -224,7 +222,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
             <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
@@ -232,7 +229,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             </div>
           )}
 
-          {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
               Event Title *
@@ -249,7 +245,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             />
           </div>
 
-          {/* All Day Toggle */}
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -259,7 +254,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
                 const isAllDay = e.target.checked;
                 let newEndTime = formData.endTime;
                 
-                // If enabling all-day and start/end are same date, keep them the same
                 if (isAllDay && formData.startTime && formData.endTime) {
                   const startDate = new Date(formData.startTime);
                   const endDate = new Date(formData.endTime);
@@ -278,7 +272,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             </label>
           </div>
 
-          {/* Start Time */}
           <div>
             <label htmlFor="startTime" className="block text-sm font-medium text-foreground mb-1">
               Start Time *
@@ -290,7 +283,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               value={formData.startTime || getDefaultStartTime()}
               onChange={(e) => {
                 const newStartTime = e.target.value;
-                // If all-day and end time is same as old start time, update end time too
                 let newEndTime = formData.endTime;
                 if (formData.isAllDay && formData.startTime && formData.endTime) {
                   const oldStartDate = new Date(formData.startTime);
@@ -306,7 +298,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             />
           </div>
 
-          {/* End Time */}
           <div>
             <label htmlFor="endTime" className="block text-sm font-medium text-foreground mb-1">
               End Time *
@@ -322,7 +313,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             />
           </div>
 
-          {/* Event Type */}
           <div>
             <label htmlFor="eventType" className="block text-sm font-medium text-foreground mb-1">
               Event Type
@@ -342,26 +332,22 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             </p>
           </div>
 
-          {/* Participants */}
           <ParticipantSelector
             familyId={familyId}
             selectedParticipants={participants}
             onSelectionChange={setParticipants}
           />
 
-          {/* Recurrence */}
           <RecurrenceEditor
             value={recurrence}
             onChange={setRecurrence}
             startDate={formData.startTime || getDefaultStartTime()}
           />
 
-          {/* Conflict Warning */}
           {formData.eventType === "blocker" && (
             <ConflictWarning conflicts={conflicts} isValidating={isValidating} />
           )}
 
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"

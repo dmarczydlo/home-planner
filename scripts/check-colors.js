@@ -1,37 +1,27 @@
 #!/usr/bin/env node
 
-/**
- * Script to check for hardcoded color usage that should use theme colors instead
- * Run with: node scripts/check-colors.js
- */
-
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 
 const FORBIDDEN_PATTERNS = [
-  // Gray colors
   /text-gray-\d+/g,
   /bg-gray-\d+/g,
   /border-gray-\d+/g,
-  // White/black hardcoded
   /bg-white\b/g,
   /bg-black\b/g,
   /text-white\b/g,
   /text-black\b/g,
-  // Dark mode color variants (theme handles this)
   /dark:text-gray-\d+/g,
   /dark:bg-gray-\d+/g,
   /dark:border-gray-\d+/g,
   /dark:bg-white/g,
   /dark:text-white/g,
-  // Hardcoded hex/rgb (basic check)
   /#[0-9a-fA-F]{3,6}\b/g,
   /rgb\(/g,
   /rgba\(/g,
 ];
 
 const ALLOWED_PATTERNS = [
-  // These are OK - they're theme colors
   /text-foreground/g,
   /text-muted-foreground/g,
   /bg-background/g,
@@ -40,7 +30,6 @@ const ALLOWED_PATTERNS = [
   /border-primary/g,
   /text-primary/g,
   /bg-primary/g,
-  // Utility classes are OK
   /glass-effect/g,
   /form-input/g,
   /card-modern/g,
@@ -69,7 +58,6 @@ function checkFile(filePath) {
       FORBIDDEN_PATTERNS.forEach(pattern => {
         const matches = line.match(pattern);
         if (matches) {
-          // Check if it's in an allowed context (comments, strings that are not className)
           const isInComment = line.trim().startsWith('//') || line.includes('/*');
           const isInAllowedContext = ALLOWED_PATTERNS.some(allowed => line.includes(allowed));
           
@@ -111,14 +99,12 @@ function scanDirectory(dir, allIssues = []) {
         allIssues.push(...issues);
       }
     } catch (error) {
-      // Skip files we can't read
     }
   }
   
   return allIssues;
 }
 
-// Main execution
 const srcDir = join(process.cwd(), 'src');
 console.log('🔍 Scanning for hardcoded colors...\n');
 

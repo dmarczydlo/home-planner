@@ -142,7 +142,6 @@
     scroll-behavior: smooth;
   }
 
-  /* Ensure inputs use theme colors by default */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -155,7 +154,6 @@
     @apply bg-card text-foreground border-primary/20 focus:ring-primary focus:border-primary/50;
   }
 
-  /* Ensure buttons use theme colors */
   button {
     @apply text-foreground;
   }
@@ -215,7 +213,6 @@
     box-shadow: 0 0 40px rgba(139, 92, 246, 0.3), 0 0 80px rgba(139, 92, 246, 0.1);
   }
 
-  /* Modal/Dialog utilities */
   .modal-container {
     background: oklch(0.12 0.02 280 / 0.4);
     backdrop-filter: blur(24px);
@@ -241,7 +238,6 @@
     @apply p-6 space-y-4;
   }
 
-  /* Form utilities */
   .form-label {
     @apply block text-sm font-medium text-foreground mb-1;
   }
@@ -258,7 +254,6 @@
     @apply text-xs text-muted-foreground mt-1;
   }
 
-  /* Card utilities */
   .card-modern {
     background: oklch(0.12 0.02 280 / 0.4);
     backdrop-filter: blur(24px);
@@ -284,7 +279,6 @@
     @apply text-sm text-muted-foreground mt-1;
   }
 
-  /* Button utilities */
   .btn-primary {
     @apply bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg transition-opacity;
   }
@@ -297,7 +291,6 @@
     @apply bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg transition-colors;
   }
 
-  /* Alert/Message utilities */
   .alert-error {
     @apply p-3 bg-destructive/10 border border-destructive/30 rounded-lg;
   }
@@ -322,7 +315,6 @@
     @apply text-sm text-success;
   }
 
-  /* Text utilities - enforce theme colors */
   .text-primary-label {
     @apply text-foreground font-medium;
   }
@@ -339,7 +331,6 @@
     @apply text-muted-foreground;
   }
 
-  /* Custom scrollbar for modals and scrollable containers */
   .scrollbar-modern {
     scrollbar-width: thin;
     scrollbar-color: oklch(0.65 0.25 280 / 0.3) transparent;

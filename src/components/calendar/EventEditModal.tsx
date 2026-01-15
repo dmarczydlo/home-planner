@@ -49,7 +49,6 @@ export function EventEditModal({
     if (isAllDay) {
       const date = new Date(dateTimeString);
       if (isEndTime) {
-        // For all-day events, set end time to end of day
         date.setHours(23, 59, 59, 999);
       } else {
         date.setHours(0, 0, 0, 0);
@@ -190,7 +189,6 @@ export function EventEditModal({
     try {
       const isRecurring = !!event.recurrence_pattern;
       const scope = isRecurring ? formData.scope : "all";
-      // Use the occurrence date from the clicked event, or fall back to event start_time
       const occurrenceDate =
         scope === "this" && isRecurring
           ? (event as any)._occurrenceDate || new Date(event.start_time).toISOString().split("T")[0]
@@ -293,7 +291,6 @@ export function EventEditModal({
         className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-primary/20">
           <h2 className="text-xl font-semibold text-foreground">Edit Event</h2>
           <button
@@ -306,7 +303,6 @@ export function EventEditModal({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {!canEdit && (
             <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
@@ -322,7 +318,6 @@ export function EventEditModal({
             </div>
           )}
 
-          {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
               Event Title *
@@ -339,7 +334,6 @@ export function EventEditModal({
             />
           </div>
 
-          {/* All Day Toggle */}
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -354,7 +348,6 @@ export function EventEditModal({
             </label>
           </div>
 
-          {/* Start Time */}
           <div>
             <label htmlFor="startTime" className="block text-sm font-medium text-foreground mb-1">
               Start Time *
@@ -370,7 +363,6 @@ export function EventEditModal({
             />
           </div>
 
-          {/* End Time */}
           <div>
             <label htmlFor="endTime" className="block text-sm font-medium text-foreground mb-1">
               End Time *
@@ -386,7 +378,6 @@ export function EventEditModal({
             />
           </div>
 
-          {/* Event Type */}
           <div>
             <label htmlFor="eventType" className="block text-sm font-medium text-foreground mb-1">
               Event Type
@@ -406,7 +397,6 @@ export function EventEditModal({
             </p>
           </div>
 
-          {/* Participants */}
           {canEdit && (
             <ParticipantSelector
               familyId={familyId}
@@ -415,7 +405,6 @@ export function EventEditModal({
             />
           )}
 
-          {/* Recurrence */}
           {canEdit && (
             <RecurrenceEditor
               value={recurrence}
@@ -424,7 +413,6 @@ export function EventEditModal({
             />
           )}
 
-          {/* Scope Selection (only for recurring events) */}
           {event?.recurrence_pattern && (
             <div>
               <label htmlFor="scope" className="block text-sm font-medium text-foreground mb-1">
@@ -449,12 +437,10 @@ export function EventEditModal({
             </div>
           )}
 
-          {/* Conflict Warning */}
           {canEdit && formData.eventType === "blocker" && (
             <ConflictWarning conflicts={conflicts} isValidating={isValidating} />
           )}
 
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             {canDelete && (
               <button
@@ -485,7 +471,6 @@ export function EventEditModal({
             </button>
           </div>
 
-          {/* Delete Confirmation */}
           {showDeleteConfirm && (
             <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
               <p className="text-sm font-medium text-destructive mb-3">Are you sure you want to delete this event?</p>
