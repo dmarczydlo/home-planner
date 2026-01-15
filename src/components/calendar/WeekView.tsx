@@ -4,7 +4,7 @@ import { Calendar } from "react-big-calendar";
 import { useCalendar } from "../../contexts/CalendarContext";
 import { localizer } from "../../lib/calendar/localizer";
 import type { EventWithParticipantsDTO } from "../../types";
-import "../../styles/calendar.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 interface WeekViewProps {
   events: EventWithParticipantsDTO[];
@@ -36,25 +36,22 @@ export function WeekView({ events, isLoading, onSelectEvent }: WeekViewProps) {
     const hasConflict = event.resource?.has_conflict;
     const isSynced = event.resource?.is_synced;
 
-    let backgroundColor = "oklch(0.65 0.25 280)";
-    let color = "oklch(1 0 0)";
-
-    if (isBlocker) {
-      if (hasConflict) {
-        backgroundColor = "oklch(0.55 0.22 25)";
-      } else {
-        backgroundColor = "oklch(0.60 0.16 220)";
-      }
-    } else {
-      backgroundColor = "oklch(0.55 0.28 300)";
-    }
-
     let style: React.CSSProperties = {
-      backgroundColor,
-      color,
+      backgroundColor: isBlocker
+        ? hasConflict
+          ? "#ef4444"
+          : "#3b82f6"
+        : "#6b7280",
+      color: "white",
+      borderRadius: "4px",
       border: "none",
-      opacity: isSynced ? 0.75 : 1,
+      padding: "2px 4px",
+      fontSize: "12px",
     };
+
+    if (isSynced) {
+      style.opacity = 0.8;
+    }
 
     return { style };
   };
@@ -89,7 +86,7 @@ export function WeekView({ events, isLoading, onSelectEvent }: WeekViewProps) {
   }
 
   return (
-    <div className="h-full p-6">
+    <div className="h-full p-4">
       <Calendar
         localizer={localizer}
         events={calendarEvents}
@@ -104,10 +101,6 @@ export function WeekView({ events, isLoading, onSelectEvent }: WeekViewProps) {
         onSelectEvent={handleSelectEvent}
         selectable
         popup
-        step={30}
-        timeslots={2}
-        min={new Date(2024, 0, 1, 6, 0)}
-        max={new Date(2024, 0, 1, 23, 0)}
         components={{
           toolbar: () => null,
         }}
