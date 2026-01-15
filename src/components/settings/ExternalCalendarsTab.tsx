@@ -43,7 +43,7 @@ export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -52,8 +52,8 @@ export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">External Calendars</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <h2 className="text-lg font-semibold text-foreground">External Calendars</h2>
+          <p className="text-sm text-muted-foreground mt-1">
             Connect and sync your external calendars
           </p>
         </div>
@@ -89,12 +89,12 @@ export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
 
       <div className="space-y-4">
         {calendars.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
-              <Plus className="h-6 w-6 text-gray-500" />
+          <div className="text-center py-12 border-2 border-dashed border-primary/30 rounded-lg glass-effect">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 mb-4">
+              <Plus className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No calendars connected</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            <h3 className="text-lg font-semibold text-foreground mb-2">No calendars connected</h3>
+            <p className="text-sm text-muted-foreground mb-6">
               Connect your Google Calendar or Microsoft 365 to sync events
             </p>
             <Button onClick={() => setShowConnectFlow(true)}>

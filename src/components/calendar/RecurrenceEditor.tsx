@@ -60,7 +60,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-foreground">
           Recurrence
         </label>
         <Button
@@ -80,15 +80,15 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
       </div>
 
       {!isExpanded && value && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-muted-foreground">
           Repeats {value.frequency} every {value.interval} {value.frequency === "daily" ? "day(s)" : value.frequency === "weekly" ? "week(s)" : "month(s)"}
         </p>
       )}
 
       {isExpanded && (
-        <div className="space-y-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+        <div className="space-y-4 p-4 border border-primary/20 rounded-lg glass-effect">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Frequency
             </label>
             <div className="flex gap-2">
@@ -99,8 +99,8 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
                   onClick={() => handleFrequencyChange(freq)}
                   className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     value?.frequency === freq
-                      ? "bg-blue-600 text-white"
-                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                      ? "bg-gradient-to-r from-primary to-secondary text-white"
+                      : "bg-card text-foreground hover:bg-card/60 border border-primary/20"
                   }`}
                 >
                   {freq.charAt(0).toUpperCase() + freq.slice(1)}
@@ -110,7 +110,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
           </div>
 
           <div>
-            <label htmlFor="interval" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="interval" className="block text-sm font-medium text-foreground mb-1">
               Repeat every
             </label>
             <div className="flex items-center gap-2">
@@ -121,9 +121,9 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
                 max="365"
                 value={value?.interval || 1}
                 onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10) || 1)}
-                className="w-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-20 px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {value?.frequency === "daily"
                   ? "day(s)"
                   : value?.frequency === "weekly"
@@ -134,7 +134,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
           </div>
 
           <div>
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="endDate" className="block text-sm font-medium text-foreground mb-1">
               End date *
             </label>
             <input
@@ -144,7 +144,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
               value={value?.end_date || getDefaultEndDate()}
               onChange={(e) => handleEndDateChange(e.target.value)}
               min={startDate.slice(0, 10)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
             />
           </div>
 

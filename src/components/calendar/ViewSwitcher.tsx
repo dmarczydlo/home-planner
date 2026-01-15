@@ -22,23 +22,23 @@ export function ViewSwitcher() {
   };
 
   return (
-    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
       {viewOptions.map((option) => (
         <button
           key={option.value}
           onClick={() => handleViewChange(option.value)}
-          className={`
-            flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors
-            ${
-              state.view === option.value
-                ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-            }
-          `}
+          className={`relative flex-1 sm:flex-none px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-300 ${
+            state.view === option.value
+              ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-105"
+              : "glass-effect text-muted-foreground hover:text-foreground hover:bg-card/60 border border-border/50"
+          }`}
           aria-pressed={state.view === option.value}
           role="tab"
         >
-          {option.label}
+          {state.view === option.value && (
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-white/10 to-primary/0 animate-shimmer rounded-xl"></div>
+          )}
+          <span className="relative">{option.label}</span>
         </button>
       ))}
     </div>

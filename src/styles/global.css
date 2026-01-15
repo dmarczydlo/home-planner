@@ -141,6 +141,24 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Ensure inputs use theme colors by default */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  textarea,
+  select {
+    @apply bg-card text-foreground border-primary/20 focus:ring-primary focus:border-primary/50;
+  }
+
+  /* Ensure buttons use theme colors */
+  button {
+    @apply text-foreground;
+  }
 }
 
 @layer utilities {
@@ -182,11 +200,171 @@
   }
 
   .glass-effect {
-    @apply bg-background/40 backdrop-blur-2xl border border-primary/20;
+    background: oklch(0.12 0.02 280 / 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid oklch(0.65 0.25 280 / 0.2);
+  }
+
+  .dark .glass-effect {
+    background: oklch(0.15 0.01 240 / 0.4);
+    border-color: oklch(0.65 0.15 220 / 0.2);
   }
 
   .glow-effect {
     box-shadow: 0 0 40px rgba(139, 92, 246, 0.3), 0 0 80px rgba(139, 92, 246, 0.1);
+  }
+
+  /* Modal/Dialog utilities */
+  .modal-container {
+    background: oklch(0.12 0.02 280 / 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid oklch(0.65 0.25 280 / 0.2);
+    @apply rounded-lg shadow-xl;
+  }
+
+  .dark .modal-container {
+    background: oklch(0.15 0.01 240 / 0.4);
+    border-color: oklch(0.65 0.15 220 / 0.2);
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between p-6 border-b border-primary/20;
+  }
+
+  .modal-title {
+    @apply text-xl font-semibold text-foreground;
+  }
+
+  .modal-content {
+    @apply p-6 space-y-4;
+  }
+
+  /* Form utilities */
+  .form-label {
+    @apply block text-sm font-medium text-foreground mb-1;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50;
+  }
+
+  .form-select {
+    @apply w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50;
+  }
+
+  .form-description {
+    @apply text-xs text-muted-foreground mt-1;
+  }
+
+  /* Card utilities */
+  .card-modern {
+    background: oklch(0.12 0.02 280 / 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid oklch(0.65 0.25 280 / 0.2);
+    @apply rounded-lg;
+  }
+
+  .dark .card-modern {
+    background: oklch(0.15 0.01 240 / 0.4);
+    border-color: oklch(0.65 0.15 220 / 0.2);
+  }
+
+  .card-header-modern {
+    @apply p-6 border-b border-primary/20;
+  }
+
+  .card-title-modern {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .card-description-modern {
+    @apply text-sm text-muted-foreground mt-1;
+  }
+
+  /* Button utilities */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg transition-opacity;
+  }
+
+  .btn-secondary {
+    @apply border border-primary/20 rounded-lg text-foreground hover:bg-card/60 transition-colors;
+  }
+
+  .btn-destructive {
+    @apply bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg transition-colors;
+  }
+
+  /* Alert/Message utilities */
+  .alert-error {
+    @apply p-3 bg-destructive/10 border border-destructive/30 rounded-lg;
+  }
+
+  .alert-error-text {
+    @apply text-sm text-destructive;
+  }
+
+  .alert-warning {
+    @apply p-3 bg-warning/10 border border-warning/30 rounded-lg;
+  }
+
+  .alert-warning-text {
+    @apply text-sm text-warning;
+  }
+
+  .alert-success {
+    @apply p-3 bg-success/10 border border-success/30 rounded-lg;
+  }
+
+  .alert-success-text {
+    @apply text-sm text-success;
+  }
+
+  /* Text utilities - enforce theme colors */
+  .text-primary-label {
+    @apply text-foreground font-medium;
+  }
+
+  .text-secondary-label {
+    @apply text-muted-foreground;
+  }
+
+  .text-body {
+    @apply text-foreground;
+  }
+
+  .text-body-muted {
+    @apply text-muted-foreground;
+  }
+
+  /* Custom scrollbar for modals and scrollable containers */
+  .scrollbar-modern {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.65 0.25 280 / 0.3) transparent;
+  }
+
+  .scrollbar-modern::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-modern::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  .scrollbar-modern::-webkit-scrollbar-thumb {
+    background: oklch(0.65 0.25 280 / 0.3);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .scrollbar-modern::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.65 0.25 280 / 0.5);
+    background-clip: padding-box;
   }
 }
 

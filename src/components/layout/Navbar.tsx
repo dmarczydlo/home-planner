@@ -10,6 +10,7 @@ export function Navbar() {
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState<string>("");
 
   useEffect(() => {
     const supabase = createSupabaseClientForAuth();
@@ -48,13 +49,35 @@ export function Navbar() {
       setScrolled(window.scrollY > 20);
     };
 
+    const updatePath = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
     window.addEventListener("scroll", handleScroll);
+    updatePath();
+
+    const handlePopState = () => {
+      updatePath();
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest("a");
+      if (link && link.href) {
+        setTimeout(updatePath, 50);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    document.addEventListener("click", handleClick);
 
     return () => {
       subscription.unsubscribe();
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("popstate", handlePopState);
+      document.removeEventListener("click", handleClick);
     };
   }, []);
 
@@ -83,9 +106,11 @@ export function Navbar() {
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <span className="text-xl font-bold text-foreground">
-                Home Planner
-              </span>
+              {!user && (
+                <span className="text-xl font-bold text-foreground">
+                  Home Planner
+                </span>
+              )}
             </a>
 
             {!user && (
@@ -112,24 +137,45 @@ export function Navbar() {
             )}
 
             {user && (
-              <div className="hidden lg:flex items-center gap-6">
+              <div className="hidden lg:flex items-center gap-2">
                 <a
                   href="/calendar/week"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/calendar")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30 shadow-lg shadow-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                 >
                   Calendar
+                  {currentPath.startsWith("/calendar") && (
+                    <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-secondary/10 animate-shimmer" />
+                  )}
                 </a>
                 <a
                   href="/family/overview"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/family")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30 shadow-lg shadow-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                 >
                   Family
+                  {currentPath.startsWith("/family") && (
+                    <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-secondary/10 animate-shimmer" />
+                  )}
                 </a>
                 <a
                   href="/settings/calendars"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/settings")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30 shadow-lg shadow-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                 >
                   Settings
+                  {currentPath.startsWith("/settings") && (
+                    <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 to-secondary/10 animate-shimmer" />
+                  )}
                 </a>
               </div>
             )}
@@ -140,7 +186,11 @@ export function Navbar() {
               <>
                 <a
                   href="/profile/me"
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-card/50 border border-border hover:border-primary/50 transition-colors"
+                  className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
+                    currentPath.startsWith("/profile")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 shadow-lg shadow-primary/10"
+                      : "bg-card/50 border border-border hover:border-primary/50"
+                  }`}
                 >
                   <UserIcon className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-foreground max-w-[150px] truncate">
@@ -228,28 +278,44 @@ export function Navbar() {
               <>
                 <a
                   href="/calendar/week"
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/calendar")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Calendar
                 </a>
                 <a
                   href="/family/overview"
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/family")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Family
                 </a>
                 <a
                   href="/settings/calendars"
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/settings")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Settings
                 </a>
                 <a
                   href="/profile/me"
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentPath.startsWith("/profile")
+                      ? "glass-effect bg-gradient-to-r from-primary/20 to-secondary/20 text-foreground border border-primary/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Profile

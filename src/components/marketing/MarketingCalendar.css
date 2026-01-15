@@ -1,0 +1,111 @@
+/* Custom Scrollbar Styling for Marketing Calendar */
+
+/* Main scrollbar styling */
+.marketing-calendar-wrapper ::-webkit-scrollbar,
+.marketing-calendar-wrapper::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.marketing-calendar-wrapper ::-webkit-scrollbar-track,
+.marketing-calendar-wrapper::-webkit-scrollbar-track {
+  background: oklch(0.15 0.02 280 / 0.3);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+}
+
+.marketing-calendar-wrapper ::-webkit-scrollbar-thumb,
+.marketing-calendar-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.6), 
+    oklch(0.55 0.28 300 / 0.6)
+  );
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 10px oklch(0.65 0.25 280 / 0.3);
+}
+
+.marketing-calendar-wrapper ::-webkit-scrollbar-thumb:hover,
+.marketing-calendar-wrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.8), 
+    oklch(0.55 0.28 300 / 0.8)
+  );
+  background-clip: padding-box;
+  box-shadow: 0 0 20px oklch(0.65 0.25 280 / 0.5);
+}
+
+/* Apply to all custom views */
+.custom-week-view ::-webkit-scrollbar,
+.custom-day-view ::-webkit-scrollbar,
+.custom-month-view ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.custom-week-view ::-webkit-scrollbar-track,
+.custom-day-view ::-webkit-scrollbar-track,
+.custom-month-view ::-webkit-scrollbar-track {
+  background: oklch(0.15 0.02 280 / 0.3);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+}
+
+.custom-week-view ::-webkit-scrollbar-thumb,
+.custom-day-view ::-webkit-scrollbar-thumb,
+.custom-month-view ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.6), 
+    oklch(0.55 0.28 300 / 0.6)
+  );
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 10px oklch(0.65 0.25 280 / 0.3);
+}
+
+.custom-week-view ::-webkit-scrollbar-thumb:hover,
+.custom-day-view ::-webkit-scrollbar-thumb:hover,
+.custom-month-view ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.8), 
+    oklch(0.55 0.28 300 / 0.8)
+  );
+  background-clip: padding-box;
+  box-shadow: 0 0 20px oklch(0.65 0.25 280 / 0.5);
+}
+
+/* Firefox scrollbar */
+.custom-week-view,
+.custom-day-view,
+.custom-month-view {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.65 0.25 280 / 0.6) oklch(0.15 0.02 280 / 0.3);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .custom-week-view,
+  .custom-day-view,
+  .custom-month-view {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Smaller scrollbars on mobile */
+  .custom-week-view ::-webkit-scrollbar,
+  .custom-day-view ::-webkit-scrollbar,
+  .custom-month-view ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-week-view ::-webkit-scrollbar-thumb,
+  .custom-day-view ::-webkit-scrollbar-thumb,
+  .custom-month-view ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+  }
+}

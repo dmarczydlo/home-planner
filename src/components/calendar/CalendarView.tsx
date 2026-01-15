@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { CalendarProvider, useCalendar } from "../../contexts/CalendarContext";
-import { CalendarHeader } from "./CalendarHeader";
 import { ViewSwitcher } from "./ViewSwitcher";
 import { DateNavigation } from "./DateNavigation";
 import { MemberFilter } from "./MemberFilter";
@@ -12,6 +11,9 @@ import { DayView } from "./DayView";
 import { WeekView } from "./WeekView";
 import { MonthView } from "./MonthView";
 import { AgendaView } from "./AgendaView";
+import { CustomCalendarWeekView } from "./CustomCalendarWeekView";
+import { CustomCalendarDayView } from "./CustomCalendarDayView";
+import { CustomCalendarMonthView } from "./CustomCalendarMonthView";
 import type { EventWithParticipantsDTO } from "../../types";
 
 interface CalendarViewProps {
@@ -52,20 +54,30 @@ function CalendarContent({ familyId }: { familyId: string }) {
     setSelectedEvent(null);
   };
 
+  const handleSelectSlot = (start: Date) => {
+    setIsCreateModalOpen(true);
+    // You might want to pre-fill the modal with the selected time
+  };
+
   const renderView = () => {
-    const viewProps = { events, isLoading, onSelectEvent: handleSelectEvent };
+    const viewProps = { 
+      events, 
+      isLoading, 
+      onSelectEvent: handleSelectEvent,
+      onSelectSlot: handleSelectSlot,
+    };
 
     switch (state.view) {
       case "day":
-        return <DayView {...viewProps} />;
+        return <CustomCalendarDayView {...viewProps} />;
       case "week":
-        return <WeekView {...viewProps} />;
+        return <CustomCalendarWeekView {...viewProps} />;
       case "month":
-        return <MonthView {...viewProps} />;
+        return <CustomCalendarMonthView {...viewProps} />;
       case "agenda":
         return <AgendaView {...viewProps} />;
       default:
-        return <WeekView {...viewProps} />;
+        return <CustomCalendarWeekView {...viewProps} />;
     }
   };
 
@@ -73,8 +85,8 @@ function CalendarContent({ familyId }: { familyId: string }) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600 dark:text-red-400 font-medium">Failed to load calendar</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{error.message}</p>
+          <p className="text-destructive font-semibold">Failed to load calendar</p>
+          <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
         </div>
       </div>
     );
@@ -82,9 +94,7 @@ function CalendarContent({ familyId }: { familyId: string }) {
 
   return (
     <div className="flex flex-col h-full">
-      <CalendarHeader />
-
-      <div className="bg-card/50 border-b border-border/50 px-6 py-4 space-y-4">
+      <div className="glass-effect border-b border-primary/20 backdrop-blur-xl px-4 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4">
         <ViewSwitcher />
         <DateNavigation />
       </div>
@@ -119,7 +129,7 @@ function CalendarContent({ familyId }: { familyId: string }) {
 export function CalendarView({ familyId, initialView = "week" }: CalendarViewProps) {
   return (
     <CalendarProvider initialView={initialView}>
-      <div className="h-screen flex flex-col bg-background">
+      <div className="h-screen flex flex-col bg-background pt-20">
         <CalendarContent familyId={familyId} />
       </div>
     </CalendarProvider>

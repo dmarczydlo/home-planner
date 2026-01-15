@@ -1,0 +1,177 @@
+---
+description: Global styling guidelines and utility classes
+globs: *.tsx,*.astro,*.css
+alwaysApply: true
+---
+
+# Styling Guidelines - Design System
+
+## Theme Colors
+
+**ALWAYS use theme colors from CSS variables. NEVER use hardcoded colors like `text-gray-900`, `bg-white`, `bg-gray-50`, etc.**
+
+### Available Theme Colors
+
+- **Text Colors:**
+  - `text-foreground` - Primary text (replaces `text-gray-900 dark:text-white`)
+  - `text-muted-foreground` - Secondary text (replaces `text-gray-600 dark:text-gray-400`)
+  - `text-primary` - Primary accent text
+  - `text-destructive` - Error/destructive text
+  - `text-warning` - Warning text
+  - `text-success` - Success text
+
+- **Background Colors:**
+  - `bg-background` - Main background
+  - `bg-card` - Card/container background (replaces `bg-white dark:bg-gray-800`)
+  - `bg-muted` - Muted background (replaces `bg-gray-100 dark:bg-gray-800`)
+  - `bg-primary/20` - Primary with opacity
+  - `bg-destructive/10` - Destructive with opacity
+
+- **Border Colors:**
+  - `border-primary/20` - Primary border (replaces `border-gray-200 dark:border-gray-700`)
+  - `border-border` - Default border
+  - `border-destructive/30` - Destructive border
+
+## Utility Classes
+
+### Glass Effect
+Use `.glass-effect` for modern glassmorphism styling:
+```tsx
+<div className="glass-effect rounded-lg p-6">
+  {/* Content */}
+</div>
+```
+
+### Modal/Dialog
+```tsx
+<div className="modal-container">
+  <div className="modal-header">
+    <h2 className="modal-title">Title</h2>
+  </div>
+  <div className="modal-content">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### Form Elements
+```tsx
+<label className="form-label">Label</label>
+<input className="form-input" />
+<select className="form-select">...</select>
+<p className="form-description">Helper text</p>
+```
+
+### Cards
+```tsx
+<div className="card-modern">
+  <div className="card-header-modern">
+    <h3 className="card-title-modern">Title</h3>
+    <p className="card-description-modern">Description</p>
+  </div>
+  {/* Content */}
+</div>
+```
+
+### Buttons
+```tsx
+<button className="btn-primary">Primary Action</button>
+<button className="btn-secondary">Secondary Action</button>
+<button className="btn-destructive">Delete</button>
+```
+
+### Alerts/Messages
+```tsx
+<div className="alert-error">
+  <p className="alert-error-text">Error message</p>
+</div>
+<div className="alert-warning">
+  <p className="alert-warning-text">Warning message</p>
+</div>
+<div className="alert-success">
+  <p className="alert-success-text">Success message</p>
+</div>
+```
+
+## Forbidden Patterns
+
+**DO NOT USE:**
+- `text-gray-*` - Use `text-foreground` or `text-muted-foreground`
+- `bg-white` or `bg-gray-*` - Use `bg-card` or `bg-background`
+- `border-gray-*` - Use `border-primary/20` or `border-border`
+- `dark:` variants for colors - Theme handles dark mode automatically
+- Hardcoded hex/rgb colors - Use theme CSS variables
+
+## Component Patterns
+
+### Input Fields
+Always use theme-aware styling:
+```tsx
+<input className="form-input" />
+// OR manually:
+<input className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50" />
+```
+
+### Cards/Containers
+```tsx
+<div className="card-modern">
+  {/* OR manually: */}
+  <div className="glass-effect rounded-lg border-primary/20">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### Headers/Sections
+```tsx
+<div className="glass-effect border-b border-primary/20 backdrop-blur-xl">
+  <h2 className="text-lg font-semibold text-foreground">Title</h2>
+  <p className="text-sm text-muted-foreground">Description</p>
+</div>
+```
+
+## Base Styles
+
+The following elements automatically use theme colors (defined in `global.css`):
+- All `input`, `textarea`, `select` elements
+- All `button` elements
+- All elements via `border-border` and `outline-ring/50`
+
+## Migration Checklist
+
+When updating components:
+1. ✅ Replace `text-gray-*` with `text-foreground` or `text-muted-foreground`
+2. ✅ Replace `bg-white`/`bg-gray-*` with `bg-card` or `glass-effect`
+3. ✅ Replace `border-gray-*` with `border-primary/20` or `border-border`
+4. ✅ Remove all `dark:` color variants (theme handles it)
+5. ✅ Use utility classes where possible (`.form-input`, `.card-modern`, etc.)
+6. ✅ Ensure modals use `.modal-container` or `.glass-effect`
+7. ✅ Ensure buttons use theme colors or utility classes
+
+## Examples
+
+### ❌ Bad
+```tsx
+<div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+  <h2 className="text-gray-900 dark:text-white">Title</h2>
+  <p className="text-gray-600 dark:text-gray-400">Description</p>
+</div>
+```
+
+### ✅ Good
+```tsx
+<div className="glass-effect">
+  <h2 className="text-foreground">Title</h2>
+  <p className="text-muted-foreground">Description</p>
+</div>
+```
+
+### ❌ Bad
+```tsx
+<input className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+```
+
+### ✅ Good
+```tsx
+<input className="form-input" />
+```

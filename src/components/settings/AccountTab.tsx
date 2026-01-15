@@ -97,7 +97,7 @@ export function AccountTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -119,45 +119,45 @@ export function AccountTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Account</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <h2 className="text-lg font-semibold text-foreground">Account</h2>
+        <p className="text-sm text-muted-foreground mt-1">
           Manage your account and admin settings
         </p>
       </div>
 
-      <Card>
+      <Card className="glass-effect border-primary/20">
         <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
+          <CardTitle className="text-foreground">Profile Information</CardTitle>
           <CardDescription>Your personal account details</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               <AvatarImage src={userProfile.avatar_url || undefined} alt={userProfile.full_name || "User"} />
-              <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              <AvatarFallback className="bg-muted text-muted-foreground">
                 {getInitials(userProfile.full_name)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
+              <h3 className="font-semibold text-foreground">
                 {userProfile.full_name || "Anonymous User"}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">ID: {userProfile.id}</p>
+              <p className="text-sm text-muted-foreground">ID: {userProfile.id}</p>
             </div>
           </div>
 
           <Separator />
 
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Account Details</p>
+            <p className="text-sm font-medium text-foreground">Account Details</p>
             <div className="grid gap-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Name:</span>
-                <span className="text-gray-900 dark:text-white">{userProfile.full_name || "Not set"}</span>
+                <span className="text-muted-foreground">Name:</span>
+                <span className="text-foreground font-medium">{userProfile.full_name || "Not set"}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Last Updated:</span>
-                <span className="text-gray-900 dark:text-white">
+                <span className="text-muted-foreground">Last Updated:</span>
+                <span className="text-foreground font-medium">
                   {userProfile.updated_at
                     ? new Date(userProfile.updated_at).toLocaleDateString()
                     : "Never"}
@@ -169,9 +169,9 @@ export function AccountTab() {
       </Card>
 
       {adminFamilies.length > 0 && (
-        <Card>
+        <Card className="glass-effect border-primary/20">
           <CardHeader>
-            <CardTitle>Admin Families</CardTitle>
+            <CardTitle className="text-foreground">Admin Families</CardTitle>
             <CardDescription>Families where you have admin privileges</CardDescription>
           </CardHeader>
           <CardContent>
@@ -179,15 +179,15 @@ export function AccountTab() {
               {adminFamilies.map((family) => (
                 <div
                   key={family.family_id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                  className="flex items-center justify-between p-3 glass-effect rounded-lg border border-primary/20"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                      <UserIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                      <UserIcon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{family.family_name}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="font-medium text-foreground">{family.family_name}</p>
+                      <p className="text-sm text-muted-foreground">
                         Joined {new Date(family.joined_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -202,9 +202,9 @@ export function AccountTab() {
         </Card>
       )}
 
-      <Card>
+      <Card className="glass-effect border-primary/20">
         <CardHeader>
-          <CardTitle>Account Actions</CardTitle>
+          <CardTitle className="text-foreground">Account Actions</CardTitle>
           <CardDescription>Manage your account settings</CardDescription>
         </CardHeader>
         <CardContent>

@@ -64,17 +64,17 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
             disabled={isConnecting}
           >
             <div className="flex items-center gap-3 w-full">
-              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
-                <CalendarIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <CalendarIcon className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 text-left">
-                <div className="font-semibold">Google Calendar</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="font-semibold text-foreground">Google Calendar</div>
+                <div className="text-sm text-muted-foreground">
                   Connect your Google Calendar
                 </div>
               </div>
               {isConnecting && selectedProvider === "google" && (
-                <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               )}
             </div>
           </Button>
@@ -86,24 +86,24 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
             disabled={isConnecting}
           >
             <div className="flex items-center gap-3 w-full">
-              <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center flex-shrink-0">
-                <CalendarIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
+                <CalendarIcon className="h-5 w-5 text-secondary" />
               </div>
               <div className="flex-1 text-left">
-                <div className="font-semibold">Microsoft 365</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="font-semibold text-foreground">Microsoft 365</div>
+                <div className="text-sm text-muted-foreground">
                   Connect your Microsoft 365 calendar
                 </div>
               </div>
               {isConnecting && selectedProvider === "microsoft" && (
-                <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               )}
             </div>
           </Button>
 
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-md">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 

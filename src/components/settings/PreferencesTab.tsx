@@ -12,15 +12,15 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Preferences</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <h2 className="text-lg font-semibold text-foreground">Preferences</h2>
+        <p className="text-sm text-muted-foreground mt-1">
           Customize your app experience
         </p>
       </div>
 
-      <Card>
+      <Card className="glass-effect border-primary/20">
         <CardHeader>
-          <CardTitle>View Preferences</CardTitle>
+          <CardTitle className="text-foreground">View Preferences</CardTitle>
           <CardDescription>Customize how you view and interact with your calendar</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -28,7 +28,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="default-view">Default Calendar View</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   Choose which view to show when opening the calendar
                 </p>
               </div>
@@ -50,7 +50,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="date-format">Date Format</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   Choose how dates are displayed
                 </p>
               </div>
@@ -71,7 +71,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="time-format">Time Format</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   Choose 12-hour or 24-hour time format
                 </p>
               </div>
@@ -91,7 +91,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="week-start">Week Starts On</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   Choose the first day of the week
                 </p>
               </div>
@@ -109,16 +109,16 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="glass-effect border-primary/20">
         <CardHeader>
-          <CardTitle>Notification Preferences</CardTitle>
+          <CardTitle className="text-foreground">Notification Preferences</CardTitle>
           <CardDescription>Control when and how you receive notifications</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="event-reminders">Event Reminders</Label>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Receive notifications before events start
               </p>
             </div>
@@ -130,7 +130,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="conflict-alerts">Conflict Alerts</Label>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Get notified when events conflict
               </p>
             </div>
@@ -142,7 +142,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="invitation-notifications">Invitation Notifications</Label>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Receive notifications for family invitations
               </p>
             </div>
@@ -154,7 +154,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="sync-notifications">Sync Notifications</Label>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Get notified when calendars sync
               </p>
             </div>

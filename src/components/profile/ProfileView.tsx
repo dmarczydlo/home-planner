@@ -60,15 +60,15 @@ export function ProfileView({ currentFamilyId, onSwitchFamily }: ProfileViewProp
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">Loading profile...</p>
+      <div className="min-h-screen pt-20 bg-background flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Loading profile...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <div className="min-h-screen pt-20 bg-background">
+      <div className="glass-effect border-b border-primary/20 backdrop-blur-xl">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center gap-4">
             <Button
@@ -80,14 +80,14 @@ export function ProfileView({ currentFamilyId, onSwitchFamily }: ProfileViewProp
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Profile</h1>
+            <h1 className="text-xl font-semibold text-foreground">Profile</h1>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="space-y-6">
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+          <div className="glass-effect rounded-lg border border-primary/20 backdrop-blur-xl p-6">
             <div className="flex flex-col items-center mb-6">
               <ProfileAvatar
                 avatarUrl={user.avatar_url}
@@ -106,8 +106,8 @@ export function ProfileView({ currentFamilyId, onSwitchFamily }: ProfileViewProp
           </div>
 
           {user.families && user.families.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="glass-effect rounded-lg border border-primary/20 backdrop-blur-xl p-6">
+              <h2 className="text-lg font-semibold text-foreground mb-4">
                 Family Memberships
               </h2>
               <FamilyMemberships
@@ -118,7 +118,7 @@ export function ProfileView({ currentFamilyId, onSwitchFamily }: ProfileViewProp
             </div>
           )}
 
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+          <div className="glass-effect rounded-lg border border-primary/20 backdrop-blur-xl p-6">
             <LogoutButton />
           </div>
         </div>

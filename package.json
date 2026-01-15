@@ -19,7 +19,8 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:onboarding": "playwright test e2e/onboarding",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "check:colors": "node scripts/check-colors.js"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",

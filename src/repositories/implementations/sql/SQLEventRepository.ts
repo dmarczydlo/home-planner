@@ -104,7 +104,7 @@ export class SQLEventRepository implements EventRepository {
       if (event.recurrence_pattern) {
         const expandedOccurrences = this.expandRecurringEvent(event, startDate, endDate);
         const exceptions = await this.getExceptions(event.id);
-        
+
         for (const occurrence of expandedOccurrences) {
           const occurrenceDate = new Date(occurrence.start_time).toISOString().split("T")[0];
           const exception = exceptions.find(
@@ -314,12 +314,29 @@ export class SQLEventRepository implements EventRepository {
       return;
     }
 
-    const inserts = participants.map((p) => ({
-      event_id: eventId,
-      user_id: p.type === "user" ? p.id : null,
-      child_id: p.type === "child" ? p.id : null,
-      participant_type: p.type,
-    }));
+    // Insert participants with explicit null handling for the polymorphic relationship
+    // After migration, the primary key is 'id' (not the composite key), so NULLs are allowed
+    const inserts: Database["public"]["Tables"]["event_participants"]["Insert"][] = participants.map((p) => {
+      if (!p.id || !p.type) {
+        throw new Error(`Invalid participant: ${JSON.stringify(p)}`);
+      }
+
+      if (p.type === "user") {
+        return {
+          event_id: eventId,
+          user_id: p.id,
+          child_id: null,
+          participant_type: p.type,
+        };
+      } else {
+        return {
+          event_id: eventId,
+          user_id: null,
+          child_id: p.id,
+          participant_type: p.type,
+        };
+      }
+    });
 
     const { error } = await this.supabase.from("event_participants").insert(inserts);
 
@@ -347,7 +364,9 @@ export class SQLEventRepository implements EventRepository {
     }
   }
 
-  async getParticipants(eventId: string): Promise<Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>> {
+  async getParticipants(
+    eventId: string
+  ): Promise<Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>> {
     const { data: participants, error } = await this.supabase
       .from("event_participants")
       .select("participant_type, user_id, child_id")
@@ -361,7 +380,11 @@ export class SQLEventRepository implements EventRepository {
 
     for (const p of participants) {
       if (p.participant_type === "user" && p.user_id) {
-        const { data: user } = await this.supabase.from("users").select("full_name, avatar_url").eq("id", p.user_id).single();
+        const { data: user } = await this.supabase
+          .from("users")
+          .select("full_name, avatar_url")
+          .eq("id", p.user_id)
+          .single();
         if (user) {
           result.push({
             id: p.user_id,
@@ -507,7 +530,11 @@ export class SQLEventRepository implements EventRepository {
     return conflicts.length > 0;
   }
 
-  private expandRecurringEvent(event: Event, startDate: string, endDate: string): Array<{ start_time: string; end_time: string }> {
+  private expandRecurringEvent(
+    event: Event,
+    startDate: string,
+    endDate: string
+  ): Array<{ start_time: string; end_time: string }> {
     if (!event.recurrence_pattern) {
       return [{ start_time: event.start_time, end_time: event.end_time }];
     }
