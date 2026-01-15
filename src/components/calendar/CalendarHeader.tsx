@@ -1,4 +1,4 @@
-import { RefreshCw, Settings } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 interface CalendarHeaderProps {
   onRefresh?: () => void;
@@ -12,40 +12,20 @@ export function CalendarHeader({
   isRefreshing = false
 }: CalendarHeaderProps) {
   return (
-    <div className="bg-gradient-to-r from-primary/5 to-accent/5 border-b-2 border-border/50">
-      <div className="flex items-center justify-between px-6 py-5">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">
-            Family Calendar
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Manage your family schedule
-          </p>
+    <div className="flex items-center gap-3">
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-lg blur-md opacity-40"></div>
+        <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+          <Calendar className="w-5 h-5 text-white" />
         </div>
-
-        <div className="flex items-center gap-2">
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              disabled={isRefreshing}
-              className="p-2.5 rounded-xl hover:bg-primary/10 active:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Refresh calendar"
-            >
-              <RefreshCw
-                className={`w-5 h-5 text-primary ${isRefreshing ? "animate-spin" : ""}`}
-              />
-            </button>
-          )}
-          {onSettingsClick && (
-            <button
-              onClick={onSettingsClick}
-              className="p-2.5 rounded-xl hover:bg-accent/10 active:bg-accent/20 transition-colors"
-              aria-label="Calendar settings"
-            >
-              <Settings className="w-5 h-5 text-accent" />
-            </button>
-          )}
-        </div>
+      </div>
+      <div>
+        <h1 className="text-xl font-bold text-foreground tracking-tight">
+          Family Calendar
+        </h1>
+        <p className="text-xs text-muted-foreground">
+          Coordinate your family schedule
+        </p>
       </div>
     </div>
   );

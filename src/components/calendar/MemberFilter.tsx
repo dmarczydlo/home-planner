@@ -98,48 +98,36 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
   const allSelected = selectedCount === members.length;
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700">
-      {/* Filter header */}
+    <div className="relative">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/50 border border-border hover:border-primary/50 transition-colors text-sm font-medium"
       >
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-900 dark:text-white">
-            Filter by Members
+        <span className="text-foreground">Filter</span>
+        {selectedCount > 0 && selectedCount < members.length && (
+          <span className="px-2 py-0.5 text-xs font-semibold bg-primary/20 text-primary rounded-full">
+            {selectedCount}
           </span>
-          {selectedCount > 0 && selectedCount < members.length && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
-              {selectedCount} selected
-            </span>
-          )}
-        </div>
+        )}
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-500" />
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
         )}
       </button>
 
-      {/* Filter content */}
       {isExpanded && (
-        <div className="px-4 pb-4 space-y-3">
-          {/* Select all option */}
-          <div className="flex items-center space-x-2 py-2 border-b border-gray-100 dark:border-gray-800">
-            <Checkbox
-              id="select-all"
-              checked={allSelected}
-              onCheckedChange={handleToggleAll}
-            />
-            <Label
-              htmlFor="select-all"
-              className="text-sm font-medium cursor-pointer"
+        <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-lg z-50 p-4 space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-border">
+            <span className="text-sm font-semibold text-foreground">Filter Members</span>
+            <button
+              onClick={handleToggleAll}
+              className="text-xs font-medium text-primary hover:underline"
             >
-              {allSelected ? "Deselect All" : "Select All"}
-            </Label>
+              {allSelected ? "Clear All" : "Select All"}
+            </button>
           </div>
 
-          {/* Member checkboxes */}
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {members.map((member) => {
               const isChecked = state.filters.participantIds.includes(member.id);
@@ -147,7 +135,7 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
               return (
                 <div
                   key={member.id}
-                  className="flex items-center space-x-2 py-1"
+                  className="flex items-center space-x-2"
                 >
                   <Checkbox
                     id={`member-${member.id}`}
@@ -156,7 +144,7 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
                   />
                   <Label
                     htmlFor={`member-${member.id}`}
-                    className="text-sm cursor-pointer flex items-center gap-2"
+                    className="text-sm cursor-pointer flex items-center gap-2 flex-1"
                   >
                     {member.avatarUrl && (
                       <img
@@ -165,9 +153,9 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
                         className="w-6 h-6 rounded-full"
                       />
                     )}
-                    {member.name}
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      ({member.type})
+                    <span className="flex-1">{member.name}</span>
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {member.type}
                     </span>
                   </Label>
                 </div>

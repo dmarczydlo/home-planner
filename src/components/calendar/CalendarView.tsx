@@ -81,17 +81,19 @@ function CalendarContent({ familyId }: { familyId: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <CalendarHeader />
-
-      <div className="bg-card/50 border-b border-border/50 px-6 py-4 space-y-4">
-        <ViewSwitcher />
-        <DateNavigation />
+    <div className="flex flex-col h-full pt-20">
+      <div className="bg-card/30 backdrop-blur-sm border-b border-border/50 px-6 py-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <CalendarHeader />
+          <ViewSwitcher />
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <DateNavigation />
+          <MemberFilter familyId={familyId} />
+        </div>
       </div>
 
-      <MemberFilter familyId={familyId} />
-
-      <div className="flex-1 overflow-auto bg-gradient-to-b from-background via-primary/5 to-background">
+      <div className="flex-1 overflow-auto bg-background">
         {renderView()}
       </div>
 
