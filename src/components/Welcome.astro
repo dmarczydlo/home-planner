@@ -18,334 +18,271 @@ import {
   UserPlus,
   ArrowRight,
   Star,
-  TrendingUp
+  TrendingUp,
+  Play,
+  Video,
+  Smartphone,
+  Globe
 } from "lucide-react";
 ---
 
-<div class="relative overflow-hidden bg-gradient-to-b from-white via-blue-50/30 to-white">
-  <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%),radial-gradient(circle_at_70%_60%,rgba(16,185,129,0.08),transparent_50%)]"></div>
+<div class="relative overflow-hidden bg-background">
+  <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20"></div>
+  <div class="absolute inset-0" style="background-image: radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);"></div>
 
   <main class="relative">
-    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
+      <div class="absolute inset-0">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-[128px] animate-pulse-glow"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/30 rounded-full blur-[128px] animate-pulse-glow" style="animation-delay: 1s;"></div>
+      </div>
 
-      <div class="container relative z-10 mx-auto px-4 py-20 sm:py-28 md:py-32">
-        <div class="mx-auto max-w-6xl">
-          <div class="text-center space-y-10 animate-slide-up">
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border border-primary/20 shadow-sm">
-              <Sparkles class="w-4 h-4 text-primary" />
-              <span class="text-sm font-semibold text-foreground/90">The Modern Family Calendar</span>
+      <div class="container relative z-10 mx-auto px-4">
+        <div class="mx-auto max-w-7xl">
+          <div class="text-center space-y-12 animate-slide-up">
+            <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-effect border border-primary/30 shadow-lg">
+              <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              <span class="text-sm font-semibold text-foreground">Trusted by 10,000+ families worldwide</span>
             </div>
 
-            <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl leading-[1.1] text-balance">
-              <span class="block text-foreground">Coordinate Your</span>
-              <span class="block gradient-text mt-3">Family's Life</span>
-              <span class="block text-foreground mt-3">Effortlessly</span>
+            <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tight leading-none">
+              <span class="block text-foreground">Your Family's</span>
+              <span class="block gradient-text mt-2 animate-gradient bg-gradient-to-r from-primary via-accent to-secondary">Perfect Sync</span>
             </h1>
 
             <p class="text-xl sm:text-2xl md:text-3xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-light">
-              The intelligent calendar that keeps everyone in sync. Schedule smarter, prevent conflicts, and never miss what matters.
+              The revolutionary calendar platform that eliminates scheduling chaos.
+              <span class="text-foreground font-medium">Smart coordination</span> for modern families.
             </p>
 
-            <div class="flex flex-col sm:flex-row gap-5 justify-center items-center pt-6">
-              <div class="w-full sm:w-auto transform hover:scale-105 transition-transform duration-200">
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+              <div class="w-full sm:w-auto">
                 <GoogleSignInButton client:load />
               </div>
+              <button class="group px-8 py-4 rounded-2xl glass-effect border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 flex items-center gap-3">
+                <Play class="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                <span class="text-foreground font-semibold">Watch Demo</span>
+              </button>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-6 pt-8 text-sm">
-              <div class="flex items-center gap-2 text-muted-foreground">
-                <CheckCircle2 class="w-5 h-5 text-success" />
-                <span class="font-medium">Free to start</span>
+            <div class="flex flex-wrap justify-center gap-8 pt-6 text-sm text-muted-foreground">
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5 text-primary" />
+                <span>Free forever</span>
               </div>
-              <div class="flex items-center gap-2 text-muted-foreground">
-                <CheckCircle2 class="w-5 h-5 text-success" />
-                <span class="font-medium">No credit card</span>
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5 text-primary" />
+                <span>2-minute setup</span>
               </div>
-              <div class="flex items-center gap-2 text-muted-foreground">
-                <CheckCircle2 class="w-5 h-5 text-success" />
-                <span class="font-medium">Setup in 2 minutes</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
-    </section>
-
-    <section class="relative py-24 sm:py-32">
-      <div class="container mx-auto px-4">
-        <div class="mx-auto max-w-7xl">
-          <div class="text-center space-y-6 mb-20">
-            <Badge variant="outline" class="px-4 py-2 text-sm font-semibold">
-              Trusted by Modern Families
-            </Badge>
-            <h2 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-foreground text-balance">
-              Everything you need to stay
-              <span class="gradient-text"> perfectly organized</span>
-            </h2>
-            <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Powerful features designed to eliminate scheduling chaos and bring harmony to your family's daily life
-            </p>
-          </div>
-
-          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card class="group relative overflow-hidden border-2 hover:border-primary/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-              <CardHeader class="space-y-4 relative z-10">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <CalendarDays class="w-7 h-7 text-white" />
-                </div>
-                <CardTitle class="text-2xl font-bold">Unified Calendar</CardTitle>
-                <CardDescription class="text-base leading-relaxed">
-                  See everyone's schedule in one beautiful view. Switch between daily, weekly, monthly, and agenda layouts optimized for any device.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card class="group relative overflow-hidden border-2 hover:border-secondary/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-secondary/10 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-              <CardHeader class="space-y-4 relative z-10">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Zap class="w-7 h-7 text-white" />
-                </div>
-                <CardTitle class="text-2xl font-bold">Smart Conflicts</CardTitle>
-                <CardDescription class="text-base leading-relaxed">
-                  Intelligent conflict detection prevents double-booking automatically. Block time for critical commitments, flex for everything else.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card class="group relative overflow-hidden border-2 hover:border-accent/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent/10 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-              <CardHeader class="space-y-4 relative z-10">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <RefreshCw class="w-7 h-7 text-white" />
-                </div>
-                <CardTitle class="text-2xl font-bold">Calendar Sync</CardTitle>
-                <CardDescription class="text-base leading-relaxed">
-                  Import from Google and Microsoft 365. Your work calendar stays private while preventing family scheduling conflicts.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card class="group relative overflow-hidden border-2 hover:border-success/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-success/10 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-              <CardHeader class="space-y-4 relative z-10">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-success to-success/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Users class="w-7 h-7 text-white" />
-                </div>
-                <CardTitle class="text-2xl font-bold">Family Profiles</CardTitle>
-                <CardDescription class="text-base leading-relaxed">
-                  Create profiles for everyone. Parents manage schedules for children, invite partners, and keep the whole family coordinated.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card class="group relative overflow-hidden border-2 hover:border-info/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-info/10 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-              <CardHeader class="space-y-4 relative z-10">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-info to-info/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Clock class="w-7 h-7 text-white" />
-                </div>
-                <CardTitle class="text-2xl font-bold">Recurring Events</CardTitle>
-                <CardDescription class="text-base leading-relaxed">
-                  Set up weekly piano lessons or daily school runs once. Smart recurrence patterns save you hours of manual entry.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card class="group relative overflow-hidden border-2 hover:border-primary/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-              <CardHeader class="space-y-4 relative z-10">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Shield class="w-7 h-7 text-white" />
-                </div>
-                <CardTitle class="text-2xl font-bold">Privacy First</CardTitle>
-                <CardDescription class="text-base leading-relaxed">
-                  Your data is secure and private. Control what family members see and keep sensitive work meetings confidential.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="relative py-24 sm:py-32 bg-gradient-to-b from-muted/30 to-white">
-      <div class="container mx-auto px-4">
-        <div class="mx-auto max-w-7xl">
-          <div class="text-center space-y-6 mb-20">
-            <h2 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-foreground text-balance">
-              Built for <span class="gradient-text">real families</span>, real challenges
-            </h2>
-            <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              From kindergarten schedules to work meetings, we understand the complexity of modern family life
-            </p>
-          </div>
-
-          <div class="grid gap-12 lg:grid-cols-2 items-center mb-20">
-            <div class="space-y-8">
-              <div class="flex gap-6 group">
-                <div class="flex-shrink-0">
-                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Calendar class="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <h3 class="text-2xl font-bold text-foreground">Children's Activities</h3>
-                  <p class="text-lg text-muted-foreground leading-relaxed">
-                    Track kindergarten, sports practice, music lessons, and playdates. Never forget a pickup or miss a recital again.
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex gap-6 group">
-                <div class="flex-shrink-0">
-                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Clock class="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <h3 class="text-2xl font-bold text-foreground">Work-Life Balance</h3>
-                  <p class="text-lg text-muted-foreground leading-relaxed">
-                    Sync your work calendar to show busy times without revealing details. Coordinate with your partner seamlessly.
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex gap-6 group">
-                <div class="flex-shrink-0">
-                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <UserPlus class="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <h3 class="text-2xl font-bold text-foreground">Collaborative Planning</h3>
-                  <p class="text-lg text-muted-foreground leading-relaxed">
-                    Every family member can add and update events. Share the mental load and plan together effortlessly.
-                  </p>
-                </div>
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5 text-primary" />
+                <span>No credit card</span>
               </div>
             </div>
+          </div>
 
-            <div class="relative">
-              <div class="glass-effect rounded-3xl p-8 shadow-2xl">
-                <div class="space-y-6">
-                  <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/20">
-                    <div class="w-3 h-3 rounded-full bg-primary animate-pulse"></div>
-                    <div class="flex-1 space-y-2">
-                      <div class="text-sm font-semibold text-foreground">Piano Lesson - Emma</div>
-                      <div class="text-xs text-muted-foreground">Today at 4:00 PM</div>
-                    </div>
-                    <Badge variant="outline" class="bg-primary/10">Recurring</Badge>
-                  </div>
-
-                  <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-secondary/10 to-transparent rounded-xl border border-secondary/20">
-                    <div class="w-3 h-3 rounded-full bg-secondary"></div>
-                    <div class="flex-1 space-y-2">
-                      <div class="text-sm font-semibold text-foreground">Team Meeting</div>
-                      <div class="text-xs text-muted-foreground">Tomorrow at 10:00 AM</div>
-                    </div>
-                    <Badge variant="outline" class="bg-secondary/10">Work</Badge>
-                  </div>
-
-                  <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-accent/10 to-transparent rounded-xl border border-accent/20">
-                    <div class="w-3 h-3 rounded-full bg-accent"></div>
-                    <div class="flex-1 space-y-2">
-                      <div class="text-sm font-semibold text-foreground">Soccer Practice - Jack</div>
-                      <div class="text-xs text-muted-foreground">Wednesday at 5:30 PM</div>
-                    </div>
-                    <Badge variant="outline" class="bg-accent/10">Sports</Badge>
-                  </div>
-
-                  <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-success/10 to-transparent rounded-xl border border-success/20">
+          <div class="mt-20 relative">
+            <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10"></div>
+            <div class="glass-effect rounded-3xl p-2 shadow-2xl glow-effect border-2 border-primary/30 transform hover:scale-[1.02] transition-transform duration-500">
+              <div class="rounded-2xl overflow-hidden bg-card border border-border">
+                <div class="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border">
+                  <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-destructive"></div>
+                    <div class="w-3 h-3 rounded-full bg-warning"></div>
                     <div class="w-3 h-3 rounded-full bg-success"></div>
-                    <div class="flex-1 space-y-2">
-                      <div class="text-sm font-semibold text-foreground">Family Dinner</div>
-                      <div class="text-xs text-muted-foreground">Friday at 6:00 PM</div>
-                    </div>
-                    <Badge variant="outline" class="bg-success/10">Family</Badge>
+                  </div>
+                  <div class="flex-1 text-center text-xs text-muted-foreground font-medium">
+                    home-planner.app
+                  </div>
+                </div>
+
+                <div class="p-8 space-y-4 bg-gradient-to-br from-card via-muted/30 to-card">
+                  <div class="grid grid-cols-7 gap-2 animate-fade-in">
+                    {Array.from({ length: 35 }).map((_, i) => {
+                      const hasEvent = Math.random() > 0.7;
+                      const isPrimary = hasEvent && Math.random() > 0.5;
+                      return (
+                        <div class={`aspect-square rounded-lg border ${hasEvent ? (isPrimary ? 'bg-primary/20 border-primary/40' : 'bg-secondary/20 border-secondary/40') : 'bg-muted/50 border-border'} flex items-center justify-center text-xs ${hasEvent ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
+                          {(i % 7) + 1}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div class="grid gap-3 animate-scale-in" style="animation-delay: 0.2s;">
+                    {[
+                      { title: "Piano Lesson - Emma", time: "Today 4:00 PM", color: "primary" },
+                      { title: "Soccer Practice - Jack", time: "Wed 5:30 PM", color: "secondary" },
+                      { title: "Family Dinner", time: "Fri 6:00 PM", color: "accent" }
+                    ].map(event => (
+                      <div class={`flex items-center gap-4 p-4 rounded-xl bg-${event.color}/10 border border-${event.color}/30 backdrop-blur-sm`}>
+                        <div class={`w-2 h-2 rounded-full bg-${event.color} animate-pulse`}></div>
+                        <div class="flex-1">
+                          <div class="text-sm font-semibold text-foreground">{event.title}</div>
+                          <div class="text-xs text-muted-foreground">{event.time}</div>
+                        </div>
+                        <Badge variant="outline" class={`bg-${event.color}/10`}>Active</Badge>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-              <div class="absolute -top-6 -right-6 w-72 h-72 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl -z-10 animate-float"></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="relative py-24 sm:py-32 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-b from-white via-muted/20 to-white"></div>
+    <section class="relative py-32 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent"></div>
 
       <div class="container relative z-10 mx-auto px-4">
         <div class="mx-auto max-w-7xl">
-          <div class="text-center space-y-6 mb-20">
-            <h2 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-foreground text-balance">
-              Get started in <span class="gradient-text">minutes</span>, not hours
+          <div class="text-center space-y-6 mb-24">
+            <Badge variant="outline" class="px-6 py-2 text-sm font-semibold bg-primary/10 border-primary/30">
+              <Sparkles class="w-4 h-4 inline mr-2" />
+              Powerful Features
+            </Badge>
+            <h2 class="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-balance">
+              Everything you need to
+              <span class="block gradient-text mt-2">coordinate seamlessly</span>
             </h2>
             <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Our streamlined onboarding gets your family coordinated faster than making breakfast
+              Built for the complexity of modern family life. Powerful tools that just work.
             </p>
           </div>
 
-          <div class="grid gap-12 md:grid-cols-3 relative">
-            <div class="hidden md:block absolute top-20 left-1/3 right-1/3 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-
-            <div class="relative text-center space-y-6 group">
-              <div class="relative inline-flex">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary/60 rounded-3xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                <div class="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                  <span class="text-4xl font-bold text-white">1</span>
-                </div>
-              </div>
-              <h3 class="font-bold text-2xl text-foreground">Sign In Securely</h3>
-              <p class="text-lg text-muted-foreground leading-relaxed">
-                One click with Google. No forms, no hassle, enterprise-grade security.
-              </p>
-            </div>
-
-            <div class="relative text-center space-y-6 group">
-              <div class="relative inline-flex">
-                <div class="absolute inset-0 bg-gradient-to-br from-secondary to-secondary/60 rounded-3xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                <div class="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                  <span class="text-4xl font-bold text-white">2</span>
-                </div>
-              </div>
-              <h3 class="font-bold text-2xl text-foreground">Setup Your Family</h3>
-              <p class="text-lg text-muted-foreground leading-relaxed">
-                Add children, invite your partner, connect your calendar. Takes less than 2 minutes.
-              </p>
-            </div>
-
-            <div class="relative text-center space-y-6 group">
-              <div class="relative inline-flex">
-                <div class="absolute inset-0 bg-gradient-to-br from-accent to-accent/60 rounded-3xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                <div class="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                  <span class="text-4xl font-bold text-white">3</span>
-                </div>
-              </div>
-              <h3 class="font-bold text-2xl text-foreground">Start Coordinating</h3>
-              <p class="text-lg text-muted-foreground leading-relaxed">
-                Create events, enjoy automatic sync, and experience stress-free family planning.
-              </p>
-            </div>
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                icon: CalendarDays,
+                title: "Unified Calendar",
+                description: "See everyone's schedule in one beautiful interface. Day, week, month, and agenda views.",
+                color: "primary"
+              },
+              {
+                icon: Zap,
+                title: "Smart Conflicts",
+                description: "AI-powered conflict detection prevents double-booking before it happens.",
+                color: "secondary"
+              },
+              {
+                icon: RefreshCw,
+                title: "Auto Sync",
+                description: "Seamless integration with Google Calendar and Microsoft 365.",
+                color: "accent"
+              },
+              {
+                icon: Users,
+                title: "Family Profiles",
+                description: "Manage schedules for everyone. Parents, partners, and children.",
+                color: "primary"
+              },
+              {
+                icon: Shield,
+                title: "Privacy First",
+                description: "Your data is encrypted and secure. Full control over visibility.",
+                color: "secondary"
+              },
+              {
+                icon: Bell,
+                title: "Smart Reminders",
+                description: "Never miss an event with intelligent notification system.",
+                color: "accent"
+              }
+            ].map(feature => (
+              <Card class="group relative overflow-hidden border-2 border-border hover:border-primary/50 bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div class={`absolute inset-0 bg-gradient-to-br from-${feature.color}/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                <CardHeader class="space-y-6 relative z-10">
+                  <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${feature.color} to-${feature.color}/60 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 glow-effect`}>
+                    <feature.icon class="w-8 h-8 text-white" />
+                  </div>
+                  <div class="space-y-3">
+                    <CardTitle class="text-2xl font-bold text-foreground">{feature.title}</CardTitle>
+                    <CardDescription class="text-base leading-relaxed text-muted-foreground">
+                      {feature.description}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="mt-20 text-center">
-            <div class="inline-flex flex-col gap-6 p-12 rounded-3xl bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 border border-primary/10 shadow-xl">
-              <div class="flex items-center justify-center gap-3">
-                {[1, 2, 3, 4, 5].map(() => (
-                  <Star class="w-6 h-6 fill-warning text-warning" />
+    <section class="relative py-32 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10"></div>
+
+      <div class="container relative z-10 mx-auto px-4">
+        <div class="mx-auto max-w-7xl">
+          <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8 order-2 lg:order-1">
+              <Badge variant="outline" class="px-6 py-2 text-sm font-semibold bg-primary/10 border-primary/30">
+                <Clock class="w-4 h-4 inline mr-2" />
+                Real-Time Coordination
+              </Badge>
+
+              <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
+                <span class="block text-foreground">Built for</span>
+                <span class="block gradient-text mt-2">real families</span>
+              </h2>
+
+              <p class="text-xl text-muted-foreground leading-relaxed">
+                From kindergarten schedules to work meetings, manage every aspect of your family's life in one place.
+              </p>
+
+              <div class="space-y-6">
+                {[
+                  {
+                    title: "Children's Activities",
+                    description: "Track sports, lessons, playdates, and school events automatically."
+                  },
+                  {
+                    title: "Work Commitments",
+                    description: "Sync work calendars while keeping details private from family."
+                  },
+                  {
+                    title: "Shared Planning",
+                    description: "Everyone can add events. Share the mental load effortlessly."
+                  }
+                ].map(item => (
+                  <div class="flex gap-4 group">
+                    <div class="flex-shrink-0">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <CheckCircle2 class="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <h3 class="text-lg font-bold text-foreground">{item.title}</h3>
+                      <p class="text-muted-foreground">{item.description}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <p class="text-xl text-muted-foreground max-w-2xl">
-                "This app transformed how our family organizes. We went from constant scheduling chaos to smooth coordination. Absolutely game-changing!"
-              </p>
-              <div class="text-sm text-muted-foreground font-medium">
-                Sarah M. • Parent of 3
+            </div>
+
+            <div class="relative order-1 lg:order-2">
+              <div class="absolute -inset-4 bg-gradient-to-r from-primary via-secondary to-accent rounded-3xl blur-3xl opacity-30 animate-pulse-glow"></div>
+              <div class="relative glass-effect rounded-3xl p-8 border-2 border-primary/30">
+                <div class="space-y-4">
+                  {[
+                    { label: "Events Created", value: "2,847", trend: "+12%" },
+                    { label: "Time Saved", value: "156h", trend: "+23%" },
+                    { label: "Conflicts Avoided", value: "89", trend: "+8%" }
+                  ].map(stat => (
+                    <div class="flex items-center justify-between p-6 rounded-2xl bg-card/80 border border-border backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
+                      <div>
+                        <div class="text-sm text-muted-foreground">{stat.label}</div>
+                        <div class="text-3xl font-bold text-foreground mt-1">{stat.value}</div>
+                      </div>
+                      <div class="flex items-center gap-2 text-success">
+                        <TrendingUp class="w-5 h-5" />
+                        <span class="font-semibold">{stat.trend}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -353,35 +290,122 @@ import {
       </div>
     </section>
 
-    <section class="relative py-24 sm:py-32 bg-gradient-to-br from-primary via-secondary to-accent overflow-hidden">
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAgNi42MjctNS4zNzMgMTItMTIgMTJzLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyIDEyIDUuMzczIDEyIDEyem0wIDBjMC02LjYyNyA1LjM3My0xMiAxMi0xMnMxMiA1LjM3MyAxMiAxMi01LjM3MyAxMi0xMiAxMi0xMi01LjM3My0xMi0xMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-
-      <div class="container relative z-10 mx-auto px-4">
-        <div class="mx-auto max-w-4xl text-center space-y-12">
-          <div class="space-y-8">
-            <h2 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-white text-balance leading-tight">
-              Ready to Transform Your Family's Schedule?
+    <section class="relative py-32 overflow-hidden">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-7xl">
+          <div class="text-center space-y-6 mb-20">
+            <h2 class="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight">
+              <span class="block text-foreground">Get started in</span>
+              <span class="block gradient-text mt-2">under 2 minutes</span>
             </h2>
-            <p class="text-xl sm:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-              Join thousands of families who have eliminated scheduling chaos and reclaimed their time
+            <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Our streamlined onboarding makes family coordination instant
             </p>
           </div>
 
-          <div class="flex flex-col items-center gap-8">
-            <div class="w-full sm:w-auto transform hover:scale-105 transition-transform duration-200">
-              <GoogleSignInButton client:load />
+          <div class="grid md:grid-cols-3 gap-8 relative">
+            <div class="hidden md:block absolute top-1/2 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-primary via-secondary to-accent -translate-y-1/2"></div>
+
+            {[
+              {
+                step: "1",
+                title: "Sign In",
+                description: "One click with Google. Enterprise-grade security.",
+                color: "primary"
+              },
+              {
+                step: "2",
+                title: "Setup Family",
+                description: "Add children and invite your partner instantly.",
+                color: "secondary"
+              },
+              {
+                step: "3",
+                title: "Start Planning",
+                description: "Create events and enjoy automatic coordination.",
+                color: "accent"
+              }
+            ].map(item => (
+              <div class="relative text-center space-y-6 group">
+                <div class="relative inline-flex">
+                  <div class={`absolute inset-0 bg-gradient-to-br from-${item.color} to-${item.color}/60 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-50`}></div>
+                  <div class={`relative w-24 h-24 rounded-3xl bg-gradient-to-br from-${item.color} to-${item.color}/60 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
+                    <span class="text-5xl font-bold text-white">{item.step}</span>
+                  </div>
+                </div>
+                <h3 class="font-bold text-3xl text-foreground">{item.title}</h3>
+                <p class="text-lg text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-24 text-center">
+            <div class="inline-flex flex-col gap-8 p-12 rounded-3xl glass-effect border-2 border-primary/30 shadow-2xl max-w-3xl">
+              <div class="flex items-center justify-center gap-2">
+                {[1, 2, 3, 4, 5].map(() => (
+                  <Star class="w-7 h-7 fill-warning text-warning" />
+                ))}
+              </div>
+              <p class="text-2xl text-foreground leading-relaxed">
+                "Home Planner transformed our chaotic family life into smooth coordination.
+                <span class="text-primary font-semibold">Absolutely game-changing.</span>"
+              </p>
+              <div class="flex items-center justify-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary"></div>
+                <div class="text-left">
+                  <div class="text-sm font-semibold text-foreground">Sarah Martinez</div>
+                  <div class="text-xs text-muted-foreground">Parent of 3, New York</div>
+                </div>
+              </div>
             </div>
-            <div class="flex flex-col items-center gap-4">
-              <div class="flex items-center gap-3 text-white/90">
-                <CheckCircle2 class="w-5 h-5" />
-                <span class="text-sm font-medium">Free forever for families</span>
-                <span class="text-white/60">•</span>
-                <CheckCircle2 class="w-5 h-5" />
-                <span class="text-sm font-medium">No credit card required</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="relative py-32 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent animate-gradient"></div>
+      <div class="absolute inset-0" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMTZjMCA2LjYyNy01LjM3MyAxMi0xMiAxMnMtMTItNS4zNzMtMTItMTIgNS4zNzMtMTIgMTItMTIgMTIgNS4zNzMgMTIgMTJ6bTAgMGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEyLTUuMzczIDEyLTEyIDEyLTEyLTUuMzczLTEyLTEyeiIvPjwvZz48L2c+PC9zdmc+'); opacity: 0.3;"></div>
+
+      <div class="container relative z-10 mx-auto px-4">
+        <div class="mx-auto max-w-5xl text-center space-y-12">
+          <h2 class="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-tight">
+            Ready to transform your family's schedule?
+          </h2>
+          <p class="text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
+            Join thousands of families who eliminated chaos and reclaimed their time
+          </p>
+
+          <div class="flex flex-col items-center gap-8 pt-8">
+            <div class="flex flex-col sm:flex-row gap-6">
+              <div class="w-full sm:w-auto">
+                <GoogleSignInButton client:load />
               </div>
-              <div class="pt-4">
-                <LegalLinks client:load />
+              <button class="group px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border-2 border-white/30 hover:border-white/50 hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3">
+                <Video class="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
+                <span class="text-white font-semibold">Schedule Demo</span>
+              </button>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-8 text-white/90">
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5" />
+                <span class="font-medium">Free forever</span>
               </div>
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5" />
+                <span class="font-medium">No credit card</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5" />
+                <span class="font-medium">Cancel anytime</span>
+              </div>
+            </div>
+
+            <div class="pt-8">
+              <LegalLinks client:load />
             </div>
           </div>
         </div>
@@ -389,19 +413,50 @@ import {
     </section>
   </main>
 
-  <footer class="relative py-12 border-t border-border/50 bg-muted/30">
+  <footer class="relative py-16 border-t border-border/50">
     <div class="container mx-auto px-4">
-      <div class="text-center text-sm text-muted-foreground">
-        <p>© 2024 Home Planner. Made with care for modern families.</p>
+      <div class="max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-4 gap-12 mb-12">
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-foreground">Home Planner</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              The modern calendar for coordinated families.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="text-sm font-semibold text-foreground">Product</h4>
+            <ul class="space-y-3 text-sm text-muted-foreground">
+              <li><a href="#" class="hover:text-primary transition-colors">Features</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">Pricing</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">Security</a></li>
+            </ul>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="text-sm font-semibold text-foreground">Company</h4>
+            <ul class="space-y-3 text-sm text-muted-foreground">
+              <li><a href="#" class="hover:text-primary transition-colors">About</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">Blog</a></li>
+              <li><a href="#" class="hover:text-primary transition-colors">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="text-sm font-semibold text-foreground">Legal</h4>
+            <ul class="space-y-3 text-sm text-muted-foreground">
+              <li><a href="/privacy" class="hover:text-primary transition-colors">Privacy</a></li>
+              <li><a href="/terms" class="hover:text-primary transition-colors">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-border/50 text-center">
+          <p class="text-sm text-muted-foreground">
+            © 2024 Home Planner. Made with care for modern families.
+          </p>
+        </div>
       </div>
     </div>
   </footer>
 </div>
-
-<style>
-  .bg-grid-slate-100 {
-    background-image: linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
-                      linear-gradient(to bottom, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-</style>
