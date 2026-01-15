@@ -102,18 +102,24 @@ export function MarketingCalendar() {
     setIsLoading(true);
 
     try {
+      const formatDateForScheduleX = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+      };
+
       const filteredEvents = dummyEvents
         .filter((event) => selectedMembers.includes(event.person))
-        .map((event) => {
-          const member = familyMembers.find((m) => m.id === event.person);
-          return {
-            id: event.id,
-            title: event.title,
-            start: event.start.toISOString().slice(0, 16),
-            end: event.end.toISOString().slice(0, 16),
-            calendarId: event.person,
-          };
-        });
+        .map((event) => ({
+          id: event.id,
+          title: event.title,
+          start: formatDateForScheduleX(event.start),
+          end: formatDateForScheduleX(event.end),
+          calendarId: event.person,
+        }));
 
       console.log("Filtered events:", filteredEvents);
 
@@ -134,6 +140,10 @@ export function MarketingCalendar() {
         return acc;
       }, {} as Record<string, any>);
 
+      console.log("Calendars config:", calendarsConfig);
+      console.log("Current view:", currentView);
+      console.log("Selected date:", new Date().toISOString().slice(0, 10));
+
       const calendar = createCalendar({
         locale: "en-US",
         views: [viewWeek, viewDay],
@@ -141,6 +151,10 @@ export function MarketingCalendar() {
         selectedDate: new Date().toISOString().slice(0, 10),
         events: filteredEvents,
         calendars: calendarsConfig,
+        weekOptions: {
+          gridHeight: 800,
+          nDays: 7,
+        },
       });
 
       calendarRef.current.innerHTML = "";
@@ -310,7 +324,7 @@ export function MarketingCalendar() {
           )}
           <div
             ref={calendarRef}
-            className="sx-react-calendar-wrapper p-4 bg-background/50 backdrop-blur-sm min-h-[400px] animate-fade-in"
+            className="sx-react-calendar-wrapper p-4 bg-background/50 backdrop-blur-sm min-h-[600px] animate-fade-in"
             style={{
               "--sx-color-primary": "139 92 246",
               "--sx-color-on-primary": "255 255 255",
