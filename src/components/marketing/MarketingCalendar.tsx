@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { Temporal } from "@js-temporal/polyfill";
 import { createCalendar, viewWeek, viewDay } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
 import "../../styles/schedule-x-custom.css";
 import { Calendar, Users, Filter, ChevronDown } from "lucide-react";
 import { Badge } from "../ui/badge";
+
+if (typeof globalThis.Temporal === "undefined") {
+  (globalThis as any).Temporal = Temporal;
+}
 
 const familyMembers = [
   { id: "mom", name: "Sarah", color: "#8b5cf6", emoji: "👩" },
