@@ -291,64 +291,106 @@ import {
     </section>
 
     <section class="relative py-32 overflow-hidden">
-      <div class="container mx-auto px-4">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent"></div>
+
+      <div class="container relative z-10 mx-auto px-4">
         <div class="mx-auto max-w-7xl">
           <div class="text-center space-y-6 mb-20">
+            <Badge variant="outline" class="px-6 py-2 text-sm font-semibold bg-primary/10 border-primary/30">
+              <Zap class="w-4 h-4 inline mr-2" />
+              Lightning Fast Setup
+            </Badge>
             <h2 class="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight">
               <span class="block text-foreground">Get started in</span>
               <span class="block gradient-text mt-2">under 2 minutes</span>
             </h2>
             <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Our streamlined onboarding makes family coordination instant
+              Three simple steps to transform your family's scheduling
             </p>
           </div>
 
-          <div class="grid md:grid-cols-3 gap-8 relative">
-            <div class="hidden md:block absolute top-1/2 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-primary via-secondary to-accent -translate-y-1/2"></div>
-
+          <div class="max-w-5xl mx-auto space-y-8">
             {[
               {
-                step: "1",
-                title: "Sign In",
-                description: "One click with Google. Enterprise-grade security.",
-                color: "primary"
+                step: "01",
+                title: "Sign In Securely",
+                description: "One click with your Google account. No lengthy forms, no passwords to remember. Enterprise-grade security built in.",
+                color: "primary",
+                icon: Shield
               },
               {
-                step: "2",
-                title: "Setup Family",
-                description: "Add children and invite your partner instantly.",
-                color: "secondary"
+                step: "02",
+                title: "Setup Your Family",
+                description: "Add children's profiles, invite your partner, and customize settings. Everything in one intuitive wizard that takes 60 seconds.",
+                color: "secondary",
+                icon: Users
               },
               {
-                step: "3",
-                title: "Start Planning",
-                description: "Create events and enjoy automatic coordination.",
-                color: "accent"
+                step: "03",
+                title: "Start Coordinating",
+                description: "Create your first event, sync external calendars, and watch the magic happen. Real-time updates across all devices.",
+                color: "accent",
+                icon: Sparkles
               }
-            ].map(item => (
-              <div class="relative text-center space-y-6 group">
-                <div class="relative inline-flex">
-                  <div class={`absolute inset-0 bg-gradient-to-br from-${item.color} to-${item.color}/60 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-50`}></div>
-                  <div class={`relative w-24 h-24 rounded-3xl bg-gradient-to-br from-${item.color} to-${item.color}/60 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
-                    <span class="text-5xl font-bold text-white">{item.step}</span>
+            ].map((item, index) => (
+              <div class="relative group">
+                <div class="glass-effect rounded-3xl p-8 md:p-10 border-2 border-border hover:border-primary/50 transition-all duration-500 hover:shadow-2xl">
+                  <div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
+                    <div class="relative flex-shrink-0">
+                      <div class={`absolute inset-0 bg-gradient-to-br from-${item.color} to-${item.color}/60 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 transition-opacity duration-500`}></div>
+                      <div class={`relative w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-${item.color} to-${item.color}/60 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500`}>
+                        <item.icon class="w-10 h-10 md:w-12 md:h-12 text-white" />
+                      </div>
+                    </div>
+
+                    <div class="flex-1 space-y-3">
+                      <div class="flex items-center gap-4">
+                        <span class={`text-sm font-bold px-4 py-1.5 rounded-full bg-${item.color}/20 text-${item.color}`}>
+                          STEP {item.step}
+                        </span>
+                      </div>
+                      <h3 class="text-3xl md:text-4xl font-bold text-foreground">
+                        {item.title}
+                      </h3>
+                      <p class="text-lg text-muted-foreground leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    <div class="hidden md:flex items-center justify-center">
+                      <div class={`w-12 h-12 rounded-2xl bg-gradient-to-br from-${item.color}/20 to-${item.color}/10 border-2 border-${item.color}/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                        <ArrowRight class={`w-6 h-6 text-${item.color}`} />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <h3 class="font-bold text-3xl text-foreground">{item.title}</h3>
-                <p class="text-lg text-muted-foreground leading-relaxed max-w-xs mx-auto">
-                  {item.description}
-                </p>
+
+                {index < 2 && (
+                  <div class="hidden md:flex justify-center py-4">
+                    <div class="w-0.5 h-8 bg-gradient-to-b from-primary via-secondary to-accent"></div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          <div class="mt-24 text-center">
-            <div class="inline-flex flex-col gap-8 p-12 rounded-3xl glass-effect border-2 border-primary/30 shadow-2xl max-w-3xl">
+          <div class="mt-24 flex flex-col items-center gap-8">
+            <div class="text-center space-y-4">
+              <p class="text-2xl font-semibold text-foreground">
+                Ready to get started?
+              </p>
+              <p class="text-muted-foreground">
+                Join thousands of families already using Home Planner
+              </p>
+            </div>
+
+            <div class="inline-flex flex-col gap-8 p-12 rounded-3xl glass-effect border-2 border-primary/30 shadow-2xl max-w-3xl w-full">
               <div class="flex items-center justify-center gap-2">
                 {[1, 2, 3, 4, 5].map(() => (
                   <Star class="w-7 h-7 fill-warning text-warning" />
                 ))}
               </div>
-              <p class="text-2xl text-foreground leading-relaxed">
+              <p class="text-2xl text-foreground leading-relaxed text-center">
                 "Home Planner transformed our chaotic family life into smooth coordination.
                 <span class="text-primary font-semibold">Absolutely game-changing.</span>"
               </p>
