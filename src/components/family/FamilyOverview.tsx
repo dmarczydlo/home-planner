@@ -66,11 +66,13 @@ export function FamilyOverview({ familyId }: FamilyOverviewProps) {
 
   if (isLoading && !familyDetails) {
     return (
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        <div className="space-y-6">
-          <div className="h-32 bg-muted animate-pulse rounded-lg" />
-          <div className="h-64 bg-muted animate-pulse rounded-lg" />
-          <div className="h-64 bg-muted animate-pulse rounded-lg" />
+      <div className="min-h-screen pt-20 bg-background">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
+          <div className="space-y-6">
+            <div className="h-32 bg-muted animate-pulse rounded-lg" />
+            <div className="h-64 bg-muted animate-pulse rounded-lg" />
+            <div className="h-64 bg-muted animate-pulse rounded-lg" />
+          </div>
         </div>
       </div>
     );
@@ -78,13 +80,15 @@ export function FamilyOverview({ familyId }: FamilyOverviewProps) {
 
   if (error && !familyDetails) {
     return (
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold mb-2">Failed to load family</h2>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <button onClick={() => refreshFamily()} className="text-primary hover:underline">
-            Try again
-          </button>
+      <div className="min-h-screen pt-20 bg-background">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold mb-2 text-foreground">Failed to load family</h2>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <button onClick={() => refreshFamily()} className="text-primary hover:underline">
+              Try again
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -96,8 +100,9 @@ export function FamilyOverview({ familyId }: FamilyOverviewProps) {
 
   return (
     <>
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        <div className="space-y-6">
+      <div className="min-h-screen pt-20 bg-background">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
+          <div className="space-y-6">
           <FamilyHeader family={familyDetails} />
 
           <MembersList
@@ -119,6 +124,7 @@ export function FamilyOverview({ familyId }: FamilyOverviewProps) {
           {invitations.length > 0 && (
             <InvitationsList invitations={invitations} isAdmin={isAdmin} onCancel={cancelInvitation} />
           )}
+          </div>
         </div>
       </div>
 

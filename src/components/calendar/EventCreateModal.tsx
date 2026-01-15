@@ -191,7 +191,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     if (isAllDay) {
       const date = new Date(dateTimeString);
       if (isEndTime) {
-        // For all-day events, set end time to end of day
         date.setHours(23, 59, 59, 999);
       } else {
         date.setHours(0, 0, 0, 0);
@@ -208,33 +207,30 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
       onClick={handleClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto"
+        className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Create New Event</h2>
+        <div className="flex items-center justify-between p-6 border-b border-primary/20">
+          <h2 className="text-xl font-semibold text-foreground">Create New Event</h2>
           <button
             onClick={handleClose}
             disabled={isSubmitting}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg hover:bg-card/60 transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
-          {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
               Event Title *
             </label>
             <input
@@ -243,13 +239,12 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               required
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               placeholder="Enter event title"
               disabled={isSubmitting}
             />
           </div>
 
-          {/* All Day Toggle */}
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -259,7 +254,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
                 const isAllDay = e.target.checked;
                 let newEndTime = formData.endTime;
                 
-                // If enabling all-day and start/end are same date, keep them the same
                 if (isAllDay && formData.startTime && formData.endTime) {
                   const startDate = new Date(formData.startTime);
                   const endDate = new Date(formData.endTime);
@@ -270,17 +264,16 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
                 
                 setFormData({ ...formData, isAllDay, endTime: newEndTime });
               }}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-primary border-primary/20 rounded focus:ring-primary"
               disabled={isSubmitting}
             />
-            <label htmlFor="isAllDay" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="isAllDay" className="ml-2 text-sm font-medium text-foreground">
               All day event
             </label>
           </div>
 
-          {/* Start Time */}
           <div>
-            <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="startTime" className="block text-sm font-medium text-foreground mb-1">
               Start Time *
             </label>
             <input
@@ -290,7 +283,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               value={formData.startTime || getDefaultStartTime()}
               onChange={(e) => {
                 const newStartTime = e.target.value;
-                // If all-day and end time is same as old start time, update end time too
                 let newEndTime = formData.endTime;
                 if (formData.isAllDay && formData.startTime && formData.endTime) {
                   const oldStartDate = new Date(formData.startTime);
@@ -301,14 +293,13 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
                 }
                 setFormData({ ...formData, startTime: newStartTime, endTime: newEndTime });
               }}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               disabled={isSubmitting}
             />
           </div>
 
-          {/* End Time */}
           <div>
-            <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="endTime" className="block text-sm font-medium text-foreground mb-1">
               End Time *
             </label>
             <input
@@ -317,64 +308,59 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               required
               value={formData.endTime || getDefaultEndTime()}
               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               disabled={isSubmitting}
             />
           </div>
 
-          {/* Event Type */}
           <div>
-            <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="eventType" className="block text-sm font-medium text-foreground mb-1">
               Event Type
             </label>
             <select
               id="eventType"
               value={formData.eventType}
               onChange={(e) => setFormData({ ...formData, eventType: e.target.value as "elastic" | "blocker" })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               disabled={isSubmitting}
             >
               <option value="elastic">Elastic</option>
               <option value="blocker">Blocker</option>
             </select>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-xs text-muted-foreground">
               Blocker events prevent scheduling conflicts, elastic events are flexible
             </p>
           </div>
 
-          {/* Participants */}
           <ParticipantSelector
             familyId={familyId}
             selectedParticipants={participants}
             onSelectionChange={setParticipants}
           />
 
-          {/* Recurrence */}
           <RecurrenceEditor
             value={recurrence}
             onChange={setRecurrence}
             startDate={formData.startTime || getDefaultStartTime()}
           />
 
-          {/* Conflict Warning */}
           {formData.eventType === "blocker" && (
             <ConflictWarning conflicts={conflicts} isValidating={isValidating} />
           )}
 
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 border border-primary/20 rounded-lg text-foreground hover:bg-card/60 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || hasConflicts}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Creating..." : "Create Event"}
             </button>

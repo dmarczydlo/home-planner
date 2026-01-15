@@ -19,13 +19,15 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:onboarding": "playwright test e2e/onboarding",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "check:colors": "node scripts/check-colors.js"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
     "@astrojs/react": "^4.3.1",
     "@astrojs/sitemap": "^3.5.1",
     "@hookform/resolvers": "^5.2.2",
+    "@js-temporal/polyfill": "^0.5.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -41,6 +43,8 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
+    "@schedule-x/calendar": "^4.0.1",
+    "@schedule-x/theme-default": "^4.0.1",
     "@supabase/supabase-js": "^2.78.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^19.1.12",

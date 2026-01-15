@@ -49,14 +49,14 @@ export function CalendarCard({ calendar, syncStatus, onSync, onDisconnect }: Cal
   const getProviderIcon = () => {
     if (calendar.provider === "google") {
       return (
-        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-          <CalendarIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+          <CalendarIcon className="h-5 w-5 text-primary" />
         </div>
       );
     }
     return (
-      <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-        <CalendarIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+      <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+        <CalendarIcon className="h-5 w-5 text-secondary" />
       </div>
     );
   };
@@ -126,26 +126,26 @@ export function CalendarCard({ calendar, syncStatus, onSync, onDisconnect }: Cal
 
   return (
     <>
-      <Card>
+      <Card className="glass-effect border-primary/20">
         <CardHeader className="pb-3">
           <div className="flex items-start gap-3">
             {getProviderIcon()}
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 dark:text-white truncate">{getProviderName()}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{calendar.account_email}</p>
+              <h3 className="font-semibold text-foreground truncate">{getProviderName()}</h3>
+              <p className="text-sm text-muted-foreground truncate">{calendar.account_email}</p>
             </div>
             {getSyncStatusBadge()}
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-sm text-muted-foreground">
             <p>Last synced: {getLastSyncedText()}</p>
           </div>
 
           {hasError && calendar.error_message && (
-            <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-              <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-600 dark:text-red-400">{calendar.error_message}</p>
+            <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-md">
+              <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-destructive">{calendar.error_message}</p>
             </div>
           )}
 
@@ -174,7 +174,7 @@ export function CalendarCard({ calendar, syncStatus, onSync, onDisconnect }: Cal
               disabled={isSyncing}
               variant="outline"
               size="sm"
-              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               Disconnect
             </Button>

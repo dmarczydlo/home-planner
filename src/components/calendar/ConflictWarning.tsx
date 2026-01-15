@@ -9,10 +9,10 @@ interface ConflictWarningProps {
 export function ConflictWarning({ conflicts, isValidating }: ConflictWarningProps) {
   if (isValidating) {
     return (
-      <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+      <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 animate-pulse" />
-          <p className="text-sm text-yellow-600 dark:text-yellow-400">Checking for conflicts...</p>
+          <AlertTriangle className="h-4 w-4 text-warning animate-pulse" />
+          <p className="text-sm text-warning">Checking for conflicts...</p>
         </div>
       </div>
     );
@@ -28,14 +28,14 @@ export function ConflictWarning({ conflicts, isValidating }: ConflictWarningProp
   };
 
   return (
-    <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+    <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
       <div className="flex items-start gap-2 mb-3">
-        <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+        <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-1">
+          <p className="text-sm font-medium text-destructive mb-1">
             Cannot save: This blocker event conflicts with {conflicts.length} existing event{conflicts.length > 1 ? "s" : ""}
           </p>
-          <p className="text-xs text-red-700 dark:text-red-300">
+          <p className="text-xs text-destructive/80">
             Save button is disabled until conflict is resolved. Adjust the time to continue.
           </p>
         </div>
@@ -45,14 +45,14 @@ export function ConflictWarning({ conflicts, isValidating }: ConflictWarningProp
         {conflicts.map((conflict) => (
           <div
             key={conflict.id}
-            className="p-2 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700"
+            className="p-2 glass-effect rounded border border-destructive/30"
           >
-            <p className="text-sm font-medium text-gray-900 dark:text-white">{conflict.title}</p>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-sm font-medium text-foreground">{conflict.title}</p>
+            <p className="text-xs text-muted-foreground">
               {formatTime(conflict.start_time)} - {formatTime(conflict.end_time)}
             </p>
             {conflict.participants.length > 0 && (
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 With: {conflict.participants.map((p) => p.name).join(", ")}
               </p>
             )}

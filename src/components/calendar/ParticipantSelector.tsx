@@ -91,12 +91,12 @@ export function ParticipantSelector({
   if (isLoading) {
     return (
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           Participants
         </label>
         <div className="animate-pulse space-y-2">
-          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="h-10 bg-muted rounded"></div>
+          <div className="h-10 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -119,12 +119,12 @@ export function ParticipantSelector({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label className="block text-sm font-medium text-foreground mb-2">
         Participants
       </label>
-      <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2">
+      <div className="space-y-2 max-h-48 overflow-y-auto border border-primary/20 rounded-lg p-2 glass-effect scrollbar-modern">
         {allParticipants.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+          <p className="text-sm text-muted-foreground text-center py-4">
             No participants available
           </p>
         ) : (
@@ -136,7 +136,7 @@ export function ParticipantSelector({
             return (
               <div
                 key={`${participant.type}-${participant.id}`}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-card/60 cursor-pointer transition-colors"
                 onClick={() => handleToggle(participant.id, participant.type)}
               >
                 <Checkbox
@@ -146,15 +146,15 @@ export function ParticipantSelector({
                 />
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={participant.avatarUrl || undefined} alt={participant.name} />
-                  <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs">
+                  <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                     {getInitials(participant.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {participant.name}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {participant.type === "user" ? "Family Member" : "Child"}
                   </p>
                 </div>

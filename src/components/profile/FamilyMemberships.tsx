@@ -15,7 +15,7 @@ export function FamilyMemberships({
   if (families.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">No family memberships</p>
+        <p className="text-muted-foreground">No family memberships</p>
       </div>
     );
   }

@@ -86,9 +86,9 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
 
   if (isLoading) {
     return (
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-primary/20">
         <div className="animate-pulse flex space-x-4">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+          <div className="h-4 bg-muted rounded w-1/4"></div>
         </div>
       </div>
     );
@@ -98,34 +98,34 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
   const allSelected = selectedCount === members.length;
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700">
+    <div className="border-b border-primary/20 glass-effect backdrop-blur-xl">
       {/* Filter header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-card/40 transition-all duration-300"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-900 dark:text-white">
+          <span className="text-sm sm:text-base font-semibold text-foreground">
             Filter by Members
           </span>
           {selectedCount > 0 && selectedCount < members.length && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
+            <span className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-semibold bg-primary/20 text-primary border border-primary/30 rounded-full">
               {selectedCount} selected
             </span>
           )}
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-500" />
+          <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
         )}
       </button>
 
       {/* Filter content */}
       {isExpanded && (
-        <div className="px-4 pb-4 space-y-3">
+        <div className="px-4 sm:px-6 pb-4 space-y-3">
           {/* Select all option */}
-          <div className="flex items-center space-x-2 py-2 border-b border-gray-100 dark:border-gray-800">
+          <div className="flex items-center space-x-2 py-2 border-b border-primary/10">
             <Checkbox
               id="select-all"
               checked={allSelected}
@@ -133,7 +133,7 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
             />
             <Label
               htmlFor="select-all"
-              className="text-sm font-medium cursor-pointer"
+              className="text-sm font-semibold cursor-pointer text-foreground"
             >
               {allSelected ? "Deselect All" : "Select All"}
             </Label>
@@ -147,7 +147,7 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
               return (
                 <div
                   key={member.id}
-                  className="flex items-center space-x-2 py-1"
+                  className="flex items-center space-x-2 py-1.5 hover:bg-card/30 rounded-lg px-2 transition-colors"
                 >
                   <Checkbox
                     id={`member-${member.id}`}
@@ -156,17 +156,17 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
                   />
                   <Label
                     htmlFor={`member-${member.id}`}
-                    className="text-sm cursor-pointer flex items-center gap-2"
+                    className="text-sm cursor-pointer flex items-center gap-2 text-foreground"
                   >
                     {member.avatarUrl && (
                       <img
                         src={member.avatarUrl}
                         alt={member.name}
-                        className="w-6 h-6 rounded-full"
+                        className="w-6 h-6 rounded-full border border-primary/20"
                       />
                     )}
                     {member.name}
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       ({member.type})
                     </span>
                   </Label>

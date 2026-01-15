@@ -50,3 +50,20 @@ When modifying the directory structure, always update this section.
 - Consider using custom error types or error factories for consistent error handling.
 - Don't comment the code. Code should be readable
 - Use KISS and DRY principle
+
+## Styling and Design System
+
+### Color Usage
+- **ALWAYS use theme colors from CSS variables** - See `STYLING_GUIDE.md` and `.cursor/rules/styling.mdc`
+- **NEVER use hardcoded colors** like `text-gray-900`, `bg-white`, `bg-gray-50`, etc.
+- Use utility classes from `global.css` (`.glass-effect`, `.form-input`, `.card-modern`, etc.)
+- Theme automatically handles dark mode - do not use `dark:` variants for colors
+
+### Common Patterns
+- Modals: Use `.modal-container` or `.glass-effect`
+- Forms: Use `.form-input`, `.form-label`, `.form-description`
+- Cards: Use `.card-modern` or `.glass-effect`
+- Buttons: Use `.btn-primary`, `.btn-secondary`, `.btn-destructive`
+- Alerts: Use `.alert-error`, `.alert-warning`, `.alert-success`
+
+See `STYLING_GUIDE.md` for complete reference.

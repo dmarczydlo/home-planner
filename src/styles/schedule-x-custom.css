@@ -1,0 +1,513 @@
+/* STUNNING DARK THEME CALENDAR - Marketing Page Design */
+
+.sx-react-calendar-wrapper {
+  font-family: inherit;
+  color: oklch(0.98 0.005 280);
+  background: transparent !important;
+}
+
+/* Hide internal calendar header/navigation - we use external controls */
+.sx-react-calendar-wrapper .sx__calendar-header,
+.sx-react-calendar-wrapper .sx__calendar-header-wrapper,
+.sx-react-calendar-wrapper .sx__calendar-header__controls,
+.sx-react-calendar-wrapper .sx__calendar-header__date-picker,
+.sx-react-calendar-wrapper .sx__calendar-header__view-selection,
+.sx-react-calendar-wrapper .sx__calendar-header__navigation {
+  display: none !important;
+}
+
+.sx-react-calendar-wrapper .sx__calendar-wrapper {
+  background: transparent !important;
+  border: none;
+  border-radius: 0;
+}
+
+/* DARK BACKGROUND - Match marketing page */
+.sx-react-calendar-wrapper .sx__time-grid,
+.sx-react-calendar-wrapper .sx__date-grid,
+.sx-react-calendar-wrapper .sx__month-grid {
+  background: transparent !important;
+}
+
+/* Modern Day Headers - Dark theme with gradients */
+.sx-react-calendar-wrapper .sx__time-grid-day__header {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: none !important;
+  padding: 24px 20px;
+  font-weight: 700;
+  color: oklch(0.98 0.005 280);
+  position: relative;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent, 
+    oklch(0.25 0.02 280 / 0.3) 50%, 
+    transparent
+  );
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__header-date {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: oklch(0.98 0.005 280);
+  line-height: 1.1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__header-day-name {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: oklch(0.65 0.01 280);
+  font-weight: 800;
+  margin-top: 8px;
+  opacity: 0.6;
+}
+
+/* TODAY - Stunning glow effect */
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.2), 
+    oklch(0.55 0.28 300 / 0.15)
+  ) !important;
+  border-radius: 20px;
+  margin: 12px 8px;
+  padding: 20px 16px;
+  box-shadow: 
+    0 0 40px oklch(0.65 0.25 280 / 0.3),
+    0 0 80px oklch(0.65 0.25 280 / 0.15),
+    inset 0 0 30px oklch(0.65 0.25 280 / 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.1), 
+    transparent 50%,
+    oklch(0.55 0.28 300 / 0.1)
+  );
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header::after {
+  display: none;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header-date {
+  color: oklch(0.65 0.25 280);
+  text-shadow: 
+    0 0 20px oklch(0.65 0.25 280 / 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, oklch(0.65 0.25 280), oklch(0.55 0.28 300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day.sx__is-today .sx__time-grid-day__header-day-name {
+  color: oklch(0.65 0.25 280);
+  opacity: 0.9;
+}
+
+/* Events - Stunning glass morphism pills */
+.sx-react-calendar-wrapper .sx__event {
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 700;
+  opacity: 1 !important;
+  min-height: 40px;
+  overflow: hidden;
+  position: relative;
+  margin: 3px 6px;
+}
+
+.sx-react-calendar-wrapper .sx__event::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.sx-react-calendar-wrapper .sx__event::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.sx-react-calendar-wrapper .sx__event:hover {
+  transform: translateY(-4px) scale(1.03) !important;
+  box-shadow: 
+    0 16px 48px rgba(139, 92, 246, 0.5),
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+  z-index: 1000;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.sx-react-calendar-wrapper .sx__event:hover::before {
+  opacity: 1;
+}
+
+.sx-react-calendar-wrapper .sx__event:hover::after {
+  opacity: 1;
+}
+
+.sx-react-calendar-wrapper .sx__event-title {
+  font-size: 13px;
+  font-weight: 800;
+  padding: 10px 14px;
+  color: white !important;
+  text-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+  line-height: 1.5;
+}
+
+/* Time Axis - Minimal dark theme */
+.sx-react-calendar-wrapper .sx__time-grid__time-axis {
+  background: transparent !important;
+  border-right: none !important;
+  color: oklch(0.65 0.01 280);
+  font-size: 11px;
+  font-weight: 800;
+  padding-right: 24px;
+  position: relative;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, 
+    transparent, 
+    oklch(0.25 0.02 280 / 0.25) 20%, 
+    oklch(0.25 0.02 280 / 0.25) 80%, 
+    transparent
+  );
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis-hour {
+  border-top: none !important;
+  padding-top: 12px;
+  position: relative;
+  color: oklch(0.65 0.01 280);
+  opacity: 0.7;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis-hour::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 24px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent, 
+    oklch(0.25 0.02 280 / 0.2) 50%, 
+    transparent
+  );
+}
+
+.sx-react-calendar-wrapper .sx__time-grid__time-axis-hour:first-child::before {
+  display: none;
+}
+
+/* Time Grid Hours - Subtle dark dividers */
+.sx-react-calendar-wrapper .sx__time-grid-hour {
+  border-top: none !important;
+  background: transparent !important;
+  position: relative;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-hour::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent, 
+    oklch(0.25 0.02 280 / 0.15) 50%, 
+    transparent
+  );
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-hour:first-child::before {
+  display: none;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-hour:hover {
+  background: oklch(0.15 0.02 280 / 0.1) !important;
+}
+
+/* Day columns - no borders */
+.sx-react-calendar-wrapper .sx__time-grid-day__events {
+  border-right: none !important;
+  background: transparent !important;
+  position: relative;
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day__events::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, 
+    transparent, 
+    oklch(0.25 0.02 280 / 0.2) 20%, 
+    oklch(0.25 0.02 280 / 0.2) 80%, 
+    transparent
+  );
+}
+
+.sx-react-calendar-wrapper .sx__time-grid-day:last-child .sx__time-grid-day__events::after {
+  display: none;
+}
+
+/* Month Grid - Dark card design */
+.sx-react-calendar-wrapper .sx__month-grid-day {
+  border: none !important;
+  background: transparent !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 140px;
+  position: relative;
+  border-radius: 16px;
+  margin: 4px;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    oklch(0.15 0.02 280 / 0.4), 
+    oklch(0.15 0.02 280 / 0.2)
+  );
+  border-radius: 16px;
+  border: 1px solid oklch(0.25 0.02 280 / 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day:hover::before {
+  opacity: 1;
+  border-color: oklch(0.65 0.25 280 / 0.4);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day__header {
+  padding: 14px;
+  font-weight: 800;
+  color: oklch(0.98 0.005 280);
+  position: relative;
+  z-index: 1;
+  font-size: 18px;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day.sx__is-today {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.2), 
+    oklch(0.55 0.28 300 / 0.15)
+  ) !important;
+  border-radius: 16px;
+  box-shadow: 
+    0 0 30px oklch(0.65 0.25 280 / 0.25),
+    inset 0 0 30px oklch(0.65 0.25 280 / 0.08);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day.sx__is-today::before {
+  opacity: 1;
+  border-color: oklch(0.65 0.25 280 / 0.5);
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.25), 
+    oklch(0.55 0.28 300 / 0.2)
+  );
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day.sx__is-today .sx__month-grid-day__header {
+  color: oklch(0.65 0.25 280);
+  font-weight: 900;
+  text-shadow: 0 0 20px oklch(0.65 0.25 280 / 0.4);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-day__events {
+  padding: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-event {
+  border-radius: 10px;
+  margin-bottom: 5px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(16px);
+}
+
+.sx-react-calendar-wrapper .sx__month-grid-event:hover {
+  transform: translateX(6px) scale(1.08);
+  box-shadow: 
+    0 8px 24px rgba(139, 92, 246, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+/* Day View - Dark single day */
+.sx-react-calendar-wrapper .sx__date-grid-day {
+  border: none !important;
+  background: transparent !important;
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day__header {
+  background: transparent !important;
+  backdrop-filter: none;
+  padding: 32px;
+  border-bottom: none !important;
+  font-weight: 900;
+  font-size: 36px;
+  color: oklch(0.98 0.005 280);
+  letter-spacing: -0.04em;
+  position: relative;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day__header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 32px;
+  right: 32px;
+  height: 3px;
+  background: linear-gradient(to right, 
+    oklch(0.65 0.25 280 / 0.6), 
+    oklch(0.55 0.28 300 / 0.6),
+    transparent
+  );
+  border-radius: 2px;
+  box-shadow: 0 0 20px oklch(0.65 0.25 280 / 0.4);
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day.sx__is-today .sx__date-grid-day__header {
+  background: transparent !important;
+  color: oklch(0.65 0.25 280);
+  text-shadow: 
+    0 0 30px oklch(0.65 0.25 280 / 0.6),
+    0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.sx-react-calendar-wrapper .sx__date-grid-day.sx__is-today .sx__date-grid-day__header::after {
+  background: linear-gradient(to right, 
+    oklch(0.65 0.25 280), 
+    oklch(0.55 0.28 300),
+    transparent
+  );
+  box-shadow: 0 0 30px oklch(0.65 0.25 280 / 0.5);
+}
+
+/* Modern Scrollbar - Dark theme */
+.sx-react-calendar-wrapper ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar-track {
+  background: oklch(0.15 0.02 280 / 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280 / 0.7), 
+    oklch(0.55 0.28 300 / 0.7)
+  );
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 10px oklch(0.65 0.25 280 / 0.3);
+}
+
+.sx-react-calendar-wrapper ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.25 280), 
+    oklch(0.55 0.28 300)
+  );
+  background-clip: padding-box;
+  box-shadow: 0 0 20px oklch(0.65 0.25 280 / 0.5);
+}
+
+/* Remove all table styling */
+.sx-react-calendar-wrapper * {
+  border-collapse: separate;
+}
+
+.sx-react-calendar-wrapper table {
+  border-spacing: 0;
+  background: transparent !important;
+}
+
+/* Ensure all backgrounds are transparent/dark */
+.sx-react-calendar-wrapper .sx__time-grid-day,
+.sx-react-calendar-wrapper .sx__time-grid-hour,
+.sx-react-calendar-wrapper .sx__time-grid-day__events-container {
+  background: transparent !important;
+}
+
+/* Shimmer animation for today */
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
