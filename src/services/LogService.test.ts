@@ -64,9 +64,13 @@ describe("LogService", () => {
     });
 
     it("should return error if userId is missing", async () => {
+      // Arrange
       const query = { limit: 50, offset: 0 };
+
+      // Act
       const result = await logService.listLogs(query, "");
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ValidationError);
@@ -75,10 +79,14 @@ describe("LogService", () => {
     });
 
     it("should return error if user is not a member of specified family", async () => {
+      // Arrange
       const otherFamily = await familyRepo.create({ name: "Other Family" });
       const query = { family_id: otherFamily.id, limit: 50, offset: 0 };
+
+      // Act
       const result = await logService.listLogs(query, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ForbiddenError);
@@ -87,9 +95,13 @@ describe("LogService", () => {
     });
 
     it("should return all logs for admin user when filtering by family", async () => {
+      // Arrange
       const query = { family_id: familyId, limit: 50, offset: 0 };
+
+      // Act
       const result = await logService.listLogs(query, adminUserId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.logs.length).toBe(3);

@@ -27,11 +27,14 @@ describe("ChildService", () => {
 
   describe("listChildren", () => {
     it("should return children when user is a family member", async () => {
+      // Arrange
       const child1 = await childRepo.create({ family_id: familyId, name: "Alice" });
       const child2 = await childRepo.create({ family_id: familyId, name: "Bob" });
 
+      // Act
       const result = await childService.listChildren(familyId, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.children).toHaveLength(2);
@@ -43,8 +46,11 @@ describe("ChildService", () => {
     });
 
     it("should return empty array when family has no children", async () => {
+      // Arrange
+      // Act
       const result = await childService.listChildren(familyId, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.children).toHaveLength(0);
@@ -52,8 +58,11 @@ describe("ChildService", () => {
     });
 
     it("should return error if family ID is empty", async () => {
+      // Arrange
+      // Act
       const result = await childService.listChildren("", userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ValidationError);
@@ -62,9 +71,13 @@ describe("ChildService", () => {
     });
 
     it("should return error if family does not exist", async () => {
+      // Arrange
       const nonExistentFamilyId = "00000000-0000-0000-0000-000000000000";
+
+      // Act
       const result = await childService.listChildren(nonExistentFamilyId, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(NotFoundError);
@@ -73,9 +86,13 @@ describe("ChildService", () => {
     });
 
     it("should return error if user is not a family member", async () => {
+      // Arrange
       const otherFamily = await familyRepo.create({ name: "Other Family" });
+
+      // Act
       const result = await childService.listChildren(otherFamily.id, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ForbiddenError);
@@ -84,12 +101,15 @@ describe("ChildService", () => {
     });
 
     it("should return children ordered by created_at", async () => {
+      // Arrange
       const child1 = await childRepo.create({ family_id: familyId, name: "First" });
       await new Promise((resolve) => setTimeout(resolve, 10));
       const child2 = await childRepo.create({ family_id: familyId, name: "Second" });
 
+      // Act
       const result = await childService.listChildren(familyId, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.children).toHaveLength(2);
@@ -101,9 +121,13 @@ describe("ChildService", () => {
 
   describe("createChild", () => {
     it("should create a child successfully", async () => {
+      // Arrange
       const command = { name: "Alice" };
+
+      // Act
       const result = await childService.createChild(familyId, command, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.name).toBe("Alice");
@@ -114,9 +138,13 @@ describe("ChildService", () => {
     });
 
     it("should return error if family ID is empty", async () => {
+      // Arrange
       const command = { name: "Alice" };
+
+      // Act
       const result = await childService.createChild("", command, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ValidationError);
@@ -125,10 +153,14 @@ describe("ChildService", () => {
     });
 
     it("should return error if family does not exist", async () => {
+      // Arrange
       const nonExistentFamilyId = "00000000-0000-0000-0000-000000000000";
       const command = { name: "Alice" };
+
+      // Act
       const result = await childService.createChild(nonExistentFamilyId, command, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(NotFoundError);
@@ -137,10 +169,14 @@ describe("ChildService", () => {
     });
 
     it("should return error if user is not a family member", async () => {
+      // Arrange
       const otherFamily = await familyRepo.create({ name: "Other Family" });
       const command = { name: "Alice" };
+
+      // Act
       const result = await childService.createChild(otherFamily.id, command, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ForbiddenError);
@@ -149,9 +185,13 @@ describe("ChildService", () => {
     });
 
     it("should log child.create action", async () => {
+      // Arrange
       const command = { name: "Alice" };
+
+      // Act
       const result = await childService.createChild(familyId, command, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       const logs = logRepo.getLogs();
       expect(logs.length).toBe(1);
