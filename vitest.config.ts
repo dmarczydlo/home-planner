@@ -6,6 +6,7 @@ export default defineConfig({
     globals: true,
     environment: "node",
     include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    setupFiles: ["./src/test/setup.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
@@ -16,7 +17,20 @@ export default defineConfig({
         "**/*.config.*",
         "**/types.ts",
         "**/database.types.ts",
+        "**/test/**",
+        "**/e2e/**",
+        "**/*.test.ts",
+        "**/*.spec.ts",
       ],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
+    },
+    typecheck: {
+      tsconfig: "./tsconfig.json",
     },
   },
   resolve: {

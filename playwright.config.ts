@@ -16,12 +16,21 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
+    // Isolate browser contexts for each test
+    contextOptions: {
+      // Clear storage state for each test
+      storageState: undefined,
+    },
   },
 
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        // Ensure isolated browser contexts
+        viewport: { width: 1280, height: 720 },
+      },
     },
   ],
 
@@ -30,5 +39,7 @@ export default defineConfig({
     url: "http://localhost:4321",
     reuseExistingServer: !isCI,
     timeout: 120000,
+    stdout: "pipe",
+    stderr: "pipe",
   },
 });

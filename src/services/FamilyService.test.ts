@@ -3,6 +3,7 @@ import { FamilyService } from "./FamilyService";
 import { InMemoryFamilyRepository } from "@/repositories/implementations/in-memory/InMemoryFamilyRepository";
 import { InMemoryChildRepository } from "@/repositories/implementations/in-memory/InMemoryChildRepository";
 import { InMemoryLogRepository } from "@/repositories/implementations/in-memory/InMemoryLogRepository";
+import { InMemoryUserRepository } from "@/repositories/implementations/in-memory/InMemoryUserRepository";
 import { ValidationError, NotFoundError, ForbiddenError, DomainError } from "@/domain/errors";
 
 describe("FamilyService", () => {
@@ -10,13 +11,15 @@ describe("FamilyService", () => {
   let familyRepo: InMemoryFamilyRepository;
   let childRepo: InMemoryChildRepository;
   let logRepo: InMemoryLogRepository;
+  let userRepo: InMemoryUserRepository;
   let userId: string;
 
   beforeEach(() => {
     familyRepo = new InMemoryFamilyRepository();
     childRepo = new InMemoryChildRepository();
     logRepo = new InMemoryLogRepository();
-    familyService = new FamilyService(familyRepo, childRepo, logRepo);
+    userRepo = new InMemoryUserRepository();
+    familyService = new FamilyService(familyRepo, childRepo, logRepo, userRepo);
     userId = "user-123";
   });
 

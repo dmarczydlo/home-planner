@@ -24,12 +24,6 @@ pnpm exec playwright install
 pnpm test:e2e
 ```
 
-### Run only onboarding tests
-
-```bash
-pnpm test:e2e:onboarding
-```
-
 ### Run with UI mode (interactive)
 
 ```bash
@@ -61,93 +55,46 @@ e2e/
 ├── fixtures/
 │   ├── auth.ts              # Authentication mocking and helpers
 │   └── helpers.ts           # Test helper functions
-└── onboarding/
-    ├── 01-welcome.spec.ts           # Welcome step tests
-    ├── 02-connect-calendar.spec.ts  # Calendar connection tests
-    ├── 03-add-children.spec.ts      # Add children tests
-    ├── 04-invite-members.spec.ts    # Invite members tests
-    ├── 05-complete-flow.spec.ts     # Full flow integration tests
-    └── 06-navigation.spec.ts        # Navigation and state tests
+└── smoke.spec.ts            # Basic infrastructure verification tests
 ```
 
-## Authentication Strategy
+## Current Tests
 
-Tests use **mocked OAuth** by default for fast, reliable execution without external dependencies.
+### Smoke Tests (`smoke.spec.ts`)
 
-The mock authentication:
-- Intercepts Supabase OAuth requests
-- Returns fake tokens and user data
-- Works entirely offline
-- Perfect for CI/CD pipelines
-
-See `.ai/oauth-testing-strategies.md` for alternative authentication strategies.
-
-## Test Coverage
-
-### Onboarding Flow (6 test suites, 50+ tests)
-
-1. **Welcome Step** (8 tests)
-   - Display and content validation
-   - Form validation (empty, too long)
-   - Family creation
-   - Error handling
-   - Loading states
-
-2. **Connect Calendar Step** (10 tests)
-   - Provider options display
-   - Skip functionality
-   - OAuth callback handling (success/error)
-   - Multiple calendars
-   - State persistence
-
-3. **Add Children Step** (12 tests)
-   - Form display and validation
-   - Adding/removing children
-   - Multiple children
-   - Date validation
-   - Error handling
-
-4. **Invite Members Step** (11 tests)
-   - Email validation
-   - Sending invitations
-   - Multiple invitations
-   - Duplicate handling
-   - Error handling
-
-5. **Complete Flow** (10 tests)
-   - Minimal onboarding
-   - Full onboarding
-   - Multiple children and invitations
-   - Error recovery
-   - Progress persistence
-   - Calendar connection flow
-
-6. **Navigation and State** (11 tests)
-   - Back/forward navigation
-   - Data preservation
-   - Progress resumption
-   - Browser navigation
-   - LocalStorage management
-   - Corrupted data handling
+Basic infrastructure verification tests:
+- Verifies test environment is working
+- Checks Playwright configuration
+- Validates page loading and basic interactions
 
 ## Writing New Tests
 
-### Use the test fixtures
+### Basic test structure
 
 ```typescript
-import { test, expect } from "../fixtures/auth";
-import { completeSteps, addChild } from "../fixtures/helpers";
+import { test, expect } from "@playwright/test";
 
-test("my new test", async ({ authenticatedPage }) => {
-  // authenticatedPage is already authenticated
-  await authenticatedPage.goto("/onboarding/welcome");
+test("my new test", async ({ page }) => {
+  await page.goto("/");
   // ... test code
 });
 ```
 
-### Available helpers
+### Using fixtures (for authenticated tests)
 
-- `completeWelcomeStep(page, familyName?)` - Complete step 1
+```typescript
+import { test, expect } from "./fixtures/auth";
+
+test("my authenticated test", async ({ authenticatedPage }) => {
+  // authenticatedPage is already authenticated
+  await authenticatedPage.goto("/dashboard");
+  // ... test code
+});
+```
+
+### Available helpers (from fixtures/helpers.ts)
+
+- `completeWelcomeStep(page, familyName?)` - Complete onboarding step 1
 - `completeSteps(page, upToStep)` - Complete multiple steps
 - `addChild(page, name, dateOfBirth)` - Add a child
 - `sendInvitation(page, email)` - Send an invitation
@@ -233,12 +180,14 @@ await authenticatedPage.pause(); // Opens Playwright Inspector
 
 ## Best Practices
 
-1. **Use fixtures** - Always use `authenticatedPage` from fixtures
+1. **Use fixtures** - Use `authenticatedPage` from fixtures when authentication is needed
 2. **Wait for elements** - Use `expect().toBeVisible()` instead of `waitForTimeout()`
 3. **Unique identifiers** - Use `generateTestEmail()` and timestamps for unique data
 4. **Clean state** - Tests should be independent and not rely on previous tests
 5. **Meaningful assertions** - Test behavior, not implementation details
 6. **Error messages** - Use descriptive error messages in assertions
+7. **Page Object Model** - Consider using Page Object Model for complex flows
+8. **Locators** - Use locators for resilient element selection
 
 ## Troubleshooting
 
