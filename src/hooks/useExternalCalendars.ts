@@ -172,7 +172,9 @@ export function useExternalCalendars(): UseExternalCalendarsReturn {
   );
 
   useEffect(() => {
-    loadCalendars();
+    loadCalendars().catch((err) => {
+      console.error("Failed to load calendars on mount:", err);
+    });
   }, [loadCalendars]);
 
   return {

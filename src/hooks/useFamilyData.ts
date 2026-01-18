@@ -249,8 +249,14 @@ export function useFamilyData(familyId: string | null): UseFamilyDataReturn {
 
   useEffect(() => {
     if (familyId) {
-      refreshFamily();
-      refreshInvitations();
+      Promise.all([
+        refreshFamily().catch((err) => {
+          console.error("Failed to refresh family on mount:", err);
+        }),
+        refreshInvitations().catch((err) => {
+          console.error("Failed to refresh invitations on mount:", err);
+        })
+      ]);
     }
   }, [familyId, refreshFamily, refreshInvitations]);
 

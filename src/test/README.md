@@ -1,79 +1,148 @@
-# Test Setup and Utilities
+# Test Utilities and Helpers
 
-This directory contains test setup files and utilities for unit and integration tests.
+This directory contains test utilities, helpers, and setup files for unit testing React components and hooks.
 
 ## Structure
 
-- `setup.ts` - Global test setup that runs before all tests
-- `utils.ts` - Reusable test utilities and helper functions
-- `README.md` - This file
-
-## Test Environment
-
-Tests use **Vitest** with the following configuration:
-
-- **Node environment**: Default for service and repository tests
-- **jsdom environment**: For React component tests (use `// @vitest-environment jsdom` comment)
-
-## Writing Tests
-
-### Service Tests (Node Environment)
-
-```typescript
-import { describe, it, expect, beforeEach } from "vitest";
-import { MyService } from "./MyService";
-
-describe("MyService", () => {
-  it("should do something", () => {
-    expect(true).toBe(true);
-  });
-});
+```
+src/test/
+├── setup.ts              # Global test setup (runs before all tests)
+├── utils.ts              # General test utilities (for service tests)
+├── utils/
+│   ├── render.tsx        # Custom render function with providers
+│   ├── mock-data.ts      # Mock data factories
+│   ├── accessibility.ts  # Accessibility testing helpers
+│   └── index.ts         # Central export point
+└── README.md             # This file
 ```
 
-### Component Tests (jsdom Environment)
+## Usage
+
+### Custom Render Function
+
+Use the custom `render` function instead of the default from `@testing-library/react`. It automatically wraps components with necessary providers:
 
 ```typescript
-import { describe, it, expect } from "vitest";
-// @vitest-environment jsdom
-import { render } from "@testing-library/react";
+import { render, screen } from "@/test/utils/render";
 import { MyComponent } from "./MyComponent";
 
-describe("MyComponent", () => {
-  it("should render correctly", () => {
-    const { container } = render(<MyComponent />);
-    expect(container).toBeTruthy();
+test("renders component", () => {
+  render(<MyComponent />);
+  expect(screen.getByText("Hello")).toBeInTheDocument();
+});
+```
+
+To skip provider wrapping (e.g., when testing providers themselves):
+
+```typescript
+render(<MyComponent />, { withProviders: false });
+```
+
+### Mock Data Factories
+
+Create test data easily:
+
+```typescript
+import { createMockUser, createMockFamily, createMockEvent } from "@/test/utils/mock-data";
+
+const user = createMockUser({ email: "custom@example.com" });
+const family = createMockFamily({ name: "Custom Family" });
+const event = createMockEvent({ title: "Custom Event" });
+```
+
+### Mock Functions
+
+Use Vitest's `vi` for mocking:
+
+```typescript
+import { vi } from "vitest";
+
+// Mock a module
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: vi.fn(),
+}));
+
+// Create a mock function
+const mockFn = vi.fn();
+```
+
+### Testing Patterns
+
+#### AAA Pattern (Arrange-Act-Assert)
+
+```typescript
+test("example test", () => {
+  // Arrange
+  const mockFn = vi.fn();
+  render(<Component onClick={mockFn} />);
+  
+  // Act
+  fireEvent.click(screen.getByRole("button"));
+  
+  // Assert
+  expect(mockFn).toHaveBeenCalledTimes(1);
+});
+```
+
+#### Testing User Interactions
+
+```typescript
+import { userEvent } from "@testing-library/user-event";
+
+test("user interaction", async () => {
+  const user = userEvent.setup();
+  render(<Component />);
+  
+  await user.click(screen.getByRole("button"));
+  await user.type(screen.getByLabelText("Email"), "test@example.com");
+});
+```
+
+#### Testing Async Behavior
+
+```typescript
+import { waitFor } from "@/test/utils/render";
+
+test("async behavior", async () => {
+  render(<AsyncComponent />);
+  
+  await waitFor(() => {
+    expect(screen.getByText("Loaded")).toBeInTheDocument();
   });
 });
 ```
 
-## Test Utilities
-
-Import utilities from `@/test/utils`:
+#### Testing Accessibility
 
 ```typescript
-import { createTestUser, createTestFamily, delay } from "@/test/utils";
+import { assertNoAccessibilityViolations } from "@/test/utils/accessibility";
 
-const user = createTestUser({ email: "custom@example.com" });
-const family = createTestFamily({ name: "Custom Family" });
-await delay(100); // Wait 100ms
+test("accessibility", async () => {
+  const { container } = render(<Component />);
+  await assertNoAccessibilityViolations(<Component />);
+});
 ```
 
-## Coverage Targets
+## Environment Setup
 
-- **Unit Tests**: ≥ 80% coverage
-- **Integration Tests**: ≥ 70% coverage
-- **Critical Paths**: 100% coverage
+Component tests use the `jsdom` environment. Add this comment at the top of component test files:
 
-Run coverage report:
-```bash
-pnpm test:coverage
+```typescript
+// @vitest-environment jsdom
 ```
 
 ## Best Practices
 
-1. **Use setup files** for global mocks and configuration
-2. **Prefer spies over mocks** when you only need to verify interactions
-3. **Use factory patterns** for `vi.mock()` implementations
-4. **Clean up mocks** in `afterEach` hooks
-5. **Follow Arrange-Act-Assert** pattern for test structure
-6. **Use descriptive test names** that explain what is being tested
+1. **Use descriptive test names**: Test names should clearly describe what is being tested
+2. **Follow AAA pattern**: Arrange, Act, Assert
+3. **Test behavior, not implementation**: Focus on what users see and interact with
+4. **Mock dependencies**: Use `vi.mock()` to mock external dependencies
+5. **Clean up**: Mocks are automatically cleaned up after each test
+6. **Use proper queries**: Prefer `getByRole`, `getByLabelText` over `getByTestId`
+7. **Test accessibility**: Ensure components are accessible to all users
+
+## Examples
+
+See example test files:
+- `src/components/auth/GoogleSignInButton.test.tsx`
+- `src/components/auth/AuthErrorDisplay.test.tsx`

@@ -27,10 +27,23 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     end_date: string;
   } | null>(null);
 
+  const getDefaultStartTime = () => {
+    const now = new Date(state.currentDate);
+    now.setMinutes(0, 0, 0);
+    return now.toISOString().slice(0, 16);
+  };
+
+  const getDefaultEndTime = () => {
+    const now = new Date(state.currentDate);
+    now.setHours(now.getHours() + 1);
+    now.setMinutes(0, 0, 0);
+    return now.toISOString().slice(0, 16);
+  };
+
   const [formData, setFormData] = useState({
     title: "",
-    startTime: "",
-    endTime: "",
+    startTime: getDefaultStartTime(),
+    endTime: getDefaultEndTime(),
     isAllDay: false,
     eventType: "elastic" as "elastic" | "blocker",
   });
@@ -99,6 +112,19 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     }
   }, [formData.eventType, formData.title, formData.startTime, formData.endTime, formData.isAllDay, participants, validateEvent]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen && !isSubmitting) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
+    }
+  }, [isOpen, isSubmitting, onClose]);
+
   if (!isOpen) return null;
 
   const hasConflicts = conflicts.length > 0 && formData.eventType === "blocker";
@@ -152,8 +178,8 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
 
       setFormData({
         title: "",
-        startTime: "",
-        endTime: "",
+        startTime: getDefaultStartTime(),
+        endTime: getDefaultEndTime(),
         isAllDay: false,
         eventType: "elastic",
       });
@@ -172,19 +198,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
       onClose();
       setError(null);
     }
-  };
-
-  const getDefaultStartTime = () => {
-    const now = new Date(state.currentDate);
-    now.setMinutes(0, 0, 0);
-    return now.toISOString().slice(0, 16);
-  };
-
-  const getDefaultEndTime = () => {
-    const now = new Date(state.currentDate);
-    now.setHours(now.getHours() + 1);
-    now.setMinutes(0, 0, 0);
-    return now.toISOString().slice(0, 16);
   };
 
   const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime: boolean = false): string => {
@@ -280,7 +293,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               type={formData.isAllDay ? "date" : "datetime-local"}
               id="startTime"
               required
-              value={formData.startTime || getDefaultStartTime()}
+              value={formData.startTime}
               onChange={(e) => {
                 const newStartTime = e.target.value;
                 let newEndTime = formData.endTime;
@@ -306,7 +319,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               type={formData.isAllDay ? "date" : "datetime-local"}
               id="endTime"
               required
-              value={formData.endTime || getDefaultEndTime()}
+              value={formData.endTime}
               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
               className="w-full px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               disabled={isSubmitting}
@@ -341,7 +354,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
           <RecurrenceEditor
             value={recurrence}
             onChange={setRecurrence}
-            startDate={formData.startTime || getDefaultStartTime()}
+            startDate={formData.startTime}
           />
 
           {formData.eventType === "blocker" && (
