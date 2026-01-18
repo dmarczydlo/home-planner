@@ -10,6 +10,7 @@ A web application designed to help families better coordinate and plan their sch
 - [Tech Stack](#tech-stack)
 - [Getting Started Locally](#getting-started-locally)
 - [Available Scripts](#available-scripts)
+- [Testing](#testing)
 - [Project Scope](#project-scope)
 - [Architecture](#architecture)
 - [Project Status](#project-status)
@@ -19,9 +20,9 @@ A web application designed to help families better coordinate and plan their sch
 
 | Category     | Technology                                 |
 | ------------ | ------------------------------------------ |
-| **Frontend** | Astro 5, React 19, TypeScript 5, Shadcn/ui |
+| **Frontend** | Astro 5, React 19, TypeScript 5, Shadcn/ui, Tailwind 4 |
 | **Backend**  | Supabase, PostgreSQL                       |
-| **Testing**  | Playwright (E2E), Vitest (Unit)            |
+| **Testing**  | Playwright (E2E), Vitest (Unit/Integration) |
 | **CI/CD**    | GitHub Actions                             |
 
 ## Getting Started Locally
@@ -68,20 +69,50 @@ A web application designed to help families better coordinate and plan their sch
 
 The application should now be running on [http://localhost:4321](http://localhost:4321).
 
+## Testing
+
+The project uses a comprehensive testing strategy with multiple test types:
+
+### Test Types
+
+- **Unit Tests**: Test individual components, services, and functions in isolation using Vitest
+- **Integration Tests**: Test interactions between components and external systems using Vitest
+- **End-to-End Tests**: Test complete user workflows from UI to database using Playwright
+
+### Test Coverage Targets
+
+- **Unit Tests**: Minimum 80% code coverage
+- **Integration Tests**: Minimum 70% code coverage
+- **Critical Paths**: 100% coverage
+
+### Test Tools
+
+- **Vitest**: Fast unit and integration testing with TypeScript support and coverage reporting
+- **Playwright**: Cross-browser E2E testing with mobile emulation and network interception
+
+### Test Environment
+
+Tests can run against:
+- **In-memory repositories**: For fast unit testing
+- **Test database**: For integration testing
+- **Staging environment**: For E2E testing
+
+For detailed test scenarios and test plan, see [`.ai/test-plan.md`](.ai/test-plan.md).
+
 ## Available Scripts
 
 The following scripts are available in the `package.json`:
 
-| Script      | Description                            |
-| ----------- | -------------------------------------- |
-| `dev`       | Starts the development server.         |
-| `start`     | Starts the development server.         |
-| `build`     | Builds the application for production. |
-| `preview`   | Previews the production build locally. |
-| `test:e2e`  | Runs end-to-end tests with Playwright. |
-| `test:unit` | Runs unit tests with Vitest.           |
-
-_Note: These are inferred scripts based on the tech stack. The `package.json` file has not been created yet._
+| Script           | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `dev`            | Starts the development server.                 |
+| `start`          | Starts the development server.                 |
+| `build`          | Builds the application for production.         |
+| `preview`        | Previews the production build locally.         |
+| `test:e2e`       | Runs end-to-end tests with Playwright.         |
+| `test:e2e:ui`    | Opens Playwright UI for interactive testing.  |
+| `test:unit`      | Runs unit and integration tests with Vitest.  |
+| `test:coverage`  | Runs tests with coverage reporting.            |
 
 ## Project Scope
 
