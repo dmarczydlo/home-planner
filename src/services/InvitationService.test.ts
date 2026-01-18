@@ -37,6 +37,7 @@ describe("InvitationService", () => {
 
   describe("listInvitations", () => {
     it("should return invitations for a family member", async () => {
+      // Arrange
       const invitation1: InvitationEntity = {
         id: crypto.randomUUID(),
         family_id: familyId,
@@ -49,8 +50,10 @@ describe("InvitationService", () => {
       };
       invitationRepo.addInvitation(invitation1);
 
+      // Act
       const result = await invitationService.listInvitations(familyId, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.invitations).toHaveLength(1);
@@ -62,6 +65,7 @@ describe("InvitationService", () => {
     });
 
     it("should filter invitations by status", async () => {
+      // Arrange
       const pendingInvitation: InvitationEntity = {
         id: crypto.randomUUID(),
         family_id: familyId,
@@ -85,8 +89,10 @@ describe("InvitationService", () => {
       invitationRepo.addInvitation(pendingInvitation);
       invitationRepo.addInvitation(acceptedInvitation);
 
+      // Act
       const result = await invitationService.listInvitations(familyId, userId, "pending");
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.invitations).toHaveLength(1);
@@ -95,8 +101,11 @@ describe("InvitationService", () => {
     });
 
     it("should return error if family ID is invalid UUID", async () => {
+      // Arrange
+      // Act
       const result = await invitationService.listInvitations("invalid-id", userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ValidationError);
@@ -105,9 +114,13 @@ describe("InvitationService", () => {
     });
 
     it("should return error if family not found", async () => {
+      // Arrange
       const fakeId = "550e8400-e29b-41d4-a716-446655440000";
+
+      // Act
       const result = await invitationService.listInvitations(fakeId, userId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(NotFoundError);
@@ -115,8 +128,11 @@ describe("InvitationService", () => {
     });
 
     it("should return error if user is not a member", async () => {
+      // Arrange
+      // Act
       const result = await invitationService.listInvitations(familyId, otherUserId);
 
+      // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(ForbiddenError);
@@ -127,9 +143,13 @@ describe("InvitationService", () => {
 
   describe("createInvitation", () => {
     it("should create an invitation successfully", async () => {
+      // Arrange
       const command = { invitee_email: "alice@example.com" };
+
+      // Act
       const result = await invitationService.createInvitation(familyId, command, userId);
 
+      // Assert
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.invitee_email).toBe("alice@example.com");
