@@ -112,6 +112,26 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     }
   }, [formData.eventType, formData.title, formData.startTime, formData.endTime, formData.isAllDay, participants, validateEvent]);
 
+  // Reset form data when modal opens to use current date defaults
+  // This ensures that opening the modal always shows defaults based on the current date,
+  // even if the date changed since the component was mounted
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        title: "",
+        startTime: getDefaultStartTime(),
+        endTime: getDefaultEndTime(),
+        isAllDay: false,
+        eventType: "elastic",
+      });
+      setParticipants([]);
+      setRecurrence(null);
+      setError(null);
+      setConflicts([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen && !isSubmitting) {

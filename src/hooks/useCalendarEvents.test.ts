@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import React, { type ReactNode } from "react";
 import { renderHook, waitFor } from "@/test/utils/render";
 import { useCalendarEvents } from "./useCalendarEvents";
-import { CalendarProvider } from "@/contexts/CalendarContext";
+import { CalendarProvider, useCalendar } from "@/contexts/CalendarContext";
 import { createMockEvent } from "@/test/utils/mock-data";
 
 // Mock fetch
@@ -240,22 +240,43 @@ describe("useCalendarEvents", () => {
         json: async () => ({ events: [] }),
       } as Response);
 
-      // Act
-      const { result, rerender } = renderHook(
-        (props: { familyId: string }) => useCalendarEvents(props.familyId),
-        {
-          wrapper: ({ children }: { children: ReactNode }) => {
-            return React.createElement(CalendarProvider, null, children);
-          },
-          initialProps: { familyId },
-        }
-      );
+      // Create a wrapper component that can set filters
+      const FilterWrapper = ({ children, participantIds }: { children: ReactNode; participantIds: string[] }) => {
+        const { setFilters } = useCalendar();
+        
+        React.useEffect(() => {
+          setFilters({ participantIds });
+        }, [setFilters, participantIds]);
 
-      // Set filters via context (would need to access context directly)
-      // For now, just verify the hook works with filters
-      await waitFor(() => {
-        expect(result.current.events).toEqual([]);
+        return React.createElement(React.Fragment, null, children);
+      };
+
+      // Act
+      const { result } = renderHook(() => useCalendarEvents(familyId), {
+        wrapper: ({ children }: { children: ReactNode }) => {
+          return React.createElement(
+            CalendarProvider,
+            null,
+            React.createElement(FilterWrapper, { participantIds, children })
+          );
+        },
       });
+
+      // Wait for the hook to load events with filters
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Assert - Verify fetch was called with participant_ids in query string
+      expect(vi.mocked(global.fetch)).toHaveBeenCalled();
+      const fetchCalls = vi.mocked(global.fetch).mock.calls;
+      const lastCall = fetchCalls[fetchCalls.length - 1];
+      const url = lastCall[0] as string;
+      
+      expect(url).toContain("participant_ids");
+      expect(url).toContain("user-1");
+      expect(url).toContain("user-2");
+      expect(result.current.events).toEqual([]);
     });
   });
 
