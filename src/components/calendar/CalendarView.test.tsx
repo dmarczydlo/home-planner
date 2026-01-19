@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@/test/utils/render";
-import { userEvent } from "@testing-library/user-event";
+import { render, screen, waitFor, act } from "@/test/utils/render";
+import userEvent from "@testing-library/user-event";
 import { CalendarView } from "./CalendarView";
 import { createMockEvent } from "@/test/utils/mock-data";
 
@@ -19,10 +19,8 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
       onAuthStateChange: vi.fn((callback) => {
-        // Call callback immediately with SIGNED_OUT event to initialize state
-        setTimeout(() => {
-          callback("SIGNED_OUT", null);
-        }, 0);
+        // Call synchronously to avoid async state updates that trigger act() warnings
+        callback("SIGNED_OUT", null);
         return {
           data: {
             subscription: mockSubscription,
@@ -426,12 +424,12 @@ describe("CalendarView", () => {
   describe("Loading State", () => {
     it("handles loading state", async () => {
       // Arrange
+      let resolveFetch: ((value: any) => void) | null = null;
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({ events: [] }),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) => {
+            resolveFetch = resolve;
+          })
       );
 
       // Act
@@ -439,6 +437,19 @@ describe("CalendarView", () => {
 
       // Assert - Component should render while loading
       expect(screen.getByRole("button", { name: /create new event/i })).toBeInTheDocument();
+
+      if (!resolveFetch) {
+        throw new Error("Expected fetch promise resolver to be set");
+      }
+
+      await act(async () => {
+        (resolveFetch as (value: any) => void)({
+          ok: true,
+          status: 200,
+          json: async () => ({ events: [] }),
+        } as Response);
+        await Promise.resolve();
+      });
     });
   });
 

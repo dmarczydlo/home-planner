@@ -18,25 +18,40 @@ describe("useFamilyApi", () => {
   });
 
   describe("Initialization", () => {
-    it("returns createFamily function", () => {
+    it("returns createFamily function", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useFamilyApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(typeof result.current.createFamily).toBe("function");
     });
 
-    it("returns isCreating state", () => {
+    it("returns isCreating state", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useFamilyApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(result.current.isCreating).toBe(false);
     });
 
-    it("returns error state", () => {
+    it("returns error state", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useFamilyApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -70,18 +85,18 @@ describe("useFamilyApi", () => {
 
       // Act
       const command = { name: "Test Family" };
-      let promise: Promise<any>;
+      let promise: Promise<any> | undefined;
       
       await act(async () => {
         promise = result.current.createFamily(command);
+        await promise;
       });
 
       // Assert - State should be updating, but might complete too fast
       // Check that the function was called and promise exists
-      expect(promise!).toBeDefined();
+      expect(promise).toBeDefined();
       expect(result.current.error).toBeNull();
-
-      const response = await promise;
+      const response = await promise!;
 
       await waitFor(() => {
         expect(result.current.isCreating).toBe(false);
@@ -113,26 +128,42 @@ describe("useFamilyApi", () => {
         },
       } as any);
 
+      let resolveFetch: ((value: any) => void) | null = null;
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => createMockFamily(),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) => {
+            resolveFetch = resolve;
+          })
       );
 
       const { result } = renderHook(() => useFamilyApi());
 
-      // Act
+      // Act - Start the request but keep it pending so we can assert loading state
       const command = { name: "Test Family" };
-      const promise = result.current.createFamily(command);
+      let createPromise: Promise<unknown> | null = null;
+      await act(async () => {
+        createPromise = result.current.createFamily(command);
+      });
 
       // Assert - State updates are async
       await waitFor(() => {
         expect(result.current.isCreating).toBe(true);
       });
 
-      await promise;
+      // Now let the request resolve
+      if (!resolveFetch) {
+        throw new Error("Expected fetch promise resolver to be set");
+      }
+
+      (resolveFetch as (value: any) => void)({
+        ok: true,
+        status: 200,
+        json: async () => createMockFamily(),
+      } as Response);
+
+      await act(async () => {
+        await createPromise;
+      });
 
       await waitFor(() => {
         expect(result.current.isCreating).toBe(false);
@@ -166,7 +197,9 @@ describe("useFamilyApi", () => {
 
       // Act & Assert
       const command = { name: "Test Family" };
-      await expect(result.current.createFamily(command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createFamily(command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe(errorMessage);
@@ -195,7 +228,9 @@ describe("useFamilyApi", () => {
 
       // Act & Assert
       const command = { name: "Test Family" };
-      await expect(result.current.createFamily(command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createFamily(command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         // The hook catches the error and sets it - check that error is set
@@ -224,7 +259,9 @@ describe("useFamilyApi", () => {
 
       // Act & Assert
       const command = { name: "Test Family" };
-      await expect(result.current.createFamily(command)).rejects.toThrow("Not authenticated");
+      await act(async () => {
+        await expect(result.current.createFamily(command)).rejects.toThrow("Not authenticated");
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe("Not authenticated");
@@ -258,7 +295,9 @@ describe("useFamilyApi", () => {
 
       // Act - First attempt fails
       const command = { name: "Test Family" };
-      await expect(result.current.createFamily(command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createFamily(command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe("Error");
@@ -272,7 +311,9 @@ describe("useFamilyApi", () => {
       } as Response);
 
       // Act - Second attempt
-      await result.current.createFamily(command);
+      await act(async () => {
+        await result.current.createFamily(command);
+      });
 
       // Assert
       await waitFor(() => {

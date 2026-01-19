@@ -18,10 +18,8 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
       onAuthStateChange: vi.fn((callback) => {
-        // Call callback immediately with SIGNED_OUT event to initialize state
-        setTimeout(() => {
-          callback("SIGNED_OUT", null);
-        }, 0);
+        // Call callback synchronously to avoid async state updates that trigger React "act(...)" warnings
+        callback("SIGNED_OUT", null);
         return {
           data: {
             subscription: mockSubscription,

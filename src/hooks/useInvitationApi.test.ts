@@ -14,25 +14,40 @@ describe("useInvitationApi", () => {
   });
 
   describe("Initialization", () => {
-    it("returns createInvitation function", () => {
+    it("returns createInvitation function", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useInvitationApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(typeof result.current.createInvitation).toBe("function");
     });
 
-    it("returns isCreating state", () => {
+    it("returns isCreating state", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useInvitationApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(result.current.isCreating).toBe(false);
     });
 
-    it("returns error state", () => {
+    it("returns error state", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useInvitationApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -117,26 +132,42 @@ describe("useInvitationApi", () => {
         },
       } as any);
 
+      let resolveFetch: ((value: any) => void) | null = null;
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({ invitation: { id: "inv-123", email: "test@example.com" } }),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) => {
+            resolveFetch = resolve;
+          })
       );
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act
+      // Act - Start request but keep it pending so we can assert loading state
       const command = { email: "test@example.com" };
-      const promise = result.current.createInvitation(familyId, command);
+      let promise: Promise<any> | null = null;
+
+      await act(async () => {
+        promise = result.current.createInvitation(familyId, command);
+      });
 
       // Assert
       await waitFor(() => {
         expect(result.current.isCreating).toBe(true);
       });
 
-      await promise;
+      if (!resolveFetch) {
+        throw new Error("Expected fetch promise resolver to be set");
+      }
+
+      (resolveFetch as (value: any) => void)({
+        ok: true,
+        status: 200,
+        json: async () => ({ invitation: { id: "inv-123", email: "test@example.com" } }),
+      } as Response);
+
+      await act(async () => {
+        await promise;
+      });
 
       await waitFor(() => {
         expect(result.current.isCreating).toBe(false);
@@ -169,9 +200,11 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act & Assert
+      // Act & Assert - Wrap in act() to avoid React warnings
       const command = { email: "test@example.com" };
-      await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe(errorMessage);
@@ -199,9 +232,11 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act & Assert
+      // Act & Assert - Wrap in act() to avoid React warnings
       const command = { email: "test@example.com" };
-      await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBeTruthy();
@@ -226,9 +261,11 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act & Assert
+      // Act & Assert - Wrap in act() to avoid React warnings
       const command = { email: "test@example.com" };
-      await expect(result.current.createInvitation(familyId, command)).rejects.toThrow("Not authenticated");
+      await act(async () => {
+        await expect(result.current.createInvitation(familyId, command)).rejects.toThrow("Not authenticated");
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe("Not authenticated");
@@ -261,9 +298,11 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act - First attempt fails
+      // Act - First attempt fails - Wrap in act() to avoid React warnings
       const command = { email: "test@example.com" };
-      await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe("Error");
@@ -276,8 +315,10 @@ describe("useInvitationApi", () => {
         json: async () => ({ invitation: { id: "inv-123", email: "test@example.com" } }),
       } as Response);
 
-      // Act - Second attempt
-      await result.current.createInvitation(familyId, command);
+      // Act - Second attempt - Wrap in act() to avoid React warnings
+      await act(async () => {
+        await result.current.createInvitation(familyId, command);
+      });
 
       // Assert
       await waitFor(() => {

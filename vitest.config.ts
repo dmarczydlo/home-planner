@@ -2,6 +2,8 @@ import { defineConfig } from "vitest/config";
 import path from "path";
 
 export default defineConfig({
+  // Use Vite's cacheDir instead of deprecated test.cache.dir
+  cacheDir: "node_modules/.vitest",
   test: {
     globals: true,
     environment: "node",
@@ -21,9 +23,6 @@ export default defineConfig({
     testTimeout: 5000, // 5 second timeout for tests (reduced from 10s)
     hookTimeout: 5000, // 5 second timeout for hooks (reduced from 10s)
     isolate: true, // Isolate tests for better reliability
-    cache: {
-      dir: "node_modules/.vitest", // Cache test results
-    },
     
     // Type checking configuration
     typecheck: {

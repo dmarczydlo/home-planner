@@ -2,7 +2,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, within } from "@/test/utils/render";
-import { userEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 

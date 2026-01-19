@@ -332,21 +332,22 @@ describe("LogoutButton", () => {
       });
     });
 
-    it("has proper ARIA role", () => {
+    it("has proper ARIA role", async () => {
       // Arrange & Act
       render(<LogoutButton />);
 
       // Assert
-      const button = screen.getByRole("button", { name: /sign out/i });
-      expect(button).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: /sign out/i })).toBeInTheDocument();
+      });
     });
 
-    it("has focus visible styles", () => {
+    it("has focus visible styles", async () => {
       // Arrange & Act
       render(<LogoutButton />);
 
       // Act
-      const button = screen.getByRole("button", { name: /sign out/i });
+      const button = await screen.findByRole("button", { name: /sign out/i });
       button.focus();
 
       // Assert

@@ -15,25 +15,40 @@ describe("useChildApi", () => {
   });
 
   describe("Initialization", () => {
-    it("returns createChild function", () => {
+    it("returns createChild function", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useChildApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(typeof result.current.createChild).toBe("function");
     });
 
-    it("returns isCreating state", () => {
+    it("returns isCreating state", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useChildApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(result.current.isCreating).toBe(false);
     });
 
-    it("returns error state", () => {
+    it("returns error state", async () => {
       // Arrange & Act
       const { result } = renderHook(() => useChildApi());
+
+      // Let mount effects settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isCreating).toBe(false);
+      }, { timeout: 1000 });
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -112,26 +127,42 @@ describe("useChildApi", () => {
         },
       } as any);
 
+      let resolveFetch: ((value: any) => void) | null = null;
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => createMockChild(),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) => {
+            resolveFetch = resolve;
+          })
       );
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act
+      // Act - Start request but keep it pending so we can assert loading state
       const command = { name: "Test Child" };
-      const promise = result.current.createChild(familyId, command);
+      let promise: Promise<any> | null = null;
+
+      await act(async () => {
+        promise = result.current.createChild(familyId, command);
+      });
 
       // Assert
       await waitFor(() => {
         expect(result.current.isCreating).toBe(true);
       });
 
-      await promise;
+      if (!resolveFetch) {
+        throw new Error("Expected fetch promise resolver to be set");
+      }
+
+      (resolveFetch as (value: any) => void)({
+        ok: true,
+        status: 200,
+        json: async () => createMockChild(),
+      } as Response);
+
+      await act(async () => {
+        await promise;
+      });
 
       await waitFor(() => {
         expect(result.current.isCreating).toBe(false);
@@ -164,9 +195,11 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act & Assert
+      // Act & Assert - Wrap in act() to avoid React warnings
       const command = { name: "Test Child" };
-      await expect(result.current.createChild(familyId, command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createChild(familyId, command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe(errorMessage);
@@ -194,9 +227,11 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act & Assert
+      // Act & Assert - Wrap in act() to avoid React warnings
       const command = { name: "Test Child" };
-      await expect(result.current.createChild(familyId, command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createChild(familyId, command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBeTruthy();
@@ -221,9 +256,11 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act & Assert
+      // Act & Assert - Wrap in act() to avoid React warnings
       const command = { name: "Test Child" };
-      await expect(result.current.createChild(familyId, command)).rejects.toThrow("Not authenticated");
+      await act(async () => {
+        await expect(result.current.createChild(familyId, command)).rejects.toThrow("Not authenticated");
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe("Not authenticated");
@@ -256,9 +293,11 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act - First attempt fails
+      // Act - First attempt fails - Wrap in act() to avoid React warnings
       const command = { name: "Test Child" };
-      await expect(result.current.createChild(familyId, command)).rejects.toThrow();
+      await act(async () => {
+        await expect(result.current.createChild(familyId, command)).rejects.toThrow();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBe("Error");
@@ -271,8 +310,10 @@ describe("useChildApi", () => {
         json: async () => createMockChild(),
       } as Response);
 
-      // Act - Second attempt
-      await result.current.createChild(familyId, command);
+      // Act - Second attempt - Wrap in act() to avoid React warnings
+      await act(async () => {
+        await result.current.createChild(familyId, command);
+      });
 
       // Assert
       await waitFor(() => {

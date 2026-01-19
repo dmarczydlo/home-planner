@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@/test/utils/render";
+import { renderHook, waitFor, act } from "@/test/utils/render";
 import { useAuth } from "./useAuth";
 import { AuthProvider } from "@/contexts/AuthContext";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
@@ -165,8 +165,10 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.logout).toBe("function");
 
-      // Test logout
-      await result.current.logout();
+      // Test logout - Wrap in act() to avoid React warnings
+      await act(async () => {
+        await result.current.logout();
+      });
       expect(signOutSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -197,8 +199,10 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.checkAuth).toBe("function");
 
-      // Test checkAuth
-      await result.current.checkAuth();
+      // Test checkAuth - Wrap in act() to avoid React warnings
+      await act(async () => {
+        await result.current.checkAuth();
+      });
       expect(getSessionSpy).toHaveBeenCalled();
     });
 
@@ -245,8 +249,10 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.refreshUser).toBe("function");
 
-      // Test refreshUser
-      await result.current.refreshUser();
+      // Test refreshUser - Wrap in act() to avoid React warnings
+      await act(async () => {
+        await result.current.refreshUser();
+      });
       await waitFor(() => {
         expect(result.current.user).toEqual(mockUser);
       });
@@ -279,7 +285,9 @@ describe("useAuth", () => {
       expect(typeof result.current.clearError).toBe("function");
 
       // Test clearError
-      result.current.clearError();
+      await act(async () => {
+        result.current.clearError();
+      });
       expect(result.current.error).toBeNull();
     });
   });
@@ -338,7 +346,10 @@ describe("useAuth", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      await result.current.logout();
+      // Wrap logout in act() to avoid React warnings
+      await act(async () => {
+        await result.current.logout();
+      });
 
       // Assert
       await waitFor(() => {

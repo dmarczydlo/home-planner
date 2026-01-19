@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@/test/utils/render";
+import { renderHook, waitFor, act } from "@/test/utils/render";
 import { useFamilyData } from "./useFamilyData";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 import { createMockFamily, createMockChild } from "@/test/utils/mock-data";
@@ -235,7 +235,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.refreshMembers();
+      await act(async () => {
+        await result.current.refreshMembers();
+      });
 
       // Assert
       await waitFor(() => {
@@ -304,7 +306,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.refreshChildren();
+      await act(async () => {
+        await result.current.refreshChildren();
+      });
 
       // Assert
       await waitFor(() => {
@@ -362,7 +366,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.refreshInvitations();
+      await act(async () => {
+        await result.current.refreshInvitations();
+      });
 
       // Assert
       await waitFor(() => {
@@ -421,7 +427,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.removeMember(userId);
+      await act(async () => {
+        await result.current.removeMember(userId);
+      });
 
       // Assert
       await waitFor(() => {
@@ -492,7 +500,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.removeChild(childId);
+      await act(async () => {
+        await result.current.removeChild(childId);
+      });
 
       // Assert
       await waitFor(() => {
@@ -552,7 +562,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.cancelInvitation(invitationId);
+      await act(async () => {
+        await result.current.cancelInvitation(invitationId);
+      });
 
       // Assert
       await waitFor(() => {
@@ -612,7 +624,9 @@ describe("useFamilyData", () => {
       } as Response);
 
       // Act
-      await result.current.updateMemberRole(userId, "admin");
+      await act(async () => {
+        await result.current.updateMemberRole(userId, "admin");
+      });
 
       // Assert
       await waitFor(() => {

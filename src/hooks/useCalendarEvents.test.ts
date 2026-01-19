@@ -16,40 +16,84 @@ describe("useCalendarEvents", () => {
   });
 
   describe("Initialization", () => {
-    it("returns events array", () => {
+    it("returns events array", async () => {
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ events: [] }),
+      } as Response);
+
       // Arrange & Act
       const { result } = renderHook(() => useCalendarEvents("test-family-123"), {
         wrapper: CalendarProvider,
+      });
+
+      // Let the mount effect settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
       });
 
       // Assert
       expect(Array.isArray(result.current.events)).toBe(true);
     });
 
-    it("returns isLoading state", () => {
+    it("returns isLoading state", async () => {
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ events: [] }),
+      } as Response);
+
       // Arrange & Act
       const { result } = renderHook(() => useCalendarEvents("test-family-123"), {
         wrapper: CalendarProvider,
+      });
+
+      // Let the mount effect settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
       });
 
       // Assert
       expect(typeof result.current.isLoading).toBe("boolean");
     });
 
-    it("returns error state", () => {
+    it("returns error state", async () => {
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ events: [] }),
+      } as Response);
+
       // Arrange & Act
       const { result } = renderHook(() => useCalendarEvents("test-family-123"), {
         wrapper: CalendarProvider,
+      });
+
+      // Let the mount effect settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
       });
 
       // Assert
       expect(result.current.error).toBeNull();
     });
 
-    it("returns refetch function", () => {
+    it("returns refetch function", async () => {
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ events: [] }),
+      } as Response);
+
       // Arrange & Act
       const { result } = renderHook(() => useCalendarEvents("test-family-123"), {
         wrapper: CalendarProvider,
+      });
+
+      // Let the mount effect settle to avoid React act() warnings
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
       });
 
       // Assert
@@ -182,8 +226,10 @@ describe("useCalendarEvents", () => {
         json: async () => ({ events: updatedEvents }),
       } as Response);
 
-      // Act
-      await result.current.refetch();
+      // Act - Wrap refetch in act() to avoid React warnings
+      await act(async () => {
+        await result.current.refetch();
+      });
 
       // Assert
       await waitFor(() => {
@@ -218,8 +264,10 @@ describe("useCalendarEvents", () => {
         statusText: "Internal Server Error",
       } as Response);
 
-      // Act
-      await result.current.refetch();
+      // Act - Wrap refetch in act() to avoid React warnings
+      await act(async () => {
+        await result.current.refetch();
+      });
 
       // Assert
       await waitFor(() => {

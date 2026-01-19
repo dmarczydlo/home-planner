@@ -112,6 +112,53 @@ test("async behavior", async () => {
 });
 ```
 
+#### When to use `act()`
+
+Use `act()` **only when you directly trigger React state updates outside Testing Library helpers**, especially in hook tests:
+
+- **Calling hook methods that update state** (e.g. `result.current.refetch()`, `result.current.createFamily()`)
+- **Resolving deferred promises** that cause state updates (e.g. completing a mocked `fetch`)
+- **Advancing fake timers** (`vi.advanceTimersByTime`, `vi.runAllTimers`) when timers drive state updates
+
+Prefer **not** to use `act()` for typical DOM interactions:
+
+- `userEvent` already wraps interactions in `act()` internally
+- `waitFor` already retries within an `act()` boundary for rendered updates
+
+Example (hook action + deferred promise):
+
+```typescript
+import { renderHook, waitFor, act } from "@/test/utils/render";
+
+test("loading state during async hook action", async () => {
+  let resolveFetch: ((value: any) => void) | null = null;
+  vi.mocked(global.fetch).mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      })
+  );
+
+  const { result } = renderHook(() => useMyHook());
+
+  let promise: Promise<unknown> | null = null;
+  await act(async () => {
+    promise = result.current.doSomethingAsync();
+  });
+
+  await waitFor(() => expect(result.current.isLoading).toBe(true));
+
+  if (!resolveFetch) throw new Error("Expected fetch resolver");
+  resolveFetch({ ok: true, json: async () => ({}) } as Response);
+
+  await act(async () => {
+    await promise;
+  });
+
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+});
+```
+
 #### Testing Accessibility
 
 ```typescript

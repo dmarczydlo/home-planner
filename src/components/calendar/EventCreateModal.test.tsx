@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, within } from "@/test/utils/render";
+import { render, screen, waitFor, within, act } from "@/test/utils/render";
 import userEvent from "@testing-library/user-event";
 import { EventCreateModal } from "./EventCreateModal";
 import { CalendarProvider } from "@/contexts/CalendarContext";
@@ -306,11 +306,14 @@ describe("EventCreateModal", () => {
       }, { timeout: 5000 });
 
       // Cleanup: resolve the pending request so the test doesn't leak async work
-      resolveSubmit!({
-        ok: true,
-        status: 200,
-        json: async () => ({ id: "event-123" }),
-      } as Response);
+      await act(async () => {
+        resolveSubmit!({
+          ok: true,
+          status: 200,
+          json: async () => ({ id: "event-123" }),
+        } as Response);
+        await submitPromise;
+      });
     });
 
     it("displays error message on failure", async () => {
@@ -450,7 +453,10 @@ describe("EventCreateModal", () => {
       expect(mockOnClose).not.toHaveBeenCalled();
       
       // Clean up - resolve the promise
-      resolveSubmit!();
+      await act(async () => {
+        resolveSubmit!();
+        await submitPromise;
+      });
     }, 5000);
   });
 
