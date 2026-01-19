@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { render, screen, waitFor } from "@/test/utils/render";
 import { userEvent } from "@testing-library/user-event";
 import { LogoutButton } from "./LogoutButton";
@@ -8,7 +8,7 @@ import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 
 // Note: Supabase auth is mocked at module level above
 
-// Mock window.location
+// Mock window.location - scoped to this test file
 const mockLocation = {
   href: "",
   assign: vi.fn(),
@@ -16,18 +16,46 @@ const mockLocation = {
   reload: vi.fn(),
 };
 
-Object.defineProperty(window, "location", {
-  value: mockLocation,
-  writable: true,
-});
+// Save original location descriptor to restore after tests
+const originalLocation = window.location;
 
-// Mock fetch
-global.fetch = vi.fn();
+// Mock fetch - scoped to this test file
+const originalFetch = global.fetch;
 
 // Note: Supabase auth is already mocked in src/test/utils/render.tsx
 // We just need to ensure the signOut mock is available for LogoutButton tests
 
 describe("LogoutButton", () => {
+  beforeAll(() => {
+    vi.stubGlobal("fetch", vi.fn());
+
+    // Mock window.location before all tests in this suite
+    Object.defineProperty(window, "location", {
+      value: mockLocation,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  afterAll(() => {
+    // Restore global.fetch to prevent leaking to other test files
+    vi.stubGlobal("fetch", originalFetch);
+
+    // Restore original location to prevent leaking to other test files
+    // Use try-catch to handle cases where location might not be configurable
+    try {
+      Object.defineProperty(window, "location", {
+        value: originalLocation,
+        writable: true,
+        configurable: true,
+      });
+    } catch (error) {
+      // If restore fails, at least we tried - the mock will be cleaned up
+      // when the test file finishes executing
+      console.warn("Could not restore window.location:", error);
+    }
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockLocation.href = "";

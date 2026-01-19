@@ -87,7 +87,7 @@ test("example test", () => {
 #### Testing User Interactions
 
 ```typescript
-import { userEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 test("user interaction", async () => {
   const user = userEvent.setup();
@@ -118,7 +118,6 @@ test("async behavior", async () => {
 import { assertNoAccessibilityViolations } from "@/test/utils/accessibility";
 
 test("accessibility", async () => {
-  const { container } = render(<Component />);
   await assertNoAccessibilityViolations(<Component />);
 });
 ```

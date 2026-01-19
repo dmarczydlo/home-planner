@@ -2,7 +2,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, within } from "@/test/utils/render";
-import { userEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 import { EventCreateModal } from "./EventCreateModal";
 import { CalendarProvider } from "@/contexts/CalendarContext";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
@@ -69,13 +69,13 @@ vi.mock("./RecurrenceEditor", () => ({
 
 describe("EventCreateModal", () => {
   const mockFamilyId = "test-family-123";
-  let mockOnClose: ReturnType<typeof vi.fn>;
-  let mockOnEventCreated: ReturnType<typeof vi.fn>;
+  let mockOnClose: ReturnType<typeof vi.fn> & (() => void);
+  let mockOnEventCreated: ReturnType<typeof vi.fn> & (() => void);
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockOnClose = vi.fn();
-    mockOnEventCreated = vi.fn();
+    mockOnClose = vi.fn() as unknown as ReturnType<typeof vi.fn> & (() => void);
+    mockOnEventCreated = vi.fn() as unknown as ReturnType<typeof vi.fn> & (() => void);
     vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
       auth: {
         getSession: vi.fn().mockResolvedValue({
@@ -268,13 +268,12 @@ describe("EventCreateModal", () => {
         },
       } as any);
       
-      vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({ id: "event-123" }),
-        } as Response), 100))
-      );
+      // Keep the request pending so we can reliably assert the loading UI
+      let resolveSubmit: (value: Response) => void;
+      const submitPromise = new Promise<Response>((resolve) => {
+        resolveSubmit = resolve;
+      });
+      vi.mocked(global.fetch).mockImplementation(() => submitPromise);
 
       render(
         <CalendarProvider>
@@ -300,13 +299,18 @@ describe("EventCreateModal", () => {
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Assert - Check for loading state
+      // Assert - Check for loading state ("Creating...") while request is in-flight
       await waitFor(() => {
-        const creatingButton = screen.queryByRole("button", { name: /creating/i });
-        const createButton = screen.queryByRole("button", { name: /create event/i });
-        // Either the button shows "Creating..." or the form is submitting
-        expect(creatingButton || createButton).toBeTruthy();
+        const creatingButton = screen.getByRole("button", { name: /creating/i });
+        expect(creatingButton).toBeDisabled();
       }, { timeout: 5000 });
+
+      // Cleanup: resolve the pending request so the test doesn't leak async work
+      resolveSubmit!({
+        ok: true,
+        status: 200,
+        json: async () => ({ id: "event-123" }),
+      } as Response);
     });
 
     it("displays error message on failure", async () => {

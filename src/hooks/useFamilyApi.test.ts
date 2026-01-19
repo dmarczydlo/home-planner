@@ -11,7 +11,10 @@ global.fetch = vi.fn();
 
 describe("useFamilyApi", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // Use resetAllMocks() to clear both call history AND mock implementations
+    // This prevents mock implementations (like mockImplementation, mockResolvedValue)
+    // from leaking between tests
+    vi.resetAllMocks();
   });
 
   describe("Initialization", () => {
