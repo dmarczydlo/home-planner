@@ -2,7 +2,7 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@/test/utils/render";
-import { userEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 import { DateNavigation } from "./DateNavigation";
 import { CalendarProvider } from "@/contexts/CalendarContext";
 

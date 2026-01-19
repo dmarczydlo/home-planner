@@ -2,7 +2,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import React, { type ReactNode } from "react";
-import { renderHook, waitFor } from "@/test/utils/render";
+import { renderHook, waitFor, act } from "@/test/utils/render";
 import { useCalendarEvents } from "./useCalendarEvents";
 import { CalendarProvider, useCalendar } from "@/contexts/CalendarContext";
 import { createMockEvent } from "@/test/utils/mock-data";
@@ -240,43 +240,67 @@ describe("useCalendarEvents", () => {
         json: async () => ({ events: [] }),
       } as Response);
 
-      // Create a wrapper component that can set filters
-      const FilterWrapper = ({ children, participantIds }: { children: ReactNode; participantIds: string[] }) => {
+      // Create a wrapper component that sets filters
+      let setFiltersRef: ((filters: { participantIds: string[] }) => void) | null = null;
+      const FilterWrapper = ({ children }: { children: ReactNode }) => {
         const { setFilters } = useCalendar();
-        
         React.useEffect(() => {
-          setFilters({ participantIds });
-        }, [setFilters, participantIds]);
-
+          setFiltersRef = setFilters;
+        }, [setFilters]);
         return React.createElement(React.Fragment, null, children);
       };
 
-      // Act
+      const TestWrapper = ({ children }: { children: ReactNode }) => {
+        return React.createElement(
+          CalendarProvider,
+          null,
+          React.createElement(FilterWrapper, null, children)
+        );
+      };
+
+      // Act - Render hook and wait for initial load
       const { result } = renderHook(() => useCalendarEvents(familyId), {
-        wrapper: ({ children }: { children: ReactNode }) => {
-          return React.createElement(
-            CalendarProvider,
-            null,
-            React.createElement(FilterWrapper, { participantIds, children })
-          );
-        },
+        wrapper: TestWrapper,
       });
 
-      // Wait for the hook to load events with filters
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Assert - Verify fetch was called with participant_ids in query string
-      expect(vi.mocked(global.fetch)).toHaveBeenCalled();
+      // Wait for setFiltersRef to be available
+      await waitFor(() => {
+        expect(setFiltersRef).not.toBeNull();
+      }, { timeout: 1000 });
+
+      // Clear previous fetch calls to isolate the filter fetch
+      vi.mocked(global.fetch).mockClear();
+
+      // Set participant filters - this should trigger a refetch
+      await act(async () => {
+        if (setFiltersRef) {
+          setFiltersRef({ participantIds });
+        }
+      });
+
+      // Wait for the hook to refetch with filters
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      }, { timeout: 2000 });
+
+      // Assert - Verify fetch was called with participant_ids in query
       const fetchCalls = vi.mocked(global.fetch).mock.calls;
-      const lastCall = fetchCalls[fetchCalls.length - 1];
-      const url = lastCall[0] as string;
+      expect(fetchCalls.length).toBeGreaterThan(0);
       
-      expect(url).toContain("participant_ids");
-      expect(url).toContain("user-1");
-      expect(url).toContain("user-2");
-      expect(result.current.events).toEqual([]);
+      const lastFetchCall = fetchCalls[fetchCalls.length - 1];
+      const fetchUrl = lastFetchCall[0] as string;
+      
+      expect(fetchUrl).toContain("/api/events");
+      expect(fetchUrl).toContain("participant_ids");
+      
+      // Verify the query parameter format
+      const url = new URL(fetchUrl, "http://localhost");
+      const participantIdsParam = url.searchParams.get("participant_ids");
+      expect(participantIdsParam).toBe("user-1,user-2");
     });
   });
 
