@@ -1,4 +1,11 @@
 import { afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import * as matchers from "@testing-library/jest-dom/matchers";
+import { expect } from "vitest";
+import "@testing-library/jest-dom/vitest";
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
 
 // Global test setup
 // This file runs before all tests
@@ -15,4 +22,5 @@ process.env.NODE_ENV = process.env.NODE_ENV || "test";
 // Clean up after each test
 afterEach(() => {
   vi.clearAllMocks();
+  cleanup();
 });
