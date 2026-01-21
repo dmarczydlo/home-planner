@@ -86,7 +86,7 @@ export function AgendaView({ events, isLoading, onSelectEvent }: AgendaViewProps
   }
 
   return (
-    <div className="h-full p-4">
+    <div data-testid="agenda-view" className="h-full p-4">
       <Calendar
         localizer={localizer}
         events={calendarEvents}

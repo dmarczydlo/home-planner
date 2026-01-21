@@ -99,7 +99,7 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
   }
 
   return (
-    <div className="relative h-full w-full flex flex-col custom-month-view">
+    <div data-testid="month-view" className="relative h-full w-full flex flex-col custom-month-view">
       {/* Month header */}
       <div className="sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4">
         <h2 className="text-xl sm:text-3xl font-black text-foreground">

@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const isCI = !!process.env.CI;
 const testEnv = process.env.TEST_ENV || (isCI ? "mock" : "mock");
+const AUTH_FILE = ".auth/user.json";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -16,21 +17,35 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
-    // Isolate browser contexts for each test
-    contextOptions: {
-      // Clear storage state for each test
-      storageState: undefined,
-    },
   },
 
   projects: [
+    // Setup project: Authenticate once and save storage state
+    {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
+    // Main test project: Use saved storage state for authenticated tests
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        // Ensure isolated browser contexts
         viewport: { width: 1280, height: 720 },
+        // Use storage state for authenticated tests
+        // If auth file doesn't exist, tests will need to handle authentication
+        storageState: AUTH_FILE,
       },
+      dependencies: ["setup"],
+    },
+    // Unauthenticated tests (if needed)
+    {
+      name: "chromium-unauthenticated",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 720 },
+        storageState: undefined, // No authentication
+      },
+      testMatch: /.*\.unauthenticated\.spec\.ts/,
     },
   ],
 
