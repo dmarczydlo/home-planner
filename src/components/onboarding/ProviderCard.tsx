@@ -14,7 +14,6 @@ interface ProviderCardProps {
 }
 
 export function ProviderCard({
-  provider,
   name,
   description,
   icon,
@@ -51,12 +50,9 @@ export function ProviderCard({
             <h3 className="font-semibold text-base">{name}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
-          {isConnected && (
-            <span className="text-xs font-medium text-green-600 dark:text-green-400">Connected</span>
-          )}
+          {isConnected && <span className="text-xs font-medium text-green-600 dark:text-green-400">Connected</span>}
         </div>
       </CardContent>
     </Card>
   );
 }
-

@@ -21,10 +21,10 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
       const body = await request.json();
 
       if (body.id !== userId) {
-        return new Response(
-          JSON.stringify({ error: "Cannot create profile for another user" }),
-          { status: 403, headers: { "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Cannot create profile for another user" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
       }
 
       const userService = new UserService(locals.repositories.user);
@@ -42,4 +42,3 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
     locals,
   });
 }
-

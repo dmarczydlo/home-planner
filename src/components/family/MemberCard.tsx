@@ -40,11 +40,12 @@ export function MemberCard({ member, isAdmin, currentUserId, onRemove, onRoleCha
   const isCurrentUser = member.user_id === currentUserId;
   const canManage = isAdmin && !isCurrentUser;
   const joinedDate = format(new Date(member.joined_at), "MMM d, yyyy");
-  const initials = member.full_name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase() || "?";
+  const initials =
+    member.full_name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase() || "?";
 
   const handleRemove = async () => {
     if (!onRemove) return;

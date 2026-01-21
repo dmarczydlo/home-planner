@@ -92,9 +92,7 @@ describe("GoogleSignInButton", () => {
       // Assert
       await waitFor(() => {
         const alerts = screen.getAllByRole("alert");
-        const componentAlert = alerts.find((alert) =>
-          alert.textContent?.includes("Sign in failed")
-        );
+        const componentAlert = alerts.find((alert) => alert.textContent?.includes("Sign in failed"));
         expect(componentAlert).toBeInTheDocument();
         expect(componentAlert).toHaveTextContent(errorMessage);
       });
@@ -179,15 +177,13 @@ describe("GoogleSignInButton", () => {
       await waitFor(
         () => {
           const alerts = screen.getAllByRole("alert");
-          const componentAlert = alerts.find((alert) =>
-            alert.textContent?.includes("Popup blocked")
-          );
+          const componentAlert = alerts.find((alert) => alert.textContent?.includes("Popup blocked"));
           expect(componentAlert).toBeInTheDocument();
           expect(componentAlert).toHaveTextContent(/popup blocked/i);
         },
         { timeout: 2000 }
       );
-      
+
       expect(signInSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -211,9 +207,7 @@ describe("GoogleSignInButton", () => {
           const alerts = screen.getAllByRole("alert");
           expect(alerts.length).toBeGreaterThan(0);
           // Find the component's error alert
-          const componentAlert = alerts.find((alert) =>
-            alert.textContent?.includes("Sign in failed")
-          );
+          const componentAlert = alerts.find((alert) => alert.textContent?.includes("Sign in failed"));
           expect(componentAlert).toBeInTheDocument();
         },
         { timeout: 2000 }
@@ -221,14 +215,12 @@ describe("GoogleSignInButton", () => {
 
       // Act - Retry (find the "Try Again" button within the component's alert)
       const alerts = screen.getAllByRole("alert");
-      const componentAlert = alerts.find((alert) =>
-        alert.textContent?.includes("Sign in failed")
-      );
-      
+      const componentAlert = alerts.find((alert) => alert.textContent?.includes("Sign in failed"));
+
       if (!componentAlert) {
         throw new Error("Component alert not found");
       }
-      
+
       const retryButton = within(componentAlert).getByRole("button", { name: /try again/i });
       await user.click(retryButton);
 

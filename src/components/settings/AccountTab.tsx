@@ -120,9 +120,7 @@ export function AccountTab() {
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold text-foreground">Account</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage your account and admin settings
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Manage your account and admin settings</p>
       </div>
 
       <Card className="glass-effect border-primary/20">
@@ -139,9 +137,7 @@ export function AccountTab() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h3 className="font-semibold text-foreground">
-                {userProfile.full_name || "Anonymous User"}
-              </h3>
+              <h3 className="font-semibold text-foreground">{userProfile.full_name || "Anonymous User"}</h3>
               <p className="text-sm text-muted-foreground">ID: {userProfile.id}</p>
             </div>
           </div>
@@ -158,9 +154,7 @@ export function AccountTab() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Last Updated:</span>
                 <span className="text-foreground font-medium">
-                  {userProfile.updated_at
-                    ? new Date(userProfile.updated_at).toLocaleDateString()
-                    : "Never"}
+                  {userProfile.updated_at ? new Date(userProfile.updated_at).toLocaleDateString() : "Never"}
                 </span>
               </div>
             </div>
@@ -208,11 +202,7 @@ export function AccountTab() {
           <CardDescription>Manage your account settings</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button
-            variant="destructive"
-            onClick={() => setShowLogoutDialog(true)}
-            className="w-full sm:w-auto"
-          >
+          <Button variant="destructive" onClick={() => setShowLogoutDialog(true)} className="w-full sm:w-auto">
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>

@@ -46,6 +46,7 @@ export class ChildService {
 
       return ok({ children: childrenDTOs });
     } catch (error) {
+      console.error("Error in ChildService.listChildren:", error);
       return err(new InternalError("Failed to retrieve children"));
     }
   }
@@ -94,6 +95,7 @@ export class ChildService {
         created_at: child.created_at,
       });
     } catch (error) {
+      console.error("Error in ChildService.createChild:", error);
       return err(new InternalError("Failed to create child"));
     }
   }
@@ -160,6 +162,7 @@ export class ChildService {
         updated_at: updated.updated_at ?? new Date().toISOString(),
       });
     } catch (error) {
+      console.error("Error in ChildService.updateChild:", error);
       return err(new InternalError("Failed to update child"));
     }
   }
@@ -210,6 +213,7 @@ export class ChildService {
 
       return ok(undefined);
     } catch (error) {
+      console.error("Error in ChildService.deleteChild:", error);
       return err(new InternalError("Failed to delete child"));
     }
   }

@@ -6,7 +6,6 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { useChildApi } from "@/hooks/useChildApi";
 import { useOnboarding } from "@/contexts/OnboardingContext";
 import { createChildCommandSchema, formatZodErrors } from "@/types";
-import { cn } from "@/lib/utils";
 
 interface ChildFormProps {
   familyId: string;
@@ -80,6 +79,7 @@ export function ChildForm({ familyId, open, onOpenChange, onChildAdded }: ChildF
               aria-describedby={displayError ? "child-name-error" : undefined}
               maxLength={100}
               required
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
             />
             {displayError && (

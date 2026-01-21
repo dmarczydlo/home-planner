@@ -23,4 +23,3 @@ export interface ChildRepository {
   delete(id: string): Promise<void>;
   belongsToFamily(childId: string, familyId: string): Promise<boolean>;
 }
-

@@ -26,12 +26,12 @@ export class ViewSwitcher extends BasePage {
    */
   async switchToDay(): Promise<void> {
     // Wait for page to be ready
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState("domcontentloaded");
     // Ensure button is visible and enabled before clicking
     await expect(this.dayButton).toBeVisible();
     await this.dayButton.scrollIntoViewIfNeeded();
     // Get current state to verify it changes
-    const wasActive = await this.dayButton.getAttribute("aria-pressed") === "true";
+    const wasActive = (await this.dayButton.getAttribute("aria-pressed")) === "true";
     if (!wasActive) {
       // Use locator.click() which waits for actionability
       await this.dayButton.click();
@@ -47,12 +47,12 @@ export class ViewSwitcher extends BasePage {
    */
   async switchToWeek(): Promise<void> {
     // Wait for page to be ready
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState("domcontentloaded");
     // Ensure button is visible and enabled before clicking
     await expect(this.weekButton).toBeVisible();
     await this.weekButton.scrollIntoViewIfNeeded();
     // Get current state to verify it changes
-    const wasActive = await this.weekButton.getAttribute("aria-pressed") === "true";
+    const wasActive = (await this.weekButton.getAttribute("aria-pressed")) === "true";
     if (!wasActive) {
       await this.weekButton.click({ force: false });
       // Wait for aria-pressed to become true
@@ -65,12 +65,12 @@ export class ViewSwitcher extends BasePage {
    */
   async switchToMonth(): Promise<void> {
     // Wait for page to be ready
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState("domcontentloaded");
     // Ensure button is visible and enabled before clicking
     await expect(this.monthButton).toBeVisible();
     await this.monthButton.scrollIntoViewIfNeeded();
     // Get current state to verify it changes
-    const wasActive = await this.monthButton.getAttribute("aria-pressed") === "true";
+    const wasActive = (await this.monthButton.getAttribute("aria-pressed")) === "true";
     if (!wasActive) {
       await this.monthButton.click({ force: false });
       // Wait for aria-pressed to become true
@@ -83,12 +83,12 @@ export class ViewSwitcher extends BasePage {
    */
   async switchToAgenda(): Promise<void> {
     // Wait for page to be ready
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState("domcontentloaded");
     // Ensure button is visible and enabled before clicking
     await expect(this.agendaButton).toBeVisible();
     await this.agendaButton.scrollIntoViewIfNeeded();
     // Get current state to verify it changes
-    const wasActive = await this.agendaButton.getAttribute("aria-pressed") === "true";
+    const wasActive = (await this.agendaButton.getAttribute("aria-pressed")) === "true";
     if (!wasActive) {
       await this.agendaButton.click({ force: false });
       // Wait for aria-pressed to become true

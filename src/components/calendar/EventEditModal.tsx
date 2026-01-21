@@ -29,7 +29,7 @@ export function EventEditModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [conflicts, setConflicts] = useState<ConflictingEventDTO[]>([]);
   const [isValidating, setIsValidating] = useState(false);
-  const [participants, setParticipants] = useState<Array<{ id: string; type: "user" | "child" }>>([]);
+  const [participants, setParticipants] = useState<{ id: string; type: "user" | "child" }[]>([]);
   const [recurrence, setRecurrence] = useState<{
     frequency: "daily" | "weekly" | "monthly";
     interval: number;
@@ -45,7 +45,7 @@ export function EventEditModal({
     scope: "all" as "this" | "future" | "all",
   });
 
-  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime: boolean = false): string => {
+  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime = false): string => {
     if (isAllDay) {
       const date = new Date(dateTimeString);
       if (isEndTime) {
@@ -60,7 +60,7 @@ export function EventEditModal({
   };
 
   const validateEvent = useCallback(
-    async (debounceMs: number = 500) => {
+    async (debounceMs = 500) => {
       if (formData.eventType !== "blocker" || !formData.title || !formData.startTime || !formData.endTime || !event) {
         setConflicts([]);
         return;
@@ -191,7 +191,8 @@ export function EventEditModal({
       const scope = isRecurring ? formData.scope : "all";
       const occurrenceDate =
         scope === "this" && isRecurring
-          ? (event as any)._occurrenceDate || new Date(event.start_time).toISOString().split("T")[0]
+          ? (event as EventWithParticipantsDTO & { _occurrenceDate?: string })._occurrenceDate ||
+            new Date(event.start_time).toISOString().split("T")[0]
           : undefined;
 
       const url = new URL(`/api/events/${event.id}`, window.location.origin);
@@ -286,10 +287,20 @@ export function EventEditModal({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={handleClose}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          handleClose();
+        }
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Edit event"
     >
       <div
         className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="document"
       >
         <div className="flex items-center justify-between p-6 border-b border-primary/20">
           <h2 className="text-xl font-semibold text-foreground">Edit Event</h2>

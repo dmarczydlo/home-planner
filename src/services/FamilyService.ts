@@ -142,6 +142,7 @@ export class FamilyService {
 
       return ok(members);
     } catch (error) {
+      console.error("Error in FamilyService.getFamilyMembers:", error);
       return err(new InternalError("Failed to retrieve family members"));
     }
   }
@@ -200,6 +201,7 @@ export class FamilyService {
         updated_at: new Date().toISOString(),
       });
     } catch (error) {
+      console.error("Error in FamilyService.updateFamily:", error);
       return err(new InternalError("Failed to update family"));
     }
   }
@@ -237,6 +239,7 @@ export class FamilyService {
 
       return ok(undefined);
     } catch (error) {
+      console.error("Error in FamilyService.deleteFamily:", error);
       return err(new InternalError("Failed to delete family"));
     }
   }

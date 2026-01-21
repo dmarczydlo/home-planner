@@ -7,11 +7,7 @@ interface FamilyMembershipsProps {
   onSwitchFamily: (familyId: string) => void;
 }
 
-export function FamilyMemberships({
-  families,
-  currentFamilyId,
-  onSwitchFamily,
-}: FamilyMembershipsProps) {
+export function FamilyMemberships({ families, currentFamilyId, onSwitchFamily }: FamilyMembershipsProps) {
   if (families.length === 0) {
     return (
       <div className="text-center py-8">

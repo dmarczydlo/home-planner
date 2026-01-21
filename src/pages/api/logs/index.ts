@@ -22,4 +22,3 @@ export async function GET({ url, locals }: APIContext): Promise<Response> {
     return mapResultToResponse(result);
   }, "GET /api/logs");
 }
-

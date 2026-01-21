@@ -1,9 +1,4 @@
 import type {
-  EventEntity,
-  EventInsert,
-  EventUpdate,
-  EventParticipantEntity,
-  EventParticipantInsert,
   EventExceptionEntity,
   EventExceptionInsert,
   RecurrencePatternDTO,
@@ -49,29 +44,29 @@ export interface UpdateEventDTO {
 }
 
 export interface EventWithParticipants extends Event {
-  participants: Array<{
+  participants: {
     id: string;
     name: string;
     type: "user" | "child";
     avatar_url?: string | null;
-  }>;
+  }[];
   has_conflict?: boolean;
 }
 
 export interface EventDetails extends Event {
-  participants: Array<{
+  participants: {
     id: string;
     name: string;
     type: "user" | "child";
     avatar_url?: string | null;
-  }>;
-  exceptions: Array<{
+  }[];
+  exceptions: {
     id: string;
     original_date: string;
     new_start_time: string | null;
     new_end_time: string | null;
     is_cancelled: boolean;
-  }>;
+  }[];
 }
 
 export interface ConflictingEvent {
@@ -79,12 +74,12 @@ export interface ConflictingEvent {
   title: string;
   start_time: string;
   end_time: string;
-  participants: Array<{
+  participants: {
     id: string;
     name: string;
     type: "user" | "child";
     avatar_url?: string | null;
-  }>;
+  }[];
 }
 
 export interface FindEventsOptions {
@@ -117,7 +112,7 @@ export interface EventRepository {
   removeParticipants(eventId: string, participantIds: ParticipantReferenceDTO[]): Promise<void>;
   getParticipants(
     eventId: string
-  ): Promise<Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>>;
+  ): Promise<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }[]>;
   createException(
     eventId: string,
     exception: Omit<EventExceptionInsert, "event_id" | "id" | "created_at">

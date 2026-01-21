@@ -2,9 +2,9 @@ import type { UserRepository, User, CreateUserDTO, UpdateUserDTO } from "../../i
 import type { UserFamilyMembershipDTO } from "@/types";
 
 export class InMemoryUserRepository implements UserRepository {
-  private users: Map<string, User> = new Map();
-  private memberships: Map<string, UserFamilyMembershipDTO[]> = new Map();
-  private emailToUserId: Map<string, string> = new Map();
+  private users = new Map<string, User>();
+  private memberships = new Map<string, UserFamilyMembershipDTO[]>();
+  private emailToUserId = new Map<string, string>();
 
   async findById(id: string): Promise<User | null> {
     return this.users.get(id) ?? null;

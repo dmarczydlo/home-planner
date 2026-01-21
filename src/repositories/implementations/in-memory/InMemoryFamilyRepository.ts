@@ -13,9 +13,9 @@ interface FamilyMemberData {
 }
 
 export class InMemoryFamilyRepository implements FamilyRepository {
-  private families: Map<string, Family> = new Map();
-  private familyMembers: Map<string, Map<string, FamilyMemberData>> = new Map(); // familyId -> Map<userId, memberData>
-  private users: Map<string, { full_name: string | null; avatar_url: string | null }> = new Map();
+  private families = new Map<string, Family>();
+  private familyMembers = new Map<string, Map<string, FamilyMemberData>>(); // familyId -> Map<userId, memberData>
+  private users = new Map<string, { full_name: string | null; avatar_url: string | null }>();
 
   async findById(id: string): Promise<Family | null> {
     return this.families.get(id) ?? null;
@@ -115,7 +115,11 @@ export class InMemoryFamilyRepository implements FamilyRepository {
     if (!this.familyMembers.has(familyId)) {
       this.familyMembers.set(familyId, new Map());
     }
-    this.familyMembers.get(familyId)!.set(userId, {
+    const familyMembers = this.familyMembers.get(familyId);
+    if (!familyMembers) {
+      throw new Error(`Family with id ${familyId} not found`);
+    }
+    familyMembers.set(userId, {
       userId,
       role,
       joinedAt: new Date().toISOString(),

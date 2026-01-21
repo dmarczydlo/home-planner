@@ -20,7 +20,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
   const [error, setError] = useState<string | null>(null);
   const [conflicts, setConflicts] = useState<ConflictingEventDTO[]>([]);
   const [isValidating, setIsValidating] = useState(false);
-  const [participants, setParticipants] = useState<Array<{ id: string; type: "user" | "child" }>>([]);
+  const [participants, setParticipants] = useState<{ id: string; type: "user" | "child" }[]>([]);
   const [recurrence, setRecurrence] = useState<{
     frequency: "daily" | "weekly" | "monthly";
     interval: number;
@@ -49,7 +49,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
   });
 
   const validateEvent = useCallback(
-    async (debounceMs: number = 500) => {
+    async (debounceMs = 500) => {
       if (formData.eventType !== "blocker" || !formData.title || !formData.startTime || !formData.endTime) {
         setConflicts([]);
         return;
@@ -110,11 +110,21 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     } else {
       setConflicts([]);
     }
-  }, [formData.eventType, formData.title, formData.startTime, formData.endTime, formData.isAllDay, participants, validateEvent]);
+  }, [
+    formData.eventType,
+    formData.title,
+    formData.startTime,
+    formData.endTime,
+    formData.isAllDay,
+    participants,
+    validateEvent,
+  ]);
 
   // Reset form data when modal opens to use current date defaults
   // This ensures that opening the modal always shows defaults based on the current date,
   // even if the date changed since the component was mounted
+  // Note: We intentionally only depend on isOpen to reset form when modal opens/closes
+  // eslint-disable-next-line react-compiler/react-compiler, react-hooks/exhaustive-deps
   useEffect(() => {
     if (isOpen) {
       setFormData({
@@ -129,7 +139,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
       setError(null);
       setConflicts([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   useEffect(() => {
@@ -220,7 +229,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     }
   };
 
-  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime: boolean = false): string => {
+  const convertToISOTimestamp = (dateTimeString: string, isAllDay: boolean, isEndTime = false): string => {
     if (isAllDay) {
       const date = new Date(dateTimeString);
       if (isEndTime) {
@@ -238,10 +247,20 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={handleClose}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          handleClose();
+        }
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Create event"
     >
       <div
         className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="document"
       >
         <div className="flex items-center justify-between p-6 border-b border-primary/20">
           <h2 className="text-xl font-semibold text-foreground">Create New Event</h2>
@@ -286,7 +305,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
               onChange={(e) => {
                 const isAllDay = e.target.checked;
                 let newEndTime = formData.endTime;
-                
+
                 if (isAllDay && formData.startTime && formData.endTime) {
                   const startDate = new Date(formData.startTime);
                   const endDate = new Date(formData.endTime);
@@ -294,7 +313,7 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
                     newEndTime = formData.startTime;
                   }
                 }
-                
+
                 setFormData({ ...formData, isAllDay, endTime: newEndTime });
               }}
               className="w-4 h-4 text-primary border-primary/20 rounded focus:ring-primary"
@@ -371,15 +390,9 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
             onSelectionChange={setParticipants}
           />
 
-          <RecurrenceEditor
-            value={recurrence}
-            onChange={setRecurrence}
-            startDate={formData.startTime}
-          />
+          <RecurrenceEditor value={recurrence} onChange={setRecurrence} startDate={formData.startTime} />
 
-          {formData.eventType === "blocker" && (
-            <ConflictWarning conflicts={conflicts} isValidating={isValidating} />
-          )}
+          {formData.eventType === "blocker" && <ConflictWarning conflicts={conflicts} isValidating={isValidating} />}
 
           <div className="flex gap-3 pt-4">
             <button

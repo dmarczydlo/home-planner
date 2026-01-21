@@ -27,7 +27,7 @@ import type {
   ExternalCalendarRepository,
 } from "./interfaces/index.ts";
 
-export type Repositories = {
+export interface Repositories {
   family: FamilyRepository;
   event: EventRepository;
   user: UserRepository;
@@ -35,7 +35,7 @@ export type Repositories = {
   log: LogRepository;
   invitation: InvitationRepository;
   externalCalendar: ExternalCalendarRepository;
-};
+}
 
 export function createSQLRepositories(supabase: SupabaseClient<Database>): Repositories {
   return {

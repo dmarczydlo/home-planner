@@ -54,6 +54,7 @@ export function OnboardingWizard({
       try {
         await onNext();
       } catch (error) {
+        console.error("Error in handleNext:", error);
         return;
       }
     }
@@ -107,4 +108,3 @@ export function OnboardingWizard({
     </div>
   );
 }
-

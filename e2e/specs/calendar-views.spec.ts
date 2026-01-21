@@ -7,14 +7,14 @@ test.describe("Calendar Views Navigation", () => {
   test.beforeEach(async ({ page }) => {
     calendarPage = new CalendarPage(page);
     // Wait for page to be ready before each test
-    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState("domcontentloaded");
   });
 
   test.describe("View Switching", () => {
     test("should switch from Week view to Day view", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
       await calendarPage.viewSwitcher.expectWeekActive();
 
       // Act
@@ -29,7 +29,7 @@ test.describe("Calendar Views Navigation", () => {
     test("should switch from Week view to Month view", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
       await calendarPage.viewSwitcher.expectWeekActive();
 
       // Act
@@ -44,7 +44,7 @@ test.describe("Calendar Views Navigation", () => {
     test("should switch from Week view to Agenda view", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
       await calendarPage.viewSwitcher.expectWeekActive();
 
       // Act
@@ -59,7 +59,7 @@ test.describe("Calendar Views Navigation", () => {
     test("should switch back to Week view from Day view", async ({ page }) => {
       // Arrange
       await calendarPage.gotoDay();
-      await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
       await calendarPage.viewSwitcher.expectDayActive();
 
       // Act
@@ -127,7 +127,7 @@ test.describe("Calendar Views Navigation", () => {
       // Arrange
       await calendarPage.gotoWeek();
       // Wait for page to be fully loaded
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState("networkidle");
       const initialDateText = (await calendarPage.dateNavigation.getDateDisplayText()).trim();
 
       // Act
@@ -150,7 +150,7 @@ test.describe("Calendar Views Navigation", () => {
       // Arrange
       await calendarPage.gotoWeek();
       // Wait for page to be fully loaded
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState("networkidle");
       const initialDateText = (await calendarPage.dateNavigation.getDateDisplayText()).trim();
 
       // Act
@@ -177,7 +177,7 @@ test.describe("Calendar Views Navigation", () => {
       await calendarPage.dateNavigation.clickNext();
       // Wait a bit and check if Today button appears
       await page.waitForTimeout(500);
-      
+
       // Only proceed if Today button is visible (meaning we moved away from today)
       await page.waitForTimeout(300); // Wait for button state to update
       const todayButtonVisible = await calendarPage.dateNavigation.todayButton.isVisible().catch(() => false);
@@ -198,7 +198,7 @@ test.describe("Calendar Views Navigation", () => {
       await calendarPage.gotoWeek();
       // Check if we're already on today
       const todayButtonInitiallyVisible = await calendarPage.dateNavigation.todayButton.isVisible().catch(() => false);
-      
+
       if (!todayButtonInitiallyVisible) {
         // We're on today, so navigate away
         await calendarPage.dateNavigation.clickNext();
@@ -317,7 +317,7 @@ test.describe("Calendar Views Navigation", () => {
     test("should navigate dates correctly in Day view", async ({ page }) => {
       // Arrange
       await calendarPage.gotoDay();
-      await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
       const initialDateText = (await calendarPage.dateNavigation.getDateDisplayText()).trim();
 
       // Act
@@ -340,7 +340,7 @@ test.describe("Calendar Views Navigation", () => {
     test("should navigate dates correctly in Week view", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
       const initialDateText = (await calendarPage.dateNavigation.getDateDisplayText()).trim();
 
       // Act

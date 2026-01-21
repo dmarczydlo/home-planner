@@ -4,18 +4,12 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
-interface PreferencesTabProps {
-  familyId: string;
-}
-
-export function PreferencesTab({ familyId }: PreferencesTabProps) {
+export function PreferencesTab() {
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold text-foreground">Preferences</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Customize your app experience
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Customize your app experience</p>
       </div>
 
       <Card className="glass-effect border-primary/20">
@@ -28,9 +22,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="default-view">Default Calendar View</Label>
-                <p className="text-sm text-muted-foreground">
-                  Choose which view to show when opening the calendar
-                </p>
+                <p className="text-sm text-muted-foreground">Choose which view to show when opening the calendar</p>
               </div>
               <Select defaultValue="week">
                 <SelectTrigger id="default-view" className="w-32">
@@ -50,9 +42,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="date-format">Date Format</Label>
-                <p className="text-sm text-muted-foreground">
-                  Choose how dates are displayed
-                </p>
+                <p className="text-sm text-muted-foreground">Choose how dates are displayed</p>
               </div>
               <Select defaultValue="MM/DD/YYYY">
                 <SelectTrigger id="date-format" className="w-40">
@@ -71,9 +61,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="time-format">Time Format</Label>
-                <p className="text-sm text-muted-foreground">
-                  Choose 12-hour or 24-hour time format
-                </p>
+                <p className="text-sm text-muted-foreground">Choose 12-hour or 24-hour time format</p>
               </div>
               <Select defaultValue="12">
                 <SelectTrigger id="time-format" className="w-32">
@@ -91,9 +79,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="week-start">Week Starts On</Label>
-                <p className="text-sm text-muted-foreground">
-                  Choose the first day of the week
-                </p>
+                <p className="text-sm text-muted-foreground">Choose the first day of the week</p>
               </div>
               <Select defaultValue="sunday">
                 <SelectTrigger id="week-start" className="w-32">
@@ -118,9 +104,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="event-reminders">Event Reminders</Label>
-              <p className="text-sm text-muted-foreground">
-                Receive notifications before events start
-              </p>
+              <p className="text-sm text-muted-foreground">Receive notifications before events start</p>
             </div>
             <Switch id="event-reminders" defaultChecked />
           </div>
@@ -130,9 +114,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="conflict-alerts">Conflict Alerts</Label>
-              <p className="text-sm text-muted-foreground">
-                Get notified when events conflict
-              </p>
+              <p className="text-sm text-muted-foreground">Get notified when events conflict</p>
             </div>
             <Switch id="conflict-alerts" defaultChecked />
           </div>
@@ -142,9 +124,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="invitation-notifications">Invitation Notifications</Label>
-              <p className="text-sm text-muted-foreground">
-                Receive notifications for family invitations
-              </p>
+              <p className="text-sm text-muted-foreground">Receive notifications for family invitations</p>
             </div>
             <Switch id="invitation-notifications" defaultChecked />
           </div>
@@ -154,9 +134,7 @@ export function PreferencesTab({ familyId }: PreferencesTabProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="sync-notifications">Sync Notifications</Label>
-              <p className="text-sm text-muted-foreground">
-                Get notified when calendars sync
-              </p>
+              <p className="text-sm text-muted-foreground">Get notified when calendars sync</p>
             </div>
             <Switch id="sync-notifications" />
           </div>

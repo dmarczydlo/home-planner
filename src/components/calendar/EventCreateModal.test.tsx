@@ -12,6 +12,7 @@ global.fetch = vi.fn();
 
 // Mock AuthContext to avoid onAuthStateChange issues
 vi.mock("@/contexts/AuthContext", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react");
   return {
     AuthProvider: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
@@ -27,10 +28,7 @@ vi.mock("@/contexts/AuthContext", () => {
 vi.mock("./ParticipantSelector", () => ({
   ParticipantSelector: ({ selectedParticipants, onSelectionChange }: any) => (
     <div data-testid="participant-selector">
-      <button
-        onClick={() => onSelectionChange([{ id: "user-1", type: "user" }])}
-        data-testid="select-participant"
-      >
+      <button onClick={() => onSelectionChange([{ id: "user-1", type: "user" }])} data-testid="select-participant">
         Select Participant
       </button>
       <div data-testid="selected-count">{selectedParticipants.length}</div>
@@ -208,7 +206,7 @@ describe("EventCreateModal", () => {
       const mockSession = {
         access_token: "mock-token",
       };
-      
+
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
           getSession: vi.fn().mockResolvedValue({
@@ -217,7 +215,7 @@ describe("EventCreateModal", () => {
           }),
         },
       } as any);
-      
+
       vi.mocked(global.fetch).mockResolvedValue({
         ok: true,
         status: 200,
@@ -246,10 +244,13 @@ describe("EventCreateModal", () => {
       await user.click(submitButton);
 
       // Assert - Wait for callbacks
-      await waitFor(() => {
-        expect(mockOnEventCreated).toHaveBeenCalled();
-        expect(mockOnClose).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOnEventCreated).toHaveBeenCalled();
+          expect(mockOnClose).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     }, 5000);
 
     it("shows loading state during submission", async () => {
@@ -258,7 +259,7 @@ describe("EventCreateModal", () => {
       const mockSession = {
         access_token: "mock-token",
       };
-      
+
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
           getSession: vi.fn().mockResolvedValue({
@@ -267,7 +268,7 @@ describe("EventCreateModal", () => {
           }),
         },
       } as any);
-      
+
       // Keep the request pending so we can reliably assert the loading UI
       let resolveSubmit: (value: Response) => void;
       const submitPromise = new Promise<Response>((resolve) => {
@@ -300,10 +301,13 @@ describe("EventCreateModal", () => {
       await user.click(submitButton);
 
       // Assert - Check for loading state ("Creating...") while request is in-flight
-      await waitFor(() => {
-        const creatingButton = screen.getByRole("button", { name: /creating/i });
-        expect(creatingButton).toBeDisabled();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          const creatingButton = screen.getByRole("button", { name: /creating/i });
+          expect(creatingButton).toBeDisabled();
+        },
+        { timeout: 5000 }
+      );
 
       // Cleanup: resolve the pending request so the test doesn't leak async work
       await act(async () => {
@@ -323,7 +327,7 @@ describe("EventCreateModal", () => {
         access_token: "mock-token",
       };
       const errorMessage = "Failed to create event";
-      
+
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
           getSession: vi.fn().mockResolvedValue({
@@ -332,7 +336,7 @@ describe("EventCreateModal", () => {
           }),
         },
       } as any);
-      
+
       vi.mocked(global.fetch).mockResolvedValue({
         ok: false,
         status: 400,
@@ -355,9 +359,12 @@ describe("EventCreateModal", () => {
       await user.click(submitButton);
 
       // Assert
-      await waitFor(() => {
-        expect(screen.getByText(errorMessage)).toBeInTheDocument();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
     }, 5000);
   });
 
@@ -402,7 +409,7 @@ describe("EventCreateModal", () => {
       const mockSession = {
         access_token: "mock-token",
       };
-      
+
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
           getSession: vi.fn().mockResolvedValue({
@@ -411,18 +418,21 @@ describe("EventCreateModal", () => {
           }),
         },
       } as any);
-      
+
       let resolveSubmit: () => void;
       const submitPromise = new Promise<void>((resolve) => {
         resolveSubmit = resolve;
       });
-      
-      vi.mocked(global.fetch).mockImplementation(
-        () => submitPromise.then(() => ({
-          ok: true,
-          status: 200,
-          json: async () => ({ id: "event-123" }),
-        } as Response))
+
+      vi.mocked(global.fetch).mockImplementation(() =>
+        submitPromise.then(
+          () =>
+            ({
+              ok: true,
+              status: 200,
+              json: async () => ({ id: "event-123" }),
+            }) as Response
+        )
       );
 
       render(
@@ -441,9 +451,12 @@ describe("EventCreateModal", () => {
       await user.click(submitButton);
 
       // Wait for submission to start - check if button shows "Creating..."
-      await waitFor(() => {
-        expect(screen.getByRole("button", { name: /creating/i })).toBeInTheDocument();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(screen.getByRole("button", { name: /creating/i })).toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
 
       // Try to close during submission
       const closeButton = screen.getByRole("button", { name: /close/i });
@@ -451,7 +464,7 @@ describe("EventCreateModal", () => {
 
       // Assert - Modal should not close during submission
       expect(mockOnClose).not.toHaveBeenCalled();
-      
+
       // Clean up - resolve the promise
       await act(async () => {
         resolveSubmit!();
@@ -529,9 +542,12 @@ describe("EventCreateModal", () => {
       await user.type(endInput, endTime.toISOString().slice(0, 16));
 
       // Assert - Wait for validation
-      await waitFor(() => {
-        expect(screen.getByTestId("conflict-warning")).toBeInTheDocument();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(screen.getByTestId("conflict-warning")).toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
     });
   });
 
@@ -604,13 +620,13 @@ describe("EventCreateModal", () => {
       // Act
       const titleInput = screen.getByLabelText(/event title/i);
       await user.click(titleInput);
-      
+
       // Assert - Title input should be focused
       expect(titleInput).toHaveFocus();
-      
+
       // Tab to next element
       await user.tab();
-      
+
       // The next focusable element after title should be the all-day checkbox
       const allDayCheckbox = screen.getByLabelText(/all day event/i);
       expect(allDayCheckbox).toHaveFocus();
@@ -629,9 +645,12 @@ describe("EventCreateModal", () => {
       await user.keyboard("{Escape}");
 
       // Assert - Modal should close on ESC
-      await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalled();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(mockOnClose).toHaveBeenCalled();
+        },
+        { timeout: 1000 }
+      );
     });
   });
 
@@ -642,7 +661,7 @@ describe("EventCreateModal", () => {
       const mockSession = {
         access_token: "mock-token",
       };
-      
+
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
           getSession: vi.fn().mockResolvedValue({
@@ -651,7 +670,7 @@ describe("EventCreateModal", () => {
           }),
         },
       } as any);
-      
+
       vi.mocked(global.fetch).mockResolvedValue({
         ok: true,
         status: 200,
@@ -679,10 +698,13 @@ describe("EventCreateModal", () => {
       await user.click(submitButton);
 
       // Assert - Modal closes after successful submission
-      await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalled();
-        expect(mockOnEventCreated).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOnClose).toHaveBeenCalled();
+          expect(mockOnEventCreated).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       // Re-open modal and check form is reset
       rerender(
@@ -691,10 +713,13 @@ describe("EventCreateModal", () => {
         </CalendarProvider>
       );
 
-      await waitFor(() => {
-        const newTitleInput = screen.getByLabelText(/event title/i);
-        expect(newTitleInput).toHaveValue("");
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          const newTitleInput = screen.getByLabelText(/event title/i);
+          expect(newTitleInput).toHaveValue("");
+        },
+        { timeout: 2000 }
+      );
     }, 5000);
   });
 });

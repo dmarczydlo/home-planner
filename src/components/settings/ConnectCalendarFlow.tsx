@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { Loader2, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCalendarApi } from "@/hooks/useCalendarApi";
 import type { CalendarProvider } from "@/types";
 
@@ -23,10 +17,10 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
 
   const handleConnect = async (provider: CalendarProvider) => {
     setSelectedProvider(provider);
-    
+
     try {
       const result = await connectCalendar({ provider });
-      
+
       if (result.authorization_url) {
         window.location.href = result.authorization_url;
       } else if (result.calendar) {
@@ -51,9 +45,7 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
       <SheetContent side="bottom" className="h-[400px] sm:h-auto">
         <SheetHeader>
           <SheetTitle>Connect Calendar</SheetTitle>
-          <SheetDescription>
-            Select a calendar provider to sync your events
-          </SheetDescription>
+          <SheetDescription>Select a calendar provider to sync your events</SheetDescription>
         </SheetHeader>
 
         <div className="space-y-4 mt-6">
@@ -69,9 +61,7 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
               </div>
               <div className="flex-1 text-left">
                 <div className="font-semibold text-foreground">Google Calendar</div>
-                <div className="text-sm text-muted-foreground">
-                  Connect your Google Calendar
-                </div>
+                <div className="text-sm text-muted-foreground">Connect your Google Calendar</div>
               </div>
               {isConnecting && selectedProvider === "google" && (
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -91,9 +81,7 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
               </div>
               <div className="flex-1 text-left">
                 <div className="font-semibold text-foreground">Microsoft 365</div>
-                <div className="text-sm text-muted-foreground">
-                  Connect your Microsoft 365 calendar
-                </div>
+                <div className="text-sm text-muted-foreground">Connect your Microsoft 365 calendar</div>
               </div>
               {isConnecting && selectedProvider === "microsoft" && (
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -107,12 +95,7 @@ export function ConnectCalendarFlow({ open, onOpenChange, onSuccess }: ConnectCa
             </div>
           )}
 
-          <Button
-            variant="ghost"
-            className="w-full"
-            onClick={handleClose}
-            disabled={isConnecting}
-          >
+          <Button variant="ghost" className="w-full" onClick={handleClose} disabled={isConnecting}>
             Cancel
           </Button>
         </div>

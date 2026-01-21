@@ -37,9 +37,12 @@ describe("PATCH /api/families/[familyId]/children/[childId]", () => {
     childId = child.id;
   });
 
-  function createMockContext(
-    params: { familyId?: string; childId?: string; userId?: string; body?: unknown }
-  ): APIContext {
+  function createMockContext(params: {
+    familyId?: string;
+    childId?: string;
+    userId?: string;
+    body?: unknown;
+  }): APIContext {
     return {
       params: {
         familyId: params.familyId ?? familyId,
@@ -309,9 +312,7 @@ describe("DELETE /api/families/[familyId]/children/[childId]", () => {
     childId = child.id;
   });
 
-  function createMockContext(
-    params: { familyId?: string; childId?: string; userId?: string }
-  ): APIContext {
+  function createMockContext(params: { familyId?: string; childId?: string; userId?: string }): APIContext {
     return {
       params: {
         familyId: params.familyId ?? familyId,
@@ -428,4 +429,3 @@ describe("DELETE /api/families/[familyId]/children/[childId]", () => {
     expect(remaining[0].id).toBe(childId);
   });
 });
-

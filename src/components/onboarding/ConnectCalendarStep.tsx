@@ -12,7 +12,6 @@ interface ConnectCalendarStepProps {
 export function ConnectCalendarStep({ className }: ConnectCalendarStepProps) {
   const { state, addCalendar } = useOnboarding();
   const { connectCalendar, listCalendars, isConnecting, error: apiError } = useCalendarApi();
-  const [selectedProvider, setSelectedProvider] = useState<CalendarProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -68,7 +67,6 @@ export function ConnectCalendarStep({ className }: ConnectCalendarStepProps) {
 
   const handleProviderClick = async (provider: CalendarProvider) => {
     setError(null);
-    setSelectedProvider(provider);
 
     try {
       const returnPath = typeof window !== "undefined" ? window.location.pathname : undefined;
@@ -85,7 +83,6 @@ export function ConnectCalendarStep({ className }: ConnectCalendarStepProps) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect calendar. Please try again.";
       setError(errorMessage);
-      setSelectedProvider(null);
     }
   };
 

@@ -12,7 +12,7 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
   const mockSubscription = {
     unsubscribe: mockUnsubscribe,
   };
-  
+
   const createMockClient = () => ({
     auth: {
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
@@ -28,7 +28,7 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
       }),
     },
   });
-  
+
   return {
     ...actual,
     createSupabaseClientForAuth: vi.fn(createMockClient),
@@ -65,11 +65,11 @@ interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
  */
 function customRender(ui: ReactElement, options?: CustomRenderOptions) {
   const { withProviders = true, ...renderOptions } = options || {};
-  
+
   if (!withProviders) {
     return render(ui, renderOptions);
   }
-  
+
   return render(ui, { wrapper: AllTheProviders, ...renderOptions });
 }
 

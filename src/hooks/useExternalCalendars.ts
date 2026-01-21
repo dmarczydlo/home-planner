@@ -1,9 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { createSupabaseClientForAuth } from "@/lib/auth/supabaseAuth";
-import type {
-  ExternalCalendarSummaryDTO,
-  CalendarSyncResultDTO,
-} from "@/types";
+import type { ExternalCalendarSummaryDTO, CalendarSyncResultDTO } from "@/types";
 
 interface UseExternalCalendarsReturn {
   calendars: ExternalCalendarSummaryDTO[];
@@ -56,7 +53,7 @@ export function useExternalCalendars(): UseExternalCalendarsReturn {
 
       const data = await response.json();
       setCalendars(data.calendars || []);
-      
+
       const initialSyncStatus: Record<string, "idle" | "syncing" | "success" | "error"> = {};
       data.calendars?.forEach((cal: ExternalCalendarSummaryDTO) => {
         initialSyncStatus[cal.id] = "idle";
@@ -89,10 +86,10 @@ export function useExternalCalendars(): UseExternalCalendarsReturn {
         }
 
         const result: CalendarSyncResultDTO = await response.json();
-        
-        setSyncStatus((prev) => ({ 
-          ...prev, 
-          [calendarId]: result.status === "success" ? "success" : "error" 
+
+        setSyncStatus((prev) => ({
+          ...prev,
+          [calendarId]: result.status === "success" ? "success" : "error",
         }));
 
         await loadCalendars();
@@ -106,11 +103,11 @@ export function useExternalCalendars(): UseExternalCalendarsReturn {
         const errorMessage = err instanceof Error ? err.message : "Failed to sync calendar";
         setError(errorMessage);
         setSyncStatus((prev) => ({ ...prev, [calendarId]: "error" }));
-        
+
         setTimeout(() => {
           setSyncStatus((prev) => ({ ...prev, [calendarId]: "idle" }));
         }, 3000);
-        
+
         throw err;
       }
     },
@@ -159,6 +156,7 @@ export function useExternalCalendars(): UseExternalCalendarsReturn {
         setCalendars((prev) => prev.filter((cal) => cal.id !== calendarId));
         setSyncStatus((prev) => {
           const newStatus = { ...prev };
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete newStatus[calendarId];
           return newStatus;
         });

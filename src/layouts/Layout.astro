@@ -19,10 +19,16 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
     <meta name="generator" content={Astro.generator} />
 
     <title>{title}</title>
-    <meta name="description" content="The modern family calendar app that keeps everyone in sync. Schedule smarter, prevent conflicts, and never miss what matters." />
+    <meta
+      name="description"
+      content="The modern family calendar app that keeps everyone in sync. Schedule smarter, prevent conflicts, and never miss what matters."
+    />
 
     <meta property="og:title" content={title} />
-    <meta property="og:description" content="The modern family calendar app that keeps everyone in sync. Schedule smarter, prevent conflicts, and never miss what matters." />
+    <meta
+      property="og:description"
+      content="The modern family calendar app that keeps everyone in sync. Schedule smarter, prevent conflicts, and never miss what matters."
+    />
     <meta property="og:type" content="website" />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -38,21 +44,19 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
     <script>
       (function syncAuthCookie() {
         if (typeof window === "undefined") return;
-        
+
         const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
         if (!supabaseUrl) return;
-        
+
         const storageKey = `sb-${supabaseUrl.split("//")[1].split(".")[0]}-auth-token`;
         const storedSession = localStorage.getItem(storageKey);
-        
+
         if (storedSession) {
           try {
             const session = JSON.parse(storedSession);
             if (session?.access_token) {
-              const existingCookie = document.cookie
-                .split(";")
-                .find((c) => c.trim().startsWith("hp_access_token="));
-              
+              const existingCookie = document.cookie.split(";").find((c) => c.trim().startsWith("hp_access_token="));
+
               if (!existingCookie) {
                 fetch("/api/auth/set-session", {
                   method: "POST",
@@ -70,6 +74,7 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
               }
             }
           } catch (e) {
+            console.error("Error parsing session:", e);
             // Ignore parsing errors
           }
         }

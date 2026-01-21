@@ -70,7 +70,7 @@ export function WelcomeStep({ className }: WelcomeStepProps) {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl" id="step-title">
           Welcome to Home Planner!
         </h1>
-        <p className="text-muted-foreground">Let's set up your family calendar.</p>
+        <p className="text-muted-foreground">Let&apos;s set up your family calendar.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

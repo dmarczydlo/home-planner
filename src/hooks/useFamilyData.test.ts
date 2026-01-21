@@ -114,11 +114,18 @@ describe("useFamilyData", () => {
       } as any);
 
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({ id: familyId, name: "Test Family", members: [], children: [] }),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  ok: true,
+                  status: 200,
+                  json: async () => ({ id: familyId, name: "Test Family", members: [], children: [] }),
+                } as Response),
+              100
+            )
+          )
       );
 
       // Mock invitations fetch

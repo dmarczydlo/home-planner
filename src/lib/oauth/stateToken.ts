@@ -78,5 +78,3 @@ export function validateStateToken(state: string): { userId: string; returnPath?
 
   return { userId: payload.userId, returnPath: payload.returnPath, valid: true };
 }
-
-

@@ -23,9 +23,12 @@ describe("useFamilyApi", () => {
       const { result } = renderHook(() => useFamilyApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(typeof result.current.createFamily).toBe("function");
@@ -36,9 +39,12 @@ describe("useFamilyApi", () => {
       const { result } = renderHook(() => useFamilyApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.isCreating).toBe(false);
@@ -49,9 +55,12 @@ describe("useFamilyApi", () => {
       const { result } = renderHook(() => useFamilyApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -86,7 +95,7 @@ describe("useFamilyApi", () => {
       // Act
       const command = { name: "Test Family" };
       let promise: Promise<any> | undefined;
-      
+
       await act(async () => {
         promise = result.current.createFamily(command);
         await promise;
@@ -239,7 +248,7 @@ describe("useFamilyApi", () => {
         expect(result.current.error).toBeTruthy();
         expect(result.current.isCreating).toBe(false);
       });
-      
+
       // The hook uses the error message from the Error object
       expect(result.current.error).toBe("Network error");
     });

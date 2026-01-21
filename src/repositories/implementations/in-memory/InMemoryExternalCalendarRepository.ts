@@ -2,7 +2,7 @@ import type { ExternalCalendarRepository } from "../../interfaces/ExternalCalend
 import type { ExternalCalendarEntity, ExternalCalendarInsert, ExternalCalendarUpdate } from "@/types";
 
 export class InMemoryExternalCalendarRepository implements ExternalCalendarRepository {
-  private calendars: Map<string, ExternalCalendarEntity> = new Map();
+  private calendars = new Map<string, ExternalCalendarEntity>();
 
   async findByUserId(userId: string): Promise<ExternalCalendarEntity[]> {
     return Array.from(this.calendars.values()).filter((cal) => cal.user_id === userId);
@@ -74,7 +74,7 @@ export class InMemoryExternalCalendarRepository implements ExternalCalendarRepos
     this.calendars.set(id, { ...existing, last_synced_at: syncedAt });
   }
 
-  async deleteEventsByCalendarId(calendarId: string): Promise<void> {
+  async deleteEventsByCalendarId(): Promise<void> {
     // In-memory implementation - events would be managed separately
     // This is a no-op for the in-memory repository
   }

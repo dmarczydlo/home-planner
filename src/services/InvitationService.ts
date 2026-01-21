@@ -12,7 +12,7 @@ import type { InvitationRepository } from "@/repositories/interfaces/InvitationR
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { UserRepository } from "@/repositories/interfaces/UserRepository";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
-import { uuidSchema, invitationStatusSchema, createInvitationCommandSchema, validateSchema } from "@/types";
+import { uuidSchema, createInvitationCommandSchema, validateSchema } from "@/types";
 import type {
   CreateInvitationCommand,
   CreateInvitationResponseDTO,

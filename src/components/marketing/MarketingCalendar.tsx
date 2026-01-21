@@ -13,7 +13,7 @@ const familyMembers = [
   { id: "jack", name: "Jack", color: "#10b981", emoji: "👦" },
 ];
 
-const getDateWithTime = (daysOffset: number, hours: number, minutes: number = 0) => {
+const getDateWithTime = (daysOffset: number, hours: number, minutes = 0) => {
   const date = new Date();
   date.setDate(date.getDate() + daysOffset);
   date.setHours(hours, minutes, 0, 0);
@@ -88,9 +88,7 @@ const dummyEvents = [
 ];
 
 export function MarketingCalendar() {
-  const [selectedMembers, setSelectedMembers] = useState<string[]>(
-    familyMembers.map((m) => m.id)
-  );
+  const [selectedMembers, setSelectedMembers] = useState<string[]>(familyMembers.map((m) => m.id));
   const [currentView, setCurrentView] = useState<"week" | "day" | "month">("week");
   const [selectedDate] = useState(new Date());
   const [showFilters, setShowFilters] = useState(false);
@@ -101,9 +99,7 @@ export function MarketingCalendar() {
 
   const toggleMember = (memberId: string) => {
     setSelectedMembers((prev) =>
-      prev.includes(memberId)
-        ? prev.filter((id) => id !== memberId)
-        : [...prev, memberId]
+      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId]
     );
   };
 
@@ -119,7 +115,10 @@ export function MarketingCalendar() {
     <div className="relative w-full h-full bg-gradient-to-br from-background via-primary/5 to-secondary/5 overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse-glow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse-glow" style={{ animationDelay: "1s" }}></div>
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse-glow"
+          style={{ animationDelay: "1s" }}
+        ></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.08),transparent_60%)]"></div>
       </div>
 
@@ -135,7 +134,9 @@ export function MarketingCalendar() {
               </div>
               <div className="flex-1 sm:flex-none">
                 <h2 className="text-base sm:text-lg font-bold text-foreground tracking-tight">Family Calendar</h2>
-                <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">Perfect coordination, zero chaos</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                  Perfect coordination, zero chaos
+                </p>
               </div>
             </div>
 
@@ -195,7 +196,10 @@ export function MarketingCalendar() {
               </div>
               <span className="text-xs sm:text-sm font-bold text-foreground">Filter Members</span>
               {selectedMembers.length > 0 && selectedMembers.length < familyMembers.length && (
-                <Badge variant="secondary" className="text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 animate-scale-in bg-primary/20 text-primary border-primary/30">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 animate-scale-in bg-primary/20 text-primary border-primary/30"
+                >
                   {selectedMembers.length} of {familyMembers.length}
                 </Badge>
               )}
@@ -218,9 +222,7 @@ export function MarketingCalendar() {
                 className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-xl glass-effect hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-all duration-300 text-xs sm:text-sm font-semibold text-foreground group"
               >
                 <span className="group-hover:translate-x-1 inline-block transition-transform">
-                  {selectedMembers.length === familyMembers.length
-                    ? "Deselect All"
-                    : "Select All"}
+                  {selectedMembers.length === familyMembers.length ? "Deselect All" : "Select All"}
                 </span>
               </button>
 
@@ -240,13 +242,11 @@ export function MarketingCalendar() {
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div
                           className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-lg sm:text-xl transition-all duration-300 ${
-                            isSelected
-                              ? "scale-110 shadow-md"
-                              : "scale-100 group-hover:scale-110"
+                            isSelected ? "scale-110 shadow-md" : "scale-100 group-hover:scale-110"
                           }`}
-                          style={{ 
+                          style={{
                             backgroundColor: isSelected ? member.color + "30" : member.color + "15",
-                            boxShadow: isSelected ? `0 4px 12px ${member.color}40` : "none"
+                            boxShadow: isSelected ? `0 4px 12px ${member.color}40` : "none",
                           }}
                         >
                           {member.emoji}
@@ -294,9 +294,7 @@ export function MarketingCalendar() {
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] sm:text-xs font-semibold text-muted-foreground">Active Events</span>
-                <span className="text-base sm:text-lg font-bold text-foreground">
-                  {filteredEvents.length}
-                </span>
+                <span className="text-base sm:text-lg font-bold text-foreground">{filteredEvents.length}</span>
               </div>
             </div>
           </div>

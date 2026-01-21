@@ -2,12 +2,7 @@ import type { APIContext } from "astro";
 import { FamilyService } from "@/services/FamilyService";
 import { mapResultToResponse } from "@/lib/http/responseMapper";
 import { handleApiRequest } from "@/lib/http/apiHelpers";
-import {
-  updateFamilyCommandSchema,
-  familyIdPathSchema,
-  type FamilyIdPath,
-  type UpdateFamilyCommand,
-} from "@/types";
+import { updateFamilyCommandSchema, familyIdPathSchema, type FamilyIdPath, type UpdateFamilyCommand } from "@/types";
 
 export const prerender = false;
 
@@ -69,4 +64,3 @@ export async function DELETE({ params, locals }: APIContext): Promise<Response> 
     locals,
   });
 }
-

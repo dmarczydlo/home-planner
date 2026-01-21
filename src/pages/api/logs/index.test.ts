@@ -56,13 +56,8 @@ describe("GET /api/logs", () => {
     });
   });
 
-  function createMockContext(params: {
-    userId?: string;
-    queryParams?: Record<string, string>;
-  }): APIContext {
-    const queryString = params.queryParams
-      ? "?" + new URLSearchParams(params.queryParams).toString()
-      : "";
+  function createMockContext(params: { userId?: string; queryParams?: Record<string, string> }): APIContext {
+    const queryString = params.queryParams ? "?" + new URLSearchParams(params.queryParams).toString() : "";
     const url = new URL(`http://localhost/api/logs${queryString}`);
 
     return {
@@ -430,4 +425,3 @@ describe("GET /api/logs", () => {
     expect(data.logs[0].action).toBe("event.create");
   });
 });
-

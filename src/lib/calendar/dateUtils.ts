@@ -52,8 +52,6 @@ export function getDateRange(view: CalendarView, currentDate: Date): DateRange {
 }
 
 export function navigateDate(currentDate: Date, view: CalendarView, direction: "previous" | "next"): Date {
-  const multiplier = direction === "next" ? 1 : -1;
-
   switch (view) {
     case "day":
       return direction === "next" ? addDays(currentDate, 1) : subDays(currentDate, 1);

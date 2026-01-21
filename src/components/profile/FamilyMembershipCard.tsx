@@ -20,9 +20,7 @@ export function FamilyMembershipCard({ family, isCurrent, onSwitch }: FamilyMemb
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-foreground truncate">
-                {family.family_name}
-              </p>
+              <p className="font-medium text-foreground truncate">{family.family_name}</p>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant={family.role === "admin" ? "default" : "secondary"}>
                   {family.role === "admin" ? "Admin" : "Member"}

@@ -48,4 +48,3 @@ export function LoginView({ error }: LoginViewProps): ReactNode {
     </div>
   );
 }
-

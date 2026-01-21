@@ -10,7 +10,7 @@ export function getInitials(name: string | null | undefined): string {
 
 export function getAvatarColor(name: string | null | undefined): string {
   if (!name) return "bg-gray-500";
-  
+
   const colors = [
     "bg-blue-500",
     "bg-green-500",
@@ -21,7 +21,7 @@ export function getAvatarColor(name: string | null | undefined): string {
     "bg-red-500",
     "bg-teal-500",
   ];
-  
+
   const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 }

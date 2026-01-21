@@ -14,9 +14,7 @@ export function InvitationsList({ invitations, isAdmin, onCancel }: InvitationsL
   return (
     <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl">
-          Pending Invitations {pendingCount > 0 && `(${pendingCount})`}
-        </CardTitle>
+        <CardTitle className="text-xl">Pending Invitations {pendingCount > 0 && `(${pendingCount})`}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {invitations.length === 0 ? (

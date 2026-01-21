@@ -19,9 +19,12 @@ describe("useCalendarApi", () => {
       const { result } = renderHook(() => useCalendarApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isConnecting).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isConnecting).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(typeof result.current.connectCalendar).toBe("function");
@@ -32,9 +35,12 @@ describe("useCalendarApi", () => {
       const { result } = renderHook(() => useCalendarApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isConnecting).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isConnecting).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(typeof result.current.listCalendars).toBe("function");
@@ -45,9 +51,12 @@ describe("useCalendarApi", () => {
       const { result } = renderHook(() => useCalendarApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isConnecting).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isConnecting).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.isConnecting).toBe(false);
@@ -58,9 +67,12 @@ describe("useCalendarApi", () => {
       const { result } = renderHook(() => useCalendarApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isConnecting).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isConnecting).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -101,7 +113,7 @@ describe("useCalendarApi", () => {
       // Act
       const command = { provider: "google" as const };
       let promise: Promise<any>;
-      
+
       await act(async () => {
         promise = result.current.connectCalendar(command);
       });
@@ -278,7 +290,7 @@ describe("useCalendarApi", () => {
 
       // Act - Wrap in act() to avoid React warnings
       let promise: Promise<any>;
-      
+
       await act(async () => {
         promise = result.current.listCalendars();
       });

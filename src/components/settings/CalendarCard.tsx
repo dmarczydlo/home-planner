@@ -77,10 +77,10 @@ export function CalendarCard({ calendar, syncStatus, onSync, onDisconnect }: Cal
 
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins} min ago`;
-    
+
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    
+
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   };
@@ -150,13 +150,7 @@ export function CalendarCard({ calendar, syncStatus, onSync, onDisconnect }: Cal
           )}
 
           <div className="flex gap-2 pt-2">
-            <Button
-              onClick={handleSync}
-              disabled={isSyncing}
-              variant="outline"
-              size="sm"
-              className="flex-1"
-            >
+            <Button onClick={handleSync} disabled={isSyncing} variant="outline" size="sm" className="flex-1">
               {isSyncing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -187,8 +181,8 @@ export function CalendarCard({ calendar, syncStatus, onSync, onDisconnect }: Cal
           <AlertDialogHeader>
             <AlertDialogTitle>Disconnect Calendar</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to disconnect {getProviderName()}? This will stop syncing events from this
-              calendar. Events already imported will remain.
+              Are you sure you want to disconnect {getProviderName()}? This will stop syncing events from this calendar.
+              Events already imported will remain.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

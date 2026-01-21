@@ -19,9 +19,12 @@ describe("useInvitationApi", () => {
       const { result } = renderHook(() => useInvitationApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(typeof result.current.createInvitation).toBe("function");
@@ -32,9 +35,12 @@ describe("useInvitationApi", () => {
       const { result } = renderHook(() => useInvitationApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.isCreating).toBe(false);
@@ -45,9 +51,12 @@ describe("useInvitationApi", () => {
       const { result } = renderHook(() => useInvitationApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -89,7 +98,7 @@ describe("useInvitationApi", () => {
       // Act
       const command = { email: "test@example.com" };
       let promise: Promise<any>;
-      
+
       await act(async () => {
         promise = result.current.createInvitation(familyId, command);
       });

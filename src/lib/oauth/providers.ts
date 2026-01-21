@@ -1,4 +1,4 @@
-import { calendarProviderSchema, type CalendarProvider } from "@/types";
+import { type CalendarProvider } from "@/types";
 
 export interface TokenResponse {
   access_token: string;
@@ -163,15 +163,24 @@ export class GoogleOAuthProvider implements OAuthProvider {
     }
 
     const data = await response.json();
-    return (data.items || []).map((item: any) => ({
-      id: item.id,
-      title: item.summary || "No Title",
-      start_time: item.start.dateTime || item.start.date,
-      end_time: item.end.dateTime || item.end.date,
-      is_all_day: !item.start.dateTime,
-      description: item.description,
-      location: item.location,
-    }));
+    return (data.items || []).map(
+      (item: {
+        id: string;
+        summary: string;
+        start: { dateTime: string; date: string };
+        end: { dateTime: string; date: string };
+        description: string;
+        location: string;
+      }) => ({
+        id: item.id,
+        title: item.summary || "No Title",
+        start_time: item.start.dateTime || item.start.date,
+        end_time: item.end.dateTime || item.end.date,
+        is_all_day: !item.start.dateTime,
+        description: item.description,
+        location: item.location,
+      })
+    );
   }
 }
 
@@ -313,15 +322,25 @@ export class MicrosoftOAuthProvider implements OAuthProvider {
     }
 
     const data = await response.json();
-    return (data.value || []).map((item: any) => ({
-      id: item.id,
-      title: item.subject || "No Title",
-      start_time: item.start.dateTime,
-      end_time: item.end.dateTime,
-      is_all_day: item.isAllDay || false,
-      description: item.body?.content,
-      location: item.location?.displayName,
-    }));
+    return (data.value || []).map(
+      (item: {
+        id: string;
+        subject: string;
+        start: { dateTime: string };
+        end: { dateTime: string };
+        isAllDay: boolean;
+        body?: { content: string };
+        location?: { displayName: string };
+      }) => ({
+        id: item.id,
+        title: item.subject || "No Title",
+        start_time: item.start.dateTime,
+        end_time: item.end.dateTime,
+        is_all_day: item.isAllDay || false,
+        description: item.body?.content,
+        location: item.location?.displayName,
+      })
+    );
   }
 }
 

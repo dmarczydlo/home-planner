@@ -65,9 +65,7 @@ export function InvitationCard({ invitation, onCancel, isAdmin = false }: Invita
                   {invitation.status}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Invited by {invitation.invited_by.full_name || "Unknown"}
-              </p>
+              <p className="text-xs text-muted-foreground">Invited by {invitation.invited_by.full_name || "Unknown"}</p>
               <p className="text-xs text-muted-foreground mt-1">
                 {isPending ? `Expires ${expiryDate}` : `Sent ${createdDate}`}
               </p>
@@ -92,8 +90,8 @@ export function InvitationCard({ invitation, onCancel, isAdmin = false }: Invita
           <AlertDialogHeader>
             <AlertDialogTitle>Cancel invitation</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel the invitation for {invitation.invitee_email}? They will no longer be
-              able to use this link to join the family.
+              Are you sure you want to cancel the invitation for {invitation.invitee_email}? They will no longer be able
+              to use this link to join the family.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

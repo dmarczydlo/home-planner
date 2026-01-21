@@ -103,27 +103,28 @@ export function FamilyOverview({ familyId }: FamilyOverviewProps) {
       <div className="min-h-screen pt-20 bg-background">
         <div className="container max-w-4xl mx-auto px-4 py-8">
           <div className="space-y-6">
-          <FamilyHeader family={familyDetails} />
+            <FamilyHeader family={familyDetails} />
 
-          <MembersList
-            members={members}
-            currentUserId={user.id}
-            isAdmin={isAdmin}
-            onInviteClick={() => setShowInviteForm(true)}
-            onRemoveMember={removeMember}
-            onRoleChange={updateMemberRole}
-          />
+            <MembersList
+              members={members}
+              currentUserId={user.id}
+              isAdmin={isAdmin}
+              onInviteClick={() => setShowInviteForm(true)}
+              onRemoveMember={removeMember}
+              onRoleChange={updateMemberRole}
+            />
 
-          <ChildrenList
-            children={children}
-            onAddClick={() => setShowChildForm(true)}
-            onEdit={handleEditChild}
-            onRemove={removeChild}
-          />
+            <ChildrenList
+              // eslint-disable-next-line react/no-children-prop
+              children={children}
+              onAddClick={() => setShowChildForm(true)}
+              onEdit={handleEditChild}
+              onRemove={removeChild}
+            />
 
-          {invitations.length > 0 && (
-            <InvitationsList invitations={invitations} isAdmin={isAdmin} onCancel={cancelInvitation} />
-          )}
+            {invitations.length > 0 && (
+              <InvitationsList invitations={invitations} isAdmin={isAdmin} onCancel={cancelInvitation} />
+            )}
           </div>
         </div>
       </div>

@@ -62,7 +62,7 @@ function formatZodErrors(error: z.ZodError): Record<string, string> {
 export function validatePathParams<T>(
   schema: z.ZodSchema<T>,
   params: unknown,
-  errorMessage: string = "Invalid path parameters"
+  errorMessage = "Invalid path parameters"
 ): Result<T, ValidationError> {
   const validation = schema.safeParse(params);
   if (!validation.success) {
@@ -74,7 +74,7 @@ export function validatePathParams<T>(
 export function validateQueryParams<T>(
   schema: z.ZodSchema<T>,
   url: URL,
-  errorMessage: string = "Invalid query parameters"
+  errorMessage = "Invalid query parameters"
 ): Result<T, ValidationError> {
   const queryParams: Record<string, string> = {};
   url.searchParams.forEach((value, key) => {
@@ -91,7 +91,7 @@ export function validateQueryParams<T>(
 export async function validateBody<T>(
   schema: z.ZodSchema<T>,
   request: Request,
-  errorMessage: string = "Invalid request body"
+  errorMessage = "Invalid request body"
 ): Promise<Result<T, ValidationError>> {
   const bodyResult = await parseJSON(request);
   if (!bodyResult.success) {
@@ -108,7 +108,7 @@ export async function validateBody<T>(
 export function validateResponse<T>(
   schema: z.ZodSchema<T>,
   data: unknown,
-  errorMessage: string = "Invalid response data"
+  errorMessage = "Invalid response data"
 ): Result<T, ValidationError> {
   const validation = schema.safeParse(data);
   if (!validation.success) {
@@ -117,19 +117,19 @@ export function validateResponse<T>(
   return ok(validation.data);
 }
 
-type ApiHandlerContext<TPath = unknown, TQuery = unknown, TBody = unknown> = {
+interface ApiHandlerContext<TPath = unknown, TQuery = unknown, TBody = unknown> {
   userId: string;
   path: TPath;
   query: TQuery;
   body: TBody;
   locals: APIContext["locals"];
-};
+}
 
 type ApiHandler<TPath = unknown, TQuery = unknown, TBody = unknown> = (
   context: ApiHandlerContext<TPath, TQuery, TBody>
 ) => Promise<Response> | Response;
 
-type HandleApiRequestOptions<TPath = unknown, TQuery = unknown, TBody = unknown> = {
+interface HandleApiRequestOptions<TPath = unknown, TQuery = unknown, TBody = unknown> {
   handler: ApiHandler<TPath, TQuery, TBody>;
   context: string;
   pathSchema?: z.ZodSchema<TPath>;
@@ -140,7 +140,7 @@ type HandleApiRequestOptions<TPath = unknown, TQuery = unknown, TBody = unknown>
   url?: URL;
   request?: Request;
   locals: APIContext["locals"];
-};
+}
 
 export async function handleApiRequest(
   handler: () => Promise<Response> | Response,
@@ -155,7 +155,7 @@ export async function handleApiRequest<TPath = unknown, TQuery = unknown, TBody 
 ): Promise<Response> {
   if (typeof handlerOrOptions === "function") {
     const handler = handlerOrOptions;
-    const ctx = contextString!;
+    const ctx = contextString ?? "";
     try {
       return await handler();
     } catch (error) {

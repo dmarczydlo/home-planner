@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-// @ts-ignore - CommonJS module compatibility
 import { Calendar } from "react-big-calendar";
 import { useCalendar } from "../../contexts/CalendarContext";
 import { localizer } from "../../lib/calendar/localizer";
@@ -31,17 +30,15 @@ export function MonthView({ events, isLoading, onSelectEvent }: MonthViewProps) 
     }));
   }, [events]);
 
-  const eventStyleGetter = (event: any) => {
+  const eventStyleGetter = (event: {
+    resource?: { event_type?: string; has_conflict?: boolean; is_synced?: boolean };
+  }): { style: React.CSSProperties } => {
     const isBlocker = event.resource?.event_type === "blocker";
     const hasConflict = event.resource?.has_conflict;
     const isSynced = event.resource?.is_synced;
 
-    let style: React.CSSProperties = {
-      backgroundColor: isBlocker
-        ? hasConflict
-          ? "#ef4444"
-          : "#3b82f6"
-        : "#6b7280",
+    const style: React.CSSProperties = {
+      backgroundColor: isBlocker ? (hasConflict ? "#ef4444" : "#3b82f6") : "#6b7280",
       color: "white",
       borderRadius: "4px",
       border: "none",
@@ -61,7 +58,7 @@ export function MonthView({ events, isLoading, onSelectEvent }: MonthViewProps) 
     setView("day");
   };
 
-  const handleSelectEvent = (event: any) => {
+  const handleSelectEvent = (event: { id: string; start?: Date }) => {
     const originalEvent = events.find((e) => e.id === event.id);
     if (originalEvent && onSelectEvent) {
       // For recurring events, store the occurrence date in the event object
@@ -95,7 +92,6 @@ export function MonthView({ events, isLoading, onSelectEvent }: MonthViewProps) 
         view="month"
         date={state.currentDate}
         onNavigate={handleNavigate}
-        onView={() => {}}
         eventPropGetter={eventStyleGetter}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}

@@ -366,7 +366,7 @@ export class SQLEventRepository implements EventRepository {
 
   async getParticipants(
     eventId: string
-  ): Promise<Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>> {
+  ): Promise<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }[]> {
     const { data: participants, error } = await this.supabase
       .from("event_participants")
       .select("participant_type, user_id, child_id")
@@ -376,7 +376,7 @@ export class SQLEventRepository implements EventRepository {
       return [];
     }
 
-    const result: Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }> = [];
+    const result: { id: string; name: string; type: "user" | "child"; avatar_url?: string | null }[] = [];
 
     for (const p of participants) {
       if (p.participant_type === "user" && p.user_id) {
@@ -534,20 +534,20 @@ export class SQLEventRepository implements EventRepository {
     event: Event,
     startDate: string,
     endDate: string
-  ): Array<{ start_time: string; end_time: string }> {
+  ): { start_time: string; end_time: string }[] {
     if (!event.recurrence_pattern) {
       return [{ start_time: event.start_time, end_time: event.end_time }];
     }
 
     const pattern = event.recurrence_pattern;
-    const occurrences: Array<{ start_time: string; end_time: string }> = [];
+    const occurrences: { start_time: string; end_time: string }[] = [];
     const baseStart = new Date(event.start_time);
     const baseEnd = new Date(event.end_time);
     const rangeStart = new Date(startDate);
     const rangeEnd = new Date(endDate);
     const patternEnd = new Date(pattern.end_date);
 
-    let currentDate = new Date(baseStart);
+    const currentDate = new Date(baseStart);
     const duration = baseEnd.getTime() - baseStart.getTime();
 
     while (currentDate <= patternEnd && currentDate <= rangeEnd) {
@@ -603,7 +603,7 @@ export class SQLEventRepository implements EventRepository {
       };
     }
 
-    let currentDate = new Date(baseStart);
+    const currentDate = new Date(baseStart);
     const duration = baseEnd.getTime() - baseStart.getTime();
 
     while (currentDate <= patternEnd) {

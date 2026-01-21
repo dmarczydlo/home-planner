@@ -32,12 +32,7 @@ export function LogoutButton() {
 
   return (
     <>
-      <Button
-        variant="destructive"
-        onClick={() => setShowDialog(true)}
-        className="w-full"
-        aria-label="Logout"
-      >
+      <Button variant="destructive" onClick={() => setShowDialog(true)} className="w-full" aria-label="Logout">
         <LogOut className="h-4 w-4 mr-2" />
         Logout
       </Button>

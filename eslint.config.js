@@ -17,6 +17,11 @@ const gitignorePath = path.resolve(__dirname, ".gitignore");
 
 const baseConfig = tseslint.config({
   extends: [eslint.configs.recommended, tseslint.configs.strict, tseslint.configs.stylistic],
+  ignores: [
+    "**/.astro/**", // Ignore generated Astro files
+    "**/dist/**",
+    "**/node_modules/**",
+  ],
   rules: {
     "no-console": "warn",
     "no-unused-vars": "off",
@@ -56,11 +61,56 @@ const reactConfig = tseslint.config({
   },
 });
 
+// Test-specific configuration - more permissive rules for test files
+const testConfig = tseslint.config({
+  files: [
+    "**/*.{test,spec}.{js,jsx,ts,tsx}",
+    "**/test/**/*.{js,jsx,ts,tsx}",
+    "**/e2e/**/*.{js,ts}",
+    "**/__tests__/**/*.{js,jsx,ts,tsx}",
+  ],
+  rules: {
+    // Allow any types in tests (useful for mocks and test data)
+    "@typescript-eslint/no-explicit-any": "off",
+    // Allow empty functions in tests (useful for mocks)
+    "@typescript-eslint/no-empty-function": "off",
+    // Allow unused vars in tests (useful for test setup)
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
+    // Allow console statements in tests (useful for debugging)
+    "no-console": "off",
+    // Allow non-null assertions in tests
+    "@typescript-eslint/no-non-null-assertion": "off",
+    // Disable React hooks rules for Playwright fixtures
+    "react-hooks/rules-of-hooks": "off",
+  },
+});
+
+// E2E specific configuration - even more permissive
+const e2eConfig = tseslint.config({
+  files: ["**/e2e/**/*.{js,ts}"],
+  rules: {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "no-console": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "react-hooks/rules-of-hooks": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
   jsxA11yConfig,
   reactConfig,
+  testConfig,
+  e2eConfig,
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginPrettier
 );

@@ -255,7 +255,7 @@ export function useFamilyData(familyId: string | null): UseFamilyDataReturn {
         }),
         refreshInvitations().catch((err) => {
           console.error("Failed to refresh invitations on mount:", err);
-        })
+        }),
       ]);
     }
   }, [familyId, refreshFamily, refreshInvitations]);

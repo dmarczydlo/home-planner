@@ -1,6 +1,6 @@
 import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
-import { NotFoundError, ValidationError, ForbiddenError, DomainError, InternalError } from "@/domain/errors";
+import { ValidationError, ForbiddenError, DomainError, InternalError } from "@/domain/errors";
 import type { LogRepository } from "@/repositories/interfaces/LogRepository";
 import type { FamilyRepository } from "@/repositories/interfaces/FamilyRepository";
 import type { ListLogsQuery, ListLogsResponseDTO, LogDTO } from "@/types";

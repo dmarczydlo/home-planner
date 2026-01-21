@@ -29,7 +29,12 @@ function getEventColor(event: EventWithParticipantsDTO): string {
   return "#6b7280";
 }
 
-export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSelectSlot }: CustomCalendarMonthViewProps) {
+export function CustomCalendarMonthView({
+  events,
+  isLoading,
+  onSelectEvent,
+  onSelectSlot,
+}: CustomCalendarMonthViewProps) {
   const { state, setCurrentDate, setView } = useCalendar();
 
   const monthStart = useMemo(() => {
@@ -44,13 +49,13 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
     const startDate = new Date(monthStart);
     const dayOfWeek = startDate.getDay();
     startDate.setDate(startDate.getDate() - dayOfWeek);
-    
+
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
       days.push(date);
     }
-    
+
     return days;
   }, [monthStart]);
 
@@ -64,10 +69,7 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
   };
 
   const isCurrentMonth = (date: Date) => {
-    return (
-      date.getMonth() === monthStart.getMonth() &&
-      date.getFullYear() === monthStart.getFullYear()
-    );
+    return date.getMonth() === monthStart.getMonth() && date.getFullYear() === monthStart.getFullYear();
   };
 
   const getEventsForDay = (day: Date) => {
@@ -102,19 +104,14 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
     <div data-testid="month-view" className="relative h-full w-full flex flex-col custom-month-view">
       {/* Month header */}
       <div className="sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4">
-        <h2 className="text-xl sm:text-3xl font-black text-foreground">
-          {formatMonthYear(monthStart)}
-        </h2>
+        <h2 className="text-xl sm:text-3xl font-black text-foreground">{formatMonthYear(monthStart)}</h2>
       </div>
 
       {/* Day names header */}
       <div className="border-b border-primary/20 bg-background/95 backdrop-blur-xl sticky top-[57px] sm:top-[73px] z-20">
         <div className="grid grid-cols-7">
           {DAYS.map((dayName, index) => (
-            <div
-              key={index}
-              className="px-2 sm:px-4 py-2 sm:py-3 text-center"
-            >
+            <div key={index} className="px-2 sm:px-4 py-2 sm:py-3 text-center">
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {dayName}
               </span>
@@ -130,13 +127,15 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
             const dayEvents = getEventsForDay(day);
             const today = isToday(day);
             const currentMonth = isCurrentMonth(day);
-            
+
             // Filter out multi-day events - they'll be rendered separately
             const singleDayEvents = dayEvents.filter((e) => !isMultiDayEvent(e));
-            
+
             return (
               <div
                 key={index}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   if (onSelectSlot) {
                     const slotDate = new Date(day);
@@ -146,13 +145,19 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
                     setView("day");
                   }
                 }}
+                onKeyDown={(e) => {
+                  if ((e.key === "Enter" || e.key === " ") && onSelectSlot) {
+                    e.preventDefault();
+                    const slotDate = new Date(day);
+                    slotDate.setHours(9, 0, 0, 0);
+                    onSelectSlot(slotDate);
+                    setCurrentDate(day);
+                    setView("day");
+                  }
+                }}
                 className={`relative border-r border-b border-primary/10 p-1.5 sm:p-3 transition-all duration-300 cursor-pointer overflow-visible ${
                   !currentMonth ? "opacity-40" : ""
-                } ${
-                  today
-                    ? "bg-gradient-to-br from-primary/15 via-primary/10 to-secondary/5"
-                    : "hover:bg-card/20"
-                }`}
+                } ${today ? "bg-gradient-to-br from-primary/15 via-primary/10 to-secondary/5" : "hover:bg-card/20"}`}
               >
                 {/* Date number */}
                 <div className="flex items-center justify-between mb-1 sm:mb-1.5 px-1 min-h-[20px]">
@@ -161,8 +166,8 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
                       today
                         ? "text-primary drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
                         : currentMonth
-                        ? "text-foreground"
-                        : "text-muted-foreground"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                     }`}
                   >
                     {day.getDate()}
@@ -174,14 +179,23 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
 
                 {/* Single-day events */}
                 <div className="space-y-0.5 sm:space-y-1 relative z-10 mt-0.5">
-                  {singleDayEvents.slice(0, 2).map((event, eventIdx) => {
+                  {singleDayEvents.slice(0, 2).map((event) => {
                     const color = getEventColor(event);
                     return (
                       <div
                         key={event.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEventClick(event);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEventClick(event);
+                          }
                         }}
                         className="rounded-lg border border-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-[1.05] hover:z-50 hover:shadow-lg cursor-pointer group overflow-hidden"
                         style={{
@@ -238,9 +252,9 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
 
           // Find the maximum number of single-day events in any cell of this row
           const maxSingleDayEvents = Math.max(
-            ...rowDays.map(day => {
+            ...rowDays.map((day) => {
               const dayEvents = getEventsForDay(day);
-              return dayEvents.filter(e => !isMultiDayEvent(e)).length;
+              return dayEvents.filter((e) => !isMultiDayEvent(e)).length;
             })
           );
 
@@ -253,8 +267,8 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
             eventStartDate.setHours(0, 0, 0, 0);
             const eventEndDate = new Date(eventEnd);
             eventEndDate.setHours(23, 59, 59, 999);
-            
-            return rowDays.some(day => {
+
+            return rowDays.some((day) => {
               const dayStart = new Date(day);
               dayStart.setHours(0, 0, 0, 0);
               const dayEnd = new Date(day);
@@ -308,16 +322,23 @@ export function CustomCalendarMonthView({ events, isLoading, onSelectEvent, onSe
 
                 // Check if this is the first day of the event (for showing title)
                 const globalStartIndex = rowStartIndex + rowStartCol;
-                const isFirstDay = globalStartIndex === 0 || 
-                  !eventSpansDay(event, calendarDays[globalStartIndex - 1]);
+                const isFirstDay = globalStartIndex === 0 || !eventSpansDay(event, calendarDays[globalStartIndex - 1]);
 
                 // Calculate top position: below date (24px) + single-day events (maxSingleDayEvents * 24px) + previous multi-day events
-                const topOffset = 24 + (maxSingleDayEvents * 24) + (eventIndex * 22);
+                const topOffset = 24 + maxSingleDayEvents * 24 + eventIndex * 22;
 
                 return (
                   <div
                     key={`${event.id}-row-${rowIndex}`}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleEventClick(event)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleEventClick(event);
+                      }
+                    }}
                     className="absolute rounded-lg border border-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:z-50 hover:shadow-lg cursor-pointer group overflow-hidden pointer-events-auto"
                     style={{
                       left: `${leftPercent}%`,
