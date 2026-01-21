@@ -42,7 +42,9 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
     {showNavbar && <Navbar client:load />}
     <slot />
     <script>
+      /* eslint-disable prettier/prettier */
       (function syncAuthCookie() {
+        // eslint-disable-next-line no-undef
         if (typeof window === "undefined") return;
 
         const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;

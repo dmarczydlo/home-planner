@@ -27,7 +27,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run linter
-        run: pnpm lint
+        run: pnpm lint -- --quiet
 
   unit-test:
     name: Unit Tests
@@ -84,10 +84,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browsers
-        uses: microsoft/playwright-github-action@v1
-        with:
-          browsers: chromium
+      - name: Install Playwright browsers with system dependencies
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run E2E tests
         env:
