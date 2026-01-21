@@ -106,7 +106,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
   }
 
   return (
-    <div className="relative h-full w-full flex flex-col custom-week-view">
+    <div data-testid="week-view" className="relative h-full w-full flex flex-col custom-week-view">
       {/* Day headers */}
       <div className="border-b border-primary/20 sticky top-0 z-20 bg-background/95 backdrop-blur-xl">
         <div className="grid grid-cols-7">

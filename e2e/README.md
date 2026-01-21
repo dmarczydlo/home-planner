@@ -109,9 +109,49 @@ test("my authenticated test", async ({ authenticatedPage }) => {
 
 Tests use the same environment variables as the main app:
 
-- `PUBLIC_SUPABASE_URL` - Supabase project URL
-- `PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
+- `PUBLIC_SUPABASE_URL` or `SUPABASE_URL` - Supabase project URL (required)
+- `PUBLIC_SUPABASE_ANON_KEY` or `SUPABASE_KEY` - Supabase anon key (required)
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (required for authentication setup)
+- `TEST_GOOGLE_EMAIL` - Test user email (optional, defaults to `e2e-test@example.com`)
 - `FRONTEND_URL` - Frontend URL (defaults to http://localhost:4321)
+
+### Authentication Setup
+
+Before running tests, you need to set up authentication:
+
+1. **Set environment variables**:
+   ```bash
+   export SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   export PUBLIC_SUPABASE_URL=your-supabase-url
+   export PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   export TEST_GOOGLE_EMAIL=e2e-test@yourdomain.com  # Optional
+   ```
+
+2. **Run authentication setup**:
+   ```bash
+   npx playwright test e2e/auth.setup.ts
+   ```
+
+   This will:
+   - Create or get the test user using the service role key
+   - Generate a session via magic link (no OAuth UI needed)
+   - Save the authentication state to `.auth/user.json`
+
+3. **Verify setup**:
+   ```bash
+   ls -la .auth/user.json
+   ```
+
+   The file should exist. **Do not commit this file** - it's in `.gitignore`.
+
+4. **Run tests**:
+   ```bash
+   pnpm test:e2e
+   ```
+
+   All tests will automatically use the saved authentication state.
+
+**Note**: Supabase sessions expire after ~1 hour. Regenerate `.auth/user.json` periodically or before CI runs.
 
 ## CI/CD Integration
 

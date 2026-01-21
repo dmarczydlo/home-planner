@@ -32,6 +32,7 @@ interface ImportMetaEnv {
   readonly SUPABASE_KEY: string;
   readonly PUBLIC_SUPABASE_URL?: string;
   readonly PUBLIC_SUPABASE_ANON_KEY?: string;
+  readonly SUPABASE_SERVICE_ROLE_KEY?: string;
   readonly OPENROUTER_API_KEY: string;
   readonly USE_IN_MEMORY_DB?: string;
   readonly GOOGLE_CLIENT_ID?: string;
@@ -42,6 +43,7 @@ interface ImportMetaEnv {
   readonly TOKEN_ENCRYPTION_KEY?: string;
   readonly OAUTH_STATE_SECRET?: string;
   readonly FRONTEND_URL?: string;
+  readonly TEST_GOOGLE_EMAIL?: string;
   // more env variables...
 }
 

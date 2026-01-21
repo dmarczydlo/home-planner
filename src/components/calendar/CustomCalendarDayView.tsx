@@ -106,7 +106,7 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
   }
 
   return (
-    <div className="relative h-full w-full flex flex-col custom-day-view">
+    <div data-testid="day-view" className="relative h-full w-full flex flex-col custom-day-view">
       {/* Header */}
       <div className={`sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4 ${
         isToday ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" : ""
