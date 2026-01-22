@@ -284,8 +284,8 @@ export function EventEditModal({
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={handleClose}
       onKeyDown={(e) => {
