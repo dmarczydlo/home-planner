@@ -27,7 +27,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run linter
-        run: pnpm lint -- --quiet
+        run: pnpm lint --quiet
 
   unit-test:
     name: Unit Tests
