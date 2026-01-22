@@ -56,5 +56,14 @@ export default defineConfig({
     timeout: 120000,
     stdout: "pipe",
     stderr: "pipe",
+    env: {
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_KEY: process.env.SUPABASE_KEY,
+      PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL,
+      PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      TEST_GOOGLE_EMAIL: process.env.TEST_GOOGLE_EMAIL,
+      TEST_ENV: process.env.TEST_ENV,
+    },
   },
 });
