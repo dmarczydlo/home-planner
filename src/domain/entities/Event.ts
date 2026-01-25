@@ -3,11 +3,12 @@ import { ok, err } from "@/domain/result";
 import { ValidationError, ForbiddenError, ConflictError } from "@/domain/errors";
 import type { ParticipantReferenceDTO, ConflictingEventDTO } from "@/types";
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Event {
   static validateParticipants(
     participants: ParticipantReferenceDTO[],
-    familyMembers: Array<{ user_id: string }>,
-    children: Array<{ id: string }>
+    familyMembers: { user_id: string }[],
+    children: { id: string }[]
   ): Result<void, ValidationError> {
     const memberIds = new Set(familyMembers.map((m) => m.user_id));
     const childIds = new Set(children.map((c) => c.id));
@@ -55,13 +56,13 @@ export class Event {
 
   static checkConflicts(
     eventType: "elastic" | "blocker",
-    conflicts: Array<{
+    conflicts: {
       id: string;
       title: string;
       start_time: string;
       end_time: string;
-      participants: Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>;
-    }>
+      participants: { id: string; name: string; type: "user" | "child"; avatar_url?: string | null }[];
+    }[]
   ): Result<void, ConflictError> {
     if (eventType === "blocker" && conflicts.length > 0) {
       const conflictingEvents: ConflictingEventDTO[] = conflicts.map((c) => ({

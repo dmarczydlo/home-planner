@@ -31,7 +31,12 @@ function getEventColor(event: EventWithParticipantsDTO): string {
   return "#6b7280"; // Default gray
 }
 
-export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSelectSlot }: CustomCalendarWeekViewProps) {
+export function CustomCalendarWeekView({
+  events,
+  isLoading,
+  onSelectEvent,
+  onSelectSlot,
+}: CustomCalendarWeekViewProps) {
   const { state, setCurrentDate, setView } = useCalendar();
 
   const weekStart = useMemo(() => {
@@ -67,16 +72,16 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
     if (event.is_all_day) {
       return { top: "0px", height: "32px" };
     }
-    
+
     const start = new Date(event.start_time);
     const end = new Date(event.end_time);
     const startMinutes = start.getHours() * 60 + start.getMinutes();
     const endMinutes = end.getHours() * 60 + end.getMinutes();
     const duration = endMinutes - startMinutes;
-    
+
     const top = (startMinutes / 60) * 60; // 60px per hour
     const height = (duration / 60) * 60;
-    
+
     return { top: `${top}px`, height: `${Math.max(height, 32)}px` };
   };
 
@@ -113,13 +118,22 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
           {weekDays.map((day, index) => {
             const dayEvents = getEventsForDay(day);
             const today = isToday(day);
-            
+
             return (
               <div
                 key={index}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   setCurrentDate(day);
                   setView("day");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setCurrentDate(day);
+                    setView("day");
+                  }
                 }}
                 className={`relative px-2 sm:px-4 py-2 sm:py-4 transition-all duration-300 min-w-[60px] sm:min-w-0 cursor-pointer ${
                   today
@@ -137,9 +151,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                   </span>
                   <span
                     className={`text-lg sm:text-xl font-black ${
-                      today
-                        ? "text-primary drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]"
-                        : "text-foreground"
+                      today ? "text-primary drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]" : "text-foreground"
                     }`}
                   >
                     {day.getDate()}
@@ -154,9 +166,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                         />
                       ))}
                       {dayEvents.length > 3 && (
-                        <span className="text-[9px] sm:text-[10px] text-muted-foreground">
-                          +{dayEvents.length - 3}
-                        </span>
+                        <span className="text-[9px] sm:text-[10px] text-muted-foreground">+{dayEvents.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -181,20 +191,17 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                   key={hour}
                   className="h-[60px] flex items-start justify-end pr-2 sm:pr-3 text-[9px] sm:text-[10px] font-bold text-muted-foreground"
                 >
-                  {hour === 0
-                    ? "12A"
-                    : hour < 12
-                    ? `${hour}A`
-                    : hour === 12
-                    ? "12P"
-                    : `${hour - 12}P`}
+                  {hour === 0 ? "12A" : hour < 12 ? `${hour}A` : hour === 12 ? "12P" : `${hour - 12}P`}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Day columns */}
-          <div className="flex-1 grid grid-cols-7 relative overflow-x-auto" style={{ minHeight: `${24 * 60}px`, minWidth: "700px" }}>
+          <div
+            className="flex-1 grid grid-cols-7 relative overflow-x-auto"
+            style={{ minHeight: `${24 * 60}px`, minWidth: "700px" }}
+          >
             {/* Hour lines */}
             {HOURS.map((hour) => (
               <div
@@ -206,16 +213,23 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
 
             {/* Day columns structure */}
             {weekDays.map((day, dayIndex) => (
-              <div
-                key={dayIndex}
-                className="relative border-r border-primary/10 last:border-r-0 min-w-[100px]"
-              >
+              <div key={dayIndex} className="relative border-r border-primary/10 last:border-r-0 min-w-[100px]">
                 {/* Clickable time slots */}
                 {HOURS.map((hour) => (
                   <div
                     key={hour}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
                       if (onSelectSlot) {
+                        const slotDate = new Date(day);
+                        slotDate.setHours(hour, 0, 0, 0);
+                        onSelectSlot(slotDate);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if ((e.key === "Enter" || e.key === " ") && onSelectSlot) {
+                        e.preventDefault();
                         const slotDate = new Date(day);
                         slotDate.setHours(hour, 0, 0, 0);
                         onSelectSlot(slotDate);
@@ -235,7 +249,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                 .map((event) => {
                   const eventStart = new Date(event.start_time);
                   const eventEnd = new Date(event.end_time);
-                  
+
                   // Find start and end day indices in the week
                   let startDayIndex = -1;
                   let endDayIndex = -1;
@@ -271,7 +285,15 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                   return (
                     <div
                       key={event.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleEventClick(event)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleEventClick(event);
+                        }
+                      }}
                       className="absolute top-0.5 rounded-lg border border-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:z-50 hover:shadow-lg cursor-pointer group pointer-events-auto"
                       style={{
                         left: `${leftPercent}%`,
@@ -282,12 +304,8 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                       }}
                     >
                       <div className="px-2 py-1 h-full flex items-center">
-                        <div className="text-[10px] font-bold text-white drop-shadow line-clamp-1">
-                          {event.title}
-                        </div>
-                        {event.has_conflict && (
-                          <div className="ml-1 w-1.5 h-1.5 rounded-full bg-white/80" />
-                        )}
+                        <div className="text-[10px] font-bold text-white drop-shadow line-clamp-1">{event.title}</div>
+                        {event.has_conflict && <div className="ml-1 w-1.5 h-1.5 rounded-full bg-white/80" />}
                       </div>
                     </div>
                   );
@@ -297,9 +315,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
             {/* Single-day all-day events */}
             {weekDays.map((day, dayIndex) => {
               const dayEvents = getEventsForDay(day);
-              const singleDayAllDayEvents = dayEvents.filter(
-                (e) => e.is_all_day && !isMultiDayEvent(e)
-              );
+              const singleDayAllDayEvents = dayEvents.filter((e) => e.is_all_day && !isMultiDayEvent(e));
 
               return (
                 <div
@@ -314,7 +330,15 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                   {singleDayAllDayEvents.map((event, eventIdx) => (
                     <div
                       key={event.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleEventClick(event)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleEventClick(event);
+                        }
+                      }}
                       className="absolute left-0.5 right-0.5 top-0.5 h-7 rounded-lg border border-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:z-50 hover:shadow-lg cursor-pointer group pointer-events-auto"
                       style={{
                         backgroundColor: `${getEventColor(event)}dd`,
@@ -323,12 +347,8 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                       }}
                     >
                       <div className="px-2 py-1 h-full flex items-center">
-                        <div className="text-[10px] font-bold text-white drop-shadow line-clamp-1">
-                          {event.title}
-                        </div>
-                        {event.has_conflict && (
-                          <div className="ml-1 w-1.5 h-1.5 rounded-full bg-white/80" />
-                        )}
+                        <div className="text-[10px] font-bold text-white drop-shadow line-clamp-1">{event.title}</div>
+                        {event.has_conflict && <div className="ml-1 w-1.5 h-1.5 rounded-full bg-white/80" />}
                       </div>
                     </div>
                   ))}
@@ -342,7 +362,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
               .map((event) => {
                 const eventStart = new Date(event.start_time);
                 const eventEnd = new Date(event.end_time);
-                
+
                 let startDayIndex = -1;
                 let endDayIndex = -1;
 
@@ -373,7 +393,15 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                 return (
                   <div
                     key={event.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleEventClick(event)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleEventClick(event);
+                      }
+                    }}
                     className="absolute rounded-lg border border-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:z-50 hover:shadow-2xl hover:shadow-primary/30 cursor-pointer group"
                     style={{
                       left: `${leftPercent}%`,
@@ -407,9 +435,7 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
             {/* Single-day timed events */}
             {weekDays.map((day, dayIndex) => {
               const dayEvents = getEventsForDay(day);
-              const singleDayTimedEvents = dayEvents.filter(
-                (e) => !e.is_all_day && !isMultiDayEvent(e)
-              );
+              const singleDayTimedEvents = dayEvents.filter((e) => !e.is_all_day && !isMultiDayEvent(e));
 
               return (
                 <div
@@ -425,11 +451,19 @@ export function CustomCalendarWeekView({ events, isLoading, onSelectEvent, onSel
                   {singleDayTimedEvents.map((event) => {
                     const position = getEventPosition(event);
                     const color = getEventColor(event);
-                    
+
                     return (
                       <div
                         key={event.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => handleEventClick(event)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleEventClick(event);
+                          }
+                        }}
                         className="absolute left-0.5 sm:left-1 right-0.5 sm:right-1 rounded-lg border border-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:z-50 hover:shadow-2xl hover:shadow-primary/30 cursor-pointer group pointer-events-auto"
                         style={{
                           ...position,

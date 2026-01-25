@@ -1,4 +1,3 @@
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 interface ProgressIndicatorProps {
@@ -60,4 +59,3 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
     </div>
   );
 }
-

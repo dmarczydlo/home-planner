@@ -13,9 +13,7 @@ export async function POST({ request, cookies }: APIContext): Promise<Response> 
       });
     }
 
-    const maxAge = expires_at
-      ? Math.max(expires_at - Math.floor(Date.now() / 1000), 0)
-      : expires_in || 3600;
+    const maxAge = expires_at ? Math.max(expires_at - Math.floor(Date.now() / 1000), 0) : expires_in || 3600;
 
     cookies.set("hp_access_token", access_token, {
       path: "/",

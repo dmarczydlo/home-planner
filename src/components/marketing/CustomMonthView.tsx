@@ -24,28 +24,21 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
     return date;
   }, [selectedDate]);
 
-  const monthEnd = useMemo(() => {
-    const date = new Date(monthStart);
-    date.setMonth(date.getMonth() + 1);
-    date.setDate(0);
-    return date;
-  }, [monthStart]);
-
   const calendarDays = useMemo(() => {
     const days: Date[] = [];
-    
+
     // Start from the first day of the week that contains monthStart
     const startDate = new Date(monthStart);
     const dayOfWeek = startDate.getDay();
     startDate.setDate(startDate.getDate() - dayOfWeek);
-    
+
     // Generate 42 days (6 weeks)
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
       days.push(date);
     }
-    
+
     return days;
   }, [monthStart]);
 
@@ -59,10 +52,7 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
   };
 
   const isCurrentMonth = (date: Date) => {
-    return (
-      date.getMonth() === monthStart.getMonth() &&
-      date.getFullYear() === monthStart.getFullYear()
-    );
+    return date.getMonth() === monthStart.getMonth() && date.getFullYear() === monthStart.getFullYear();
   };
 
   const getEventsForDay = (day: Date) => {
@@ -87,19 +77,14 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
     <div className="relative h-full w-full flex flex-col custom-month-view">
       {/* Month header */}
       <div className="sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4">
-        <h2 className="text-xl sm:text-3xl font-black text-foreground">
-          {formatMonthYear(monthStart)}
-        </h2>
+        <h2 className="text-xl sm:text-3xl font-black text-foreground">{formatMonthYear(monthStart)}</h2>
       </div>
 
       {/* Day names header */}
       <div className="border-b border-primary/20 bg-background/95 backdrop-blur-xl sticky top-[57px] sm:top-[73px] z-20">
         <div className="grid grid-cols-7">
           {DAYS.map((dayName, index) => (
-            <div
-              key={index}
-              className="px-2 sm:px-4 py-2 sm:py-3 text-center"
-            >
+            <div key={index} className="px-2 sm:px-4 py-2 sm:py-3 text-center">
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {dayName}
               </span>
@@ -115,17 +100,13 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
             const dayEvents = getEventsForDay(day);
             const today = isToday(day);
             const currentMonth = isCurrentMonth(day);
-            
+
             return (
               <div
                 key={index}
                 className={`relative border-r border-b border-primary/10 p-1.5 sm:p-3 transition-all duration-300 ${
                   !currentMonth ? "opacity-40" : ""
-                } ${
-                  today
-                    ? "bg-gradient-to-br from-primary/15 via-primary/10 to-secondary/5"
-                    : "hover:bg-card/20"
-                }`}
+                } ${today ? "bg-gradient-to-br from-primary/15 via-primary/10 to-secondary/5" : "hover:bg-card/20"}`}
               >
                 {/* Date number */}
                 <div className="flex items-center justify-between mb-0.5 sm:mb-1">
@@ -134,8 +115,8 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
                       today
                         ? "text-primary drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
                         : currentMonth
-                        ? "text-foreground"
-                        : "text-muted-foreground"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                     }`}
                   >
                     {day.getDate()}

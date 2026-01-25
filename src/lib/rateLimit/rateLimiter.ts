@@ -5,7 +5,7 @@ import { RateLimitError } from "@/domain/errors";
 const SYNC_RATE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
 
 class RateLimitStore {
-  private lastSyncTimes: Map<string, number> = new Map();
+  private lastSyncTimes = new Map<string, number>();
 
   getLastSyncTime(calendarId: string): number | null {
     return this.lastSyncTimes.get(calendarId) || null;

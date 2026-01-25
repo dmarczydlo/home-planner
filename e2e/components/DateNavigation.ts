@@ -81,7 +81,7 @@ export class DateNavigation extends BasePage {
    * Get current date display text
    */
   async getDateDisplayText(): Promise<string> {
-    return await this.dateDisplay.textContent() || "";
+    return (await this.dateDisplay.textContent()) || "";
   }
 
   /**

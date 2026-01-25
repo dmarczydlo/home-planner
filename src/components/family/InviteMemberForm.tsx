@@ -89,6 +89,7 @@ export function InviteMemberForm({ open, onOpenChange, familyId, onSuccess }: In
                   setValidationError(null);
                 }}
                 disabled={isCreating}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 aria-required="true"
                 aria-invalid={!!(validationError || error)}

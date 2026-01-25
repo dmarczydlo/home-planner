@@ -90,12 +90,12 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
     const startMinutes = start.getHours() * 60 + start.getMinutes();
     const endMinutes = end.getHours() * 60 + end.getMinutes();
     const duration = endMinutes - startMinutes;
-    
+
     // Calculate position relative to timeRange.start
     const rangeStartMinutes = timeRange.start * 60;
     const top = ((startMinutes - rangeStartMinutes) / 60) * 60; // 60px per hour for compact view
     const height = (duration / 60) * 60;
-    
+
     return { top: `${top}px`, height: `${Math.max(height, 32)}px` };
   };
 
@@ -117,14 +117,12 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
           {weekDays.map((day, index) => {
             const dayEvents = getEventsForDay(day);
             const today = isToday(day);
-            
+
             return (
               <div
                 key={index}
                 className={`relative px-2 sm:px-4 py-2 sm:py-4 transition-all duration-300 min-w-[60px] sm:min-w-0 ${
-                  today
-                    ? "bg-gradient-to-br from-primary/20 via-primary/15 to-secondary/10 rounded-t-2xl"
-                    : ""
+                  today ? "bg-gradient-to-br from-primary/20 via-primary/15 to-secondary/10 rounded-t-2xl" : ""
                 }`}
               >
                 <div className="flex flex-col items-center gap-1 sm:gap-1.5">
@@ -137,9 +135,7 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
                   </span>
                   <span
                     className={`text-lg sm:text-xl font-black ${
-                      today
-                        ? "text-primary drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]"
-                        : "text-foreground"
+                      today ? "text-primary drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]" : "text-foreground"
                     }`}
                   >
                     {day.getDate()}
@@ -147,16 +143,10 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
                   {dayEvents.length > 0 && (
                     <div className="flex gap-0.5 sm:gap-1 mt-0.5">
                       {dayEvents.slice(0, 3).map((event, i) => (
-                        <div
-                          key={i}
-                          className="w-1 h-1 rounded-full"
-                          style={{ backgroundColor: event.color }}
-                        />
+                        <div key={i} className="w-1 h-1 rounded-full" style={{ backgroundColor: event.color }} />
                       ))}
                       {dayEvents.length > 3 && (
-                        <span className="text-[9px] sm:text-[10px] text-muted-foreground">
-                          +{dayEvents.length - 3}
-                        </span>
+                        <span className="text-[9px] sm:text-[10px] text-muted-foreground">+{dayEvents.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -181,20 +171,17 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
                   key={hour}
                   className="h-[60px] flex items-start justify-end pr-2 sm:pr-3 text-[9px] sm:text-[10px] font-bold text-muted-foreground"
                 >
-                  {hour === 0
-                    ? "12A"
-                    : hour < 12
-                    ? `${hour}A`
-                    : hour === 12
-                    ? "12P"
-                    : `${hour - 12}P`}
+                  {hour === 0 ? "12A" : hour < 12 ? `${hour}A` : hour === 12 ? "12P" : `${hour - 12}P`}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Day columns */}
-          <div className="flex-1 grid grid-cols-7 relative" style={{ minHeight: `${totalHeight}px`, minWidth: "700px" }}>
+          <div
+            className="flex-1 grid grid-cols-7 relative"
+            style={{ minHeight: `${totalHeight}px`, minWidth: "700px" }}
+          >
             {/* Hour lines */}
             {hours.map((hour) => (
               <div
@@ -207,16 +194,13 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
             {/* Day columns */}
             {weekDays.map((day, dayIndex) => {
               const dayEvents = getEventsForDay(day);
-              
+
               return (
-                <div
-                  key={dayIndex}
-                  className="relative border-r border-primary/10 last:border-r-0 min-w-[100px]"
-                >
+                <div key={dayIndex} className="relative border-r border-primary/10 last:border-r-0 min-w-[100px]">
                   {/* Events */}
                   {dayEvents.map((event) => {
                     const position = getEventPosition(event);
-                    
+
                     return (
                       <div
                         key={event.id}

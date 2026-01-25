@@ -24,13 +24,7 @@ export function SettingsView({ familyId, isAdmin, initialTab = "calendars" }: Se
       <div className="glass-effect border-b border-primary/20 backdrop-blur-xl">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="md:hidden"
-              aria-label="Go back"
-            >
+            <Button variant="ghost" size="icon" onClick={handleBack} className="md:hidden" aria-label="Go back">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl font-semibold text-foreground">Settings</h1>
@@ -39,7 +33,11 @@ export function SettingsView({ familyId, isAdmin, initialTab = "calendars" }: Se
       </div>
 
       <main className="container mx-auto px-4 py-6">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as typeof activeTab)}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto md:mx-0">
             <TabsTrigger value="calendars">Calendars</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>

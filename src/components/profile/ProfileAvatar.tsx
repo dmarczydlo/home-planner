@@ -18,9 +18,7 @@ export function ProfileAvatar({ avatarUrl, fullName, onEdit }: ProfileAvatarProp
       <div className="relative">
         <Avatar className="h-24 w-24 border-4 border-gray-200 dark:border-gray-700">
           <AvatarImage src={avatarUrl || undefined} alt={fullName || "User"} />
-          <AvatarFallback className={`${colorClass} text-white text-2xl font-semibold`}>
-            {initials}
-          </AvatarFallback>
+          <AvatarFallback className={`${colorClass} text-white text-2xl font-semibold`}>{initials}</AvatarFallback>
         </Avatar>
         <Button
           variant="outline"

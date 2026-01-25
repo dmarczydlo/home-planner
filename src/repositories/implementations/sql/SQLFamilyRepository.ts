@@ -8,6 +8,16 @@ import type {
   FamilyMemberWithUser,
 } from "../../interfaces/FamilyRepository.ts";
 
+interface FamilyMemberWithUsersQuery {
+  user_id: string;
+  role: Database["public"]["Enums"]["family_role_enum"];
+  joined_at: string;
+  users: {
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
 export class SQLFamilyRepository implements FamilyRepository {
   constructor(private readonly supabase: SupabaseClient<Database>) {}
 
@@ -123,7 +133,7 @@ export class SQLFamilyRepository implements FamilyRepository {
       return [];
     }
 
-    return data.map((member: any) => ({
+    return data.map((member: FamilyMemberWithUsersQuery) => ({
       user_id: member.user_id,
       full_name: member.users.full_name,
       avatar_url: member.users.avatar_url,
@@ -154,7 +164,7 @@ export class SQLFamilyRepository implements FamilyRepository {
       return [];
     }
 
-    return data.map((member: any) => ({
+    return data.map((member: FamilyMemberWithUsersQuery) => ({
       user_id: member.user_id,
       full_name: member.users?.full_name ?? null,
       avatar_url: member.users?.avatar_url ?? null,

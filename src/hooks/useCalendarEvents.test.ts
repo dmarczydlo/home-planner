@@ -135,11 +135,18 @@ describe("useCalendarEvents", () => {
       const familyId = "test-family-123";
 
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({ events: [] }),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  ok: true,
+                  status: 200,
+                  json: async () => ({ events: [] }),
+                } as Response),
+              100
+            )
+          )
       );
 
       // Act
@@ -299,11 +306,7 @@ describe("useCalendarEvents", () => {
       };
 
       const TestWrapper = ({ children }: { children: ReactNode }) => {
-        return React.createElement(
-          CalendarProvider,
-          null,
-          React.createElement(FilterWrapper, null, children)
-        );
+        return React.createElement(CalendarProvider, null, React.createElement(FilterWrapper, null, children));
       };
 
       // Act - Render hook and wait for initial load
@@ -316,9 +319,12 @@ describe("useCalendarEvents", () => {
       });
 
       // Wait for setFiltersRef to be available
-      await waitFor(() => {
-        expect(setFiltersRef).not.toBeNull();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(setFiltersRef).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
 
       // Clear previous fetch calls to isolate the filter fetch
       vi.mocked(global.fetch).mockClear();
@@ -331,20 +337,23 @@ describe("useCalendarEvents", () => {
       });
 
       // Wait for the hook to refetch with filters
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalled();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(global.fetch).toHaveBeenCalled();
+        },
+        { timeout: 2000 }
+      );
 
       // Assert - Verify fetch was called with participant_ids in query
       const fetchCalls = vi.mocked(global.fetch).mock.calls;
       expect(fetchCalls.length).toBeGreaterThan(0);
-      
+
       const lastFetchCall = fetchCalls[fetchCalls.length - 1];
       const fetchUrl = lastFetchCall[0] as string;
-      
+
       expect(fetchUrl).toContain("/api/events");
       expect(fetchUrl).toContain("participant_ids");
-      
+
       // Verify the query parameter format
       const url = new URL(fetchUrl, "http://localhost");
       const participantIdsParam = url.searchParams.get("participant_ids");

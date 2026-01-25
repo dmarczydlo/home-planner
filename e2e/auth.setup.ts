@@ -1,6 +1,6 @@
 import { config } from "dotenv";
-import { test as setup, expect, type Page } from "@playwright/test";
-import { createClient } from "@supabase/supabase-js";
+import { test as setup, type Page } from "@playwright/test";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Session, User } from "@supabase/supabase-js";
 
 // Load environment variables from .env file
@@ -25,7 +25,7 @@ function getSupabaseStorageKey(supabaseUrl: string): string {
 /**
  * Create or get test user using service role key
  */
-async function createOrGetTestUser(supabaseAdmin: any, email: string): Promise<User> {
+async function createOrGetTestUser(supabaseAdmin: SupabaseClient, email: string): Promise<User> {
   // Try to get existing user first by listing users and filtering by email
   const { data: usersData, error: listError } = await supabaseAdmin.auth.admin.listUsers();
 
@@ -69,7 +69,11 @@ async function createOrGetTestUser(supabaseAdmin: any, email: string): Promise<U
 /**
  * Generate session for user via magic link
  */
-async function generateSessionForUser(supabaseAdmin: any, supabaseAnon: any, email: string): Promise<Session> {
+async function generateSessionForUser(
+  supabaseAdmin: SupabaseClient,
+  supabaseAnon: SupabaseClient,
+  email: string
+): Promise<Session> {
   // Generate magic link
   const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
     type: "magiclink",
@@ -178,14 +182,17 @@ setup("authenticate", async ({ page }) => {
   try {
     // Step 1: Create or get test user
     const user = await createOrGetTestUser(supabaseAdmin, TEST_GOOGLE_EMAIL);
+
     console.log(`✅ User ready: ${user.email} (${user.id})`);
 
     // Step 2: Generate session via magic link
     const session = await generateSessionForUser(supabaseAdmin, supabaseAnon, TEST_GOOGLE_EMAIL);
-    console.log(`✅ Session generated (expires at: ${new Date(session.expires_at! * 1000).toISOString()})`);
+    const expiresAt = session.expires_at ? new Date(session.expires_at * 1000).toISOString() : "unknown";
+    console.log(`✅ Session generated (expires at: ${expiresAt})`);
 
     // Step 3: Get storage key format
     const storageKey = getSupabaseStorageKey(SUPABASE_URL);
+
     console.log(`✅ Using storage key: xxxxxx`);
 
     // Step 4: Inject session into browser

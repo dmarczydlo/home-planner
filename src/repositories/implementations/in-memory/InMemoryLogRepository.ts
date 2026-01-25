@@ -1,7 +1,7 @@
 import type { LogRepository, LogInsert, LogQueryFilters, LogQueryResult, Log } from "../../interfaces/LogRepository.ts";
 
 export class InMemoryLogRepository implements LogRepository {
-  private logs: Array<LogInsert & { id: number; created_at: string }> = [];
+  private logs: (LogInsert & { id: number; created_at: string })[] = [];
   private nextId = 1;
 
   async create(log: LogInsert): Promise<void> {

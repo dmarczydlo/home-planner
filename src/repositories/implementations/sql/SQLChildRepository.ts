@@ -90,7 +90,7 @@ export class SQLChildRepository implements ChildRepository {
       family_id: row.family_id,
       name: row.name,
       created_at: row.created_at,
-      updated_at: (row as any).updated_at ?? null,
+      updated_at: null,
     };
   }
 }

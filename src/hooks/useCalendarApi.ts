@@ -8,7 +8,9 @@ import type {
 } from "@/types";
 
 interface UseCalendarApiReturn {
-  connectCalendar: (command: ConnectCalendarCommand) => Promise<CalendarAuthResponseDTO & { calendar?: ExternalCalendarSummaryDTO }>;
+  connectCalendar: (
+    command: ConnectCalendarCommand
+  ) => Promise<CalendarAuthResponseDTO & { calendar?: ExternalCalendarSummaryDTO }>;
   listCalendars: () => Promise<ExternalCalendarSummaryDTO[]>;
   isConnecting: boolean;
   error: string | null;
@@ -19,7 +21,9 @@ export function useCalendarApi(): UseCalendarApiReturn {
   const [error, setError] = useState<string | null>(null);
 
   const connectCalendar = useCallback(
-    async (command: ConnectCalendarCommand): Promise<CalendarAuthResponseDTO & { calendar?: ExternalCalendarSummaryDTO }> => {
+    async (
+      command: ConnectCalendarCommand
+    ): Promise<CalendarAuthResponseDTO & { calendar?: ExternalCalendarSummaryDTO }> => {
       setIsConnecting(true);
       setError(null);
 
@@ -97,4 +101,3 @@ export function useCalendarApi(): UseCalendarApiReturn {
 
   return { connectCalendar, listCalendars, isConnecting, error };
 }
-

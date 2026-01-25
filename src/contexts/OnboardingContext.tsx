@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import type { ChildDTO, ExternalCalendarSummaryDTO, InvitationWithInviterDTO, FamilyDTO } from "@/types";
+import type { ChildDTO, ExternalCalendarSummaryDTO, InvitationWithInviterDTO } from "@/types";
 
 interface OnboardingState {
   currentStep: number;
@@ -212,6 +212,7 @@ export function OnboardingProvider({ children, initialStep = 1 }: OnboardingProv
     }
 
     localStorage.removeItem(STORAGE_KEY);
+    // eslint-disable-next-line react-compiler/react-compiler
     window.location.href = "/calendar/week";
   }, [updateState]);
 

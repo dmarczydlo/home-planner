@@ -7,9 +7,6 @@ import { FloatingActionButton } from "./FloatingActionButton";
 import { EventCreateModal } from "./EventCreateModal";
 import { EventEditModal } from "./EventEditModal";
 import { useCalendarEvents } from "../../hooks/useCalendarEvents";
-import { DayView } from "./DayView";
-import { WeekView } from "./WeekView";
-import { MonthView } from "./MonthView";
 import { AgendaView } from "./AgendaView";
 import { CustomCalendarWeekView } from "./CustomCalendarWeekView";
 import { CustomCalendarDayView } from "./CustomCalendarDayView";
@@ -54,15 +51,14 @@ function CalendarContent({ familyId }: { familyId: string }) {
     setSelectedEvent(null);
   };
 
-  const handleSelectSlot = (start: Date) => {
+  const handleSelectSlot = () => {
     setIsCreateModalOpen(true);
-    // You might want to pre-fill the modal with the selected time
   };
 
   const renderView = () => {
-    const viewProps = { 
-      events, 
-      isLoading, 
+    const viewProps = {
+      events,
+      isLoading,
       onSelectEvent: handleSelectEvent,
       onSelectSlot: handleSelectSlot,
     };

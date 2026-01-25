@@ -33,7 +33,7 @@ describe("ViewSwitcher", () => {
 
       // Assert
       const weekButton = screen.getByRole("tab", { name: /week/i });
-      expect(weekButton).toHaveAttribute("aria-pressed", "true");
+      expect(weekButton).toHaveAttribute("aria-selected", "true");
     });
   });
 
@@ -52,7 +52,7 @@ describe("ViewSwitcher", () => {
       await user.click(dayButton);
 
       // Assert
-      expect(dayButton).toHaveAttribute("aria-pressed", "true");
+      expect(dayButton).toHaveAttribute("aria-selected", "true");
     });
 
     it("updates active view when switching", async () => {
@@ -69,9 +69,9 @@ describe("ViewSwitcher", () => {
       await user.click(monthButton);
 
       // Assert
-      expect(monthButton).toHaveAttribute("aria-pressed", "true");
+      expect(monthButton).toHaveAttribute("aria-selected", "true");
       const weekButton = screen.getByRole("tab", { name: /week/i });
-      expect(weekButton).toHaveAttribute("aria-pressed", "false");
+      expect(weekButton).toHaveAttribute("aria-selected", "false");
     });
   });
 
@@ -88,7 +88,7 @@ describe("ViewSwitcher", () => {
       const tabs = screen.getAllByRole("tab");
       tabs.forEach((tab) => {
         expect(tab).toHaveAttribute("role", "tab");
-        expect(tab).toHaveAttribute("aria-pressed");
+        expect(tab).toHaveAttribute("aria-selected");
       });
     });
 
@@ -107,7 +107,7 @@ describe("ViewSwitcher", () => {
       await user.keyboard("{Enter}");
 
       // Assert
-      expect(dayButton).toHaveAttribute("aria-pressed", "true");
+      expect(dayButton).toHaveAttribute("aria-selected", "true");
     });
   });
 });

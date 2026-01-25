@@ -32,7 +32,7 @@ export function ViewSwitcher() {
               ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-105"
               : "glass-effect text-muted-foreground hover:text-foreground hover:bg-card/60 border border-border/50"
           }`}
-          aria-pressed={state.view === option.value}
+          aria-selected={state.view === option.value}
           role="tab"
         >
           {state.view === option.value && (

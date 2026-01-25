@@ -6,7 +6,7 @@ export class DomainError extends Error {
 }
 
 export class UnauthorizedError extends DomainError {
-  constructor(message: string = "Unauthorized") {
+  constructor(message = "Unauthorized") {
     super(message);
   }
 }
@@ -18,7 +18,7 @@ export class NotFoundError extends DomainError {
 }
 
 export class ForbiddenError extends DomainError {
-  constructor(message: string = "Forbidden") {
+  constructor(message = "Forbidden") {
     super(message);
   }
 }
@@ -42,7 +42,7 @@ export class ConflictError extends DomainError {
 }
 
 export class InternalError extends DomainError {
-  constructor(message: string = "An internal error occurred") {
+  constructor(message = "An internal error occurred") {
     super(message);
   }
 }

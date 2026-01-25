@@ -429,7 +429,7 @@ export class EventService {
       return err(new ForbiddenError("You do not have access to this family"));
     }
 
-    const errors: Array<{ field: string; message: string }> = [];
+    const errors: { field: string; message: string }[] = [];
     let conflicts: ConflictingEventDTO[] = [];
 
     if (command.participants && command.participants.length > 0) {

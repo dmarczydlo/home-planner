@@ -11,9 +11,18 @@ import type {
 import type { ParticipantReferenceDTO } from "@/types";
 
 export class InMemoryEventRepository implements EventRepository {
-  private events: Map<string, Event> = new Map();
-  private participants: Map<string, ParticipantReferenceDTO[]> = new Map();
-  private exceptions: Map<string, Array<{ id: string; original_date: string; new_start_time: string | null; new_end_time: string | null; is_cancelled: boolean }>> = new Map();
+  private events = new Map<string, Event>();
+  private participants = new Map<string, ParticipantReferenceDTO[]>();
+  private exceptions = new Map<
+    string,
+    {
+      id: string;
+      original_date: string;
+      new_start_time: string | null;
+      new_end_time: string | null;
+      is_cancelled: boolean;
+    }[]
+  >();
 
   async findById(id: string): Promise<Event | null> {
     return this.events.get(id) ?? null;
@@ -36,12 +45,8 @@ export class InMemoryEventRepository implements EventRepository {
   }
 
   async findByDateRange(options: FindEventsOptions): Promise<{ events: EventWithParticipants[]; total: number }> {
-    const events = await this.findByFamilyId(
-      options.familyId,
-      new Date(options.startDate),
-      new Date(options.endDate)
-    );
-    
+    const events = await this.findByFamilyId(options.familyId, new Date(options.startDate), new Date(options.endDate));
+
     const filtered = events.filter((e) => {
       if (options.eventType && e.event_type !== options.eventType) return false;
       if (options.includeSynced === false && e.is_synced) return false;
@@ -81,11 +86,11 @@ export class InMemoryEventRepository implements EventRepository {
       updated_at: null,
     };
     this.events.set(event.id, event);
-    
+
     if (data.participants) {
       this.participants.set(event.id, data.participants);
     }
-    
+
     return event;
   }
 
@@ -107,11 +112,11 @@ export class InMemoryEventRepository implements EventRepository {
       updated_at: new Date().toISOString(),
     };
     this.events.set(id, updated);
-    
+
     if (data.participants !== undefined) {
       this.participants.set(id, data.participants);
     }
-    
+
     return updated;
   }
 
@@ -121,7 +126,7 @@ export class InMemoryEventRepository implements EventRepository {
     this.exceptions.delete(id);
   }
 
-  async findByIdWithDetails(id: string, occurrenceDate?: string): Promise<EventDetails | null> {
+  async findByIdWithDetails(id: string): Promise<EventDetails | null> {
     const event = await this.findById(id);
     if (!event) return null;
 
@@ -149,9 +154,7 @@ export class InMemoryEventRepository implements EventRepository {
     excludeEventId?: string
   ): Promise<ConflictingEvent[]> {
     const events = await this.findByFamilyId(familyId);
-    const blockerEvents = events.filter(
-      (e) => e.event_type === "blocker" && e.id !== excludeEventId
-    );
+    const blockerEvents = events.filter((e) => e.event_type === "blocker" && e.id !== excludeEventId);
 
     const conflicts: ConflictingEvent[] = [];
 
@@ -190,13 +193,13 @@ export class InMemoryEventRepository implements EventRepository {
 
   async removeParticipants(eventId: string, participantIds: ParticipantReferenceDTO[]): Promise<void> {
     const existing = this.participants.get(eventId) ?? [];
-    const filtered = existing.filter(
-      (p) => !participantIds.some((pid) => pid.id === p.id && pid.type === p.type)
-    );
+    const filtered = existing.filter((p) => !participantIds.some((pid) => pid.id === p.id && pid.type === p.type));
     this.participants.set(eventId, filtered);
   }
 
-  async getParticipants(eventId: string): Promise<Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>> {
+  async getParticipants(
+    eventId: string
+  ): Promise<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }[]> {
     const refs = this.participants.get(eventId) ?? [];
     return refs.map((ref) => ({
       id: ref.id,

@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { ChildDTO } from "@/types";
 
 interface ChildCardProps {
@@ -38,4 +37,3 @@ export function ChildCard({ child, onRemove, canRemove = true }: ChildCardProps)
     </Card>
   );
 }
-

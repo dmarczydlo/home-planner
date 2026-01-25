@@ -6,11 +6,7 @@ interface CalendarHeaderProps {
   isRefreshing?: boolean;
 }
 
-export function CalendarHeader({
-  onRefresh,
-  onSettingsClick,
-  isRefreshing = false
-}: CalendarHeaderProps) {
+export function CalendarHeader({ onRefresh, onSettingsClick, isRefreshing = false }: CalendarHeaderProps) {
   // Only render if there are action buttons, otherwise return null
   if (!onRefresh && !onSettingsClick) {
     return null;
@@ -27,9 +23,7 @@ export function CalendarHeader({
               className="p-2 sm:p-2.5 rounded-xl glass-effect hover:bg-card/60 active:bg-card/80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
               aria-label="Refresh calendar"
             >
-              <RefreshCw
-                className={`w-4 h-4 sm:w-5 sm:h-5 text-primary ${isRefreshing ? "animate-spin" : ""}`}
-              />
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 text-primary ${isRefreshing ? "animate-spin" : ""}`} />
             </button>
           )}
           {onSettingsClick && (

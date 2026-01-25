@@ -65,12 +65,7 @@ export function ChildCard({ child, onEdit, onRemove, canEdit = true }: ChildCard
           {canEdit && (onEdit || onRemove) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-9 w-9 p-0"
-                  aria-label={`Actions for ${child.name}`}
-                >
+                <Button variant="ghost" size="sm" className="h-9 w-9 p-0" aria-label={`Actions for ${child.name}`}>
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

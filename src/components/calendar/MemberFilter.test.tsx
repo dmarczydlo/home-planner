@@ -93,11 +93,14 @@ describe("MemberFilter", () => {
       await user.click(headerButton);
 
       // Assert - Wait for members to be rendered
-      await waitFor(() => {
-        expect(screen.getByText("User 1")).toBeInTheDocument();
-        expect(screen.getByText("User 2")).toBeInTheDocument();
-        expect(screen.getByText("Child 1")).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText("User 1")).toBeInTheDocument();
+          expect(screen.getByText("User 2")).toBeInTheDocument();
+          expect(screen.getByText("Child 1")).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -261,9 +264,12 @@ describe("MemberFilter", () => {
       // await user.keyboard("{Enter}");
 
       // Assert
-      await waitFor(() => {
-        expect(screen.getByText(/select all/i)).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText(/select all/i)).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 });

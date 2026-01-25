@@ -71,13 +71,7 @@ export function ProfileView({ currentFamilyId, onSwitchFamily }: ProfileViewProp
       <div className="glass-effect border-b border-primary/20 backdrop-blur-xl">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="md:hidden"
-              aria-label="Go back"
-            >
+            <Button variant="ghost" size="icon" onClick={handleBack} className="md:hidden" aria-label="Go back">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl font-semibold text-foreground">Profile</h1>
@@ -89,27 +83,17 @@ export function ProfileView({ currentFamilyId, onSwitchFamily }: ProfileViewProp
         <div className="space-y-6">
           <div className="glass-effect rounded-lg border border-primary/20 backdrop-blur-xl p-6">
             <div className="flex flex-col items-center mb-6">
-              <ProfileAvatar
-                avatarUrl={user.avatar_url}
-                fullName={user.full_name}
-                onEdit={handleEdit}
-              />
+              <ProfileAvatar avatarUrl={user.avatar_url} fullName={user.full_name} onEdit={handleEdit} />
             </div>
 
             <Separator className="my-6" />
 
-            <ProfileInfo
-              fullName={user.full_name}
-              email={email}
-              onEdit={handleEdit}
-            />
+            <ProfileInfo fullName={user.full_name} email={email} onEdit={handleEdit} />
           </div>
 
           {user.families && user.families.length > 0 && (
             <div className="glass-effect rounded-lg border border-primary/20 backdrop-blur-xl p-6">
-              <h2 className="text-lg font-semibold text-foreground mb-4">
-                Family Memberships
-              </h2>
+              <h2 className="text-lg font-semibold text-foreground mb-4">Family Memberships</h2>
               <FamilyMemberships
                 families={user.families}
                 currentFamilyId={currentFamilyId}

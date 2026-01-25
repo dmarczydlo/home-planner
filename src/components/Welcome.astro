@@ -2,7 +2,7 @@
 import { GoogleSignInButton } from "./auth/GoogleSignInButton";
 import { LegalLinks } from "./auth/LegalLinks";
 import { MarketingCalendar } from "./marketing/MarketingCalendar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import {
   CalendarDays,
@@ -14,44 +14,55 @@ import {
   Zap,
   Bell,
   RefreshCw,
-  Filter,
-  Calendar,
-  UserPlus,
   ArrowRight,
   Star,
   TrendingUp,
   Play,
   Video,
-  Smartphone,
-  Globe
 } from "lucide-react";
 ---
 
 <div class="relative overflow-hidden bg-background">
   <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20"></div>
-  <div class="absolute inset-0" style="background-image: radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);"></div>
+  <div
+    class="absolute inset-0"
+    style="background-image: radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);"
+  >
+  </div>
 
   <main class="relative">
     <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
       <div class="absolute inset-0">
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-[128px] animate-pulse-glow"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/30 rounded-full blur-[128px] animate-pulse-glow" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-[128px] animate-pulse-glow">
+        </div>
+        <div
+          class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/30 rounded-full blur-[128px] animate-pulse-glow"
+          style="animation-delay: 1s;"
+        >
+        </div>
       </div>
 
       <div class="container relative z-10 mx-auto px-4">
         <div class="mx-auto max-w-7xl">
           <div class="text-center space-y-12 animate-slide-up">
-            <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-effect border border-primary/30 shadow-lg">
+            <div
+              class="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-effect border border-primary/30 shadow-lg"
+            >
               <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
               <span class="text-sm font-semibold text-foreground">Trusted by 10,000+ families worldwide</span>
             </div>
 
             <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tight leading-none">
               <span class="block text-foreground">Your Family's</span>
-              <span class="block gradient-text mt-2 animate-gradient bg-gradient-to-r from-primary via-accent to-secondary">Perfect Sync</span>
+              <span
+                class="block gradient-text mt-2 animate-gradient bg-gradient-to-r from-primary via-accent to-secondary"
+                >Perfect Sync</span
+              >
             </h1>
 
-            <p class="text-xl sm:text-2xl md:text-3xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-light">
+            <p
+              class="text-xl sm:text-2xl md:text-3xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-light"
+            >
               The revolutionary calendar platform that eliminates scheduling chaos.
               <span class="text-foreground font-medium">Smart coordination</span> for modern families.
             </p>
@@ -60,7 +71,9 @@ import {
               <div class="w-full sm:w-auto">
                 <GoogleSignInButton client:load />
               </div>
-              <button class="group px-8 py-4 rounded-2xl glass-effect border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 flex items-center gap-3">
+              <button
+                class="group px-8 py-4 rounded-2xl glass-effect border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 flex items-center gap-3"
+              >
                 <Play class="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                 <span class="text-foreground font-semibold">Watch Demo</span>
               </button>
@@ -83,8 +96,13 @@ import {
           </div>
 
           <div class="mt-20 relative">
-            <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none"></div>
-            <div class="glass-effect rounded-3xl p-2 shadow-2xl glow-effect border-2 border-primary/30 transform hover:scale-[1.02] transition-transform duration-500 animate-slide-up">
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none"
+            >
+            </div>
+            <div
+              class="glass-effect rounded-3xl p-2 shadow-2xl glow-effect border-2 border-primary/30 transform hover:scale-[1.02] transition-transform duration-500 animate-slide-up"
+            >
               <div class="rounded-2xl overflow-hidden bg-card border border-border">
                 <div class="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border">
                   <div class="flex gap-2">
@@ -92,9 +110,7 @@ import {
                     <div class="w-3 h-3 rounded-full bg-warning"></div>
                     <div class="w-3 h-3 rounded-full bg-success"></div>
                   </div>
-                  <div class="flex-1 text-center text-xs text-muted-foreground font-medium">
-                    home-planner.app
-                  </div>
+                  <div class="flex-1 text-center text-xs text-muted-foreground font-medium">home-planner.app</div>
                 </div>
 
                 <div class="h-[500px] overflow-hidden">
@@ -127,59 +143,66 @@ import {
           </div>
 
           <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: CalendarDays,
-                title: "Unified Calendar",
-                description: "See everyone's schedule in one beautiful interface. Day, week, month, and agenda views.",
-                color: "primary"
-              },
-              {
-                icon: Zap,
-                title: "Smart Conflicts",
-                description: "AI-powered conflict detection prevents double-booking before it happens.",
-                color: "secondary"
-              },
-              {
-                icon: RefreshCw,
-                title: "Auto Sync",
-                description: "Seamless integration with Google Calendar and Microsoft 365.",
-                color: "accent"
-              },
-              {
-                icon: Users,
-                title: "Family Profiles",
-                description: "Manage schedules for everyone. Parents, partners, and children.",
-                color: "primary"
-              },
-              {
-                icon: Shield,
-                title: "Privacy First",
-                description: "Your data is encrypted and secure. Full control over visibility.",
-                color: "secondary"
-              },
-              {
-                icon: Bell,
-                title: "Smart Reminders",
-                description: "Never miss an event with intelligent notification system.",
-                color: "accent"
-              }
-            ].map(feature => (
-              <Card class="group relative overflow-hidden border-2 border-border hover:border-primary/50 bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                <div class={`absolute inset-0 bg-gradient-to-br from-${feature.color}/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-                <CardHeader class="space-y-6 relative z-10">
-                  <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${feature.color} to-${feature.color}/60 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 glow-effect`}>
-                    <feature.icon class="w-8 h-8 text-white" />
-                  </div>
-                  <div class="space-y-3">
-                    <CardTitle class="text-2xl font-bold text-foreground">{feature.title}</CardTitle>
-                    <CardDescription class="text-base leading-relaxed text-muted-foreground">
-                      {feature.description}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            ))}
+            {
+              [
+                {
+                  icon: CalendarDays,
+                  title: "Unified Calendar",
+                  description:
+                    "See everyone's schedule in one beautiful interface. Day, week, month, and agenda views.",
+                  color: "primary",
+                },
+                {
+                  icon: Zap,
+                  title: "Smart Conflicts",
+                  description: "AI-powered conflict detection prevents double-booking before it happens.",
+                  color: "secondary",
+                },
+                {
+                  icon: RefreshCw,
+                  title: "Auto Sync",
+                  description: "Seamless integration with Google Calendar and Microsoft 365.",
+                  color: "accent",
+                },
+                {
+                  icon: Users,
+                  title: "Family Profiles",
+                  description: "Manage schedules for everyone. Parents, partners, and children.",
+                  color: "primary",
+                },
+                {
+                  icon: Shield,
+                  title: "Privacy First",
+                  description: "Your data is encrypted and secure. Full control over visibility.",
+                  color: "secondary",
+                },
+                {
+                  icon: Bell,
+                  title: "Smart Reminders",
+                  description: "Never miss an event with intelligent notification system.",
+                  color: "accent",
+                },
+              ].map((feature) => (
+                <Card class="group relative overflow-hidden border-2 border-border hover:border-primary/50 bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                  <div
+                    class={`absolute inset-0 bg-gradient-to-br from-${feature.color}/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                  />
+                  <CardHeader class="space-y-6 relative z-10">
+                    <div
+                      class={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${feature.color} to-${feature.color}/60 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 glow-effect`}
+                    >
+                      <feature.icon class="w-8 h-8 text-white" />
+                    </div>
+                    <div class="space-y-3">
+                      <CardTitle class="text-2xl font-bold text-foreground">{feature.title}</CardTitle>
+                      <CardDescription class="text-base leading-relaxed text-muted-foreground">
+                        {feature.description}
+                      </CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))
+            }
           </div>
         </div>
       </div>
@@ -207,55 +230,62 @@ import {
               </p>
 
               <div class="space-y-6">
-                {[
-                  {
-                    title: "Children's Activities",
-                    description: "Track sports, lessons, playdates, and school events automatically."
-                  },
-                  {
-                    title: "Work Commitments",
-                    description: "Sync work calendars while keeping details private from family."
-                  },
-                  {
-                    title: "Shared Planning",
-                    description: "Everyone can add events. Share the mental load effortlessly."
-                  }
-                ].map(item => (
-                  <div class="flex gap-4 group">
-                    <div class="flex-shrink-0">
-                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <CheckCircle2 class="w-5 h-5 text-white" />
+                {
+                  [
+                    {
+                      title: "Children's Activities",
+                      description: "Track sports, lessons, playdates, and school events automatically.",
+                    },
+                    {
+                      title: "Work Commitments",
+                      description: "Sync work calendars while keeping details private from family.",
+                    },
+                    {
+                      title: "Shared Planning",
+                      description: "Everyone can add events. Share the mental load effortlessly.",
+                    },
+                  ].map((item) => (
+                    <div class="flex gap-4 group">
+                      <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <CheckCircle2 class="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                      <div class="space-y-1">
+                        <h3 class="text-lg font-bold text-foreground">{item.title}</h3>
+                        <p class="text-muted-foreground">{item.description}</p>
                       </div>
                     </div>
-                    <div class="space-y-1">
-                      <h3 class="text-lg font-bold text-foreground">{item.title}</h3>
-                      <p class="text-muted-foreground">{item.description}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                }
               </div>
             </div>
 
             <div class="relative order-1 lg:order-2">
-              <div class="absolute -inset-4 bg-gradient-to-r from-primary via-secondary to-accent rounded-3xl blur-3xl opacity-30 animate-pulse-glow"></div>
+              <div
+                class="absolute -inset-4 bg-gradient-to-r from-primary via-secondary to-accent rounded-3xl blur-3xl opacity-30 animate-pulse-glow"
+              >
+              </div>
               <div class="relative glass-effect rounded-3xl p-8 border-2 border-primary/30">
                 <div class="space-y-4">
-                  {[
-                    { label: "Events Created", value: "2,847", trend: "+12%" },
-                    { label: "Time Saved", value: "156h", trend: "+23%" },
-                    { label: "Conflicts Avoided", value: "89", trend: "+8%" }
-                  ].map(stat => (
-                    <div class="flex items-center justify-between p-6 rounded-2xl bg-card/80 border border-border backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
-                      <div>
-                        <div class="text-sm text-muted-foreground">{stat.label}</div>
-                        <div class="text-3xl font-bold text-foreground mt-1">{stat.value}</div>
+                  {
+                    [
+                      { label: "Events Created", value: "2,847", trend: "+12%" },
+                      { label: "Time Saved", value: "156h", trend: "+23%" },
+                      { label: "Conflicts Avoided", value: "89", trend: "+8%" },
+                    ].map((stat) => (
+                      <div class="flex items-center justify-between p-6 rounded-2xl bg-card/80 border border-border backdrop-blur-sm hover:border-primary/50 transition-colors duration-300">
+                        <div>
+                          <div class="text-sm text-muted-foreground">{stat.label}</div>
+                          <div class="text-3xl font-bold text-foreground mt-1">{stat.value}</div>
+                        </div>
+                        <div class="flex items-center gap-2 text-success">
+                          <TrendingUp class="w-5 h-5" />
+                          <span class="font-semibold">{stat.trend}</span>
+                        </div>
                       </div>
-                      <div class="flex items-center gap-2 text-success">
-                        <TrendingUp class="w-5 h-5" />
-                        <span class="font-semibold">{stat.trend}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  }
                 </div>
               </div>
             </div>
@@ -284,85 +314,90 @@ import {
           </div>
 
           <div class="max-w-5xl mx-auto space-y-8">
-            {[
-              {
-                step: "01",
-                title: "Sign In Securely",
-                description: "One click with your Google account. No lengthy forms, no passwords to remember. Enterprise-grade security built in.",
-                color: "primary",
-                icon: Shield
-              },
-              {
-                step: "02",
-                title: "Setup Your Family",
-                description: "Add children's profiles, invite your partner, and customize settings. Everything in one intuitive wizard that takes 60 seconds.",
-                color: "secondary",
-                icon: Users
-              },
-              {
-                step: "03",
-                title: "Start Coordinating",
-                description: "Create your first event, sync external calendars, and watch the magic happen. Real-time updates across all devices.",
-                color: "accent",
-                icon: Sparkles
-              }
-            ].map((item, index) => (
-              <div class="relative group">
-                <div class="glass-effect rounded-3xl p-8 md:p-10 border-2 border-border hover:border-primary/50 transition-all duration-500 hover:shadow-2xl">
-                  <div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
-                    <div class="relative flex-shrink-0">
-                      <div class={`absolute inset-0 bg-gradient-to-br from-${item.color} to-${item.color}/60 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 transition-opacity duration-500`}></div>
-                      <div class={`relative w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-${item.color} to-${item.color}/60 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500`}>
-                        <item.icon class="w-10 h-10 md:w-12 md:h-12 text-white" />
+            {
+              [
+                {
+                  step: "01",
+                  title: "Sign In Securely",
+                  description:
+                    "One click with your Google account. No lengthy forms, no passwords to remember. Enterprise-grade security built in.",
+                  color: "primary",
+                  icon: Shield,
+                },
+                {
+                  step: "02",
+                  title: "Setup Your Family",
+                  description:
+                    "Add children's profiles, invite your partner, and customize settings. Everything in one intuitive wizard that takes 60 seconds.",
+                  color: "secondary",
+                  icon: Users,
+                },
+                {
+                  step: "03",
+                  title: "Start Coordinating",
+                  description:
+                    "Create your first event, sync external calendars, and watch the magic happen. Real-time updates across all devices.",
+                  color: "accent",
+                  icon: Sparkles,
+                },
+              ].map((item, index) => (
+                <div class="relative group">
+                  <div class="glass-effect rounded-3xl p-8 md:p-10 border-2 border-border hover:border-primary/50 transition-all duration-500 hover:shadow-2xl">
+                    <div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
+                      <div class="relative flex-shrink-0">
+                        <div
+                          class={`absolute inset-0 bg-gradient-to-br from-${item.color} to-${item.color}/60 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 transition-opacity duration-500`}
+                        />
+                        <div
+                          class={`relative w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-${item.color} to-${item.color}/60 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500`}
+                        >
+                          <item.icon class="w-10 h-10 md:w-12 md:h-12 text-white" />
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="flex-1 space-y-3">
-                      <div class="flex items-center gap-4">
-                        <span class={`text-sm font-bold px-4 py-1.5 rounded-full bg-${item.color}/20 text-${item.color}`}>
-                          STEP {item.step}
-                        </span>
+                      <div class="flex-1 space-y-3">
+                        <div class="flex items-center gap-4">
+                          <span
+                            class={`text-sm font-bold px-4 py-1.5 rounded-full bg-${item.color}/20 text-${item.color}`}
+                          >
+                            STEP {item.step}
+                          </span>
+                        </div>
+                        <h3 class="text-3xl md:text-4xl font-bold text-foreground">{item.title}</h3>
+                        <p class="text-lg text-muted-foreground leading-relaxed">{item.description}</p>
                       </div>
-                      <h3 class="text-3xl md:text-4xl font-bold text-foreground">
-                        {item.title}
-                      </h3>
-                      <p class="text-lg text-muted-foreground leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
 
-                    <div class="hidden md:flex items-center justify-center">
-                      <div class={`w-12 h-12 rounded-2xl bg-gradient-to-br from-${item.color}/20 to-${item.color}/10 border-2 border-${item.color}/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                        <ArrowRight class={`w-6 h-6 text-${item.color}`} />
+                      <div class="hidden md:flex items-center justify-center">
+                        <div
+                          class={`w-12 h-12 rounded-2xl bg-gradient-to-br from-${item.color}/20 to-${item.color}/10 border-2 border-${item.color}/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                        >
+                          <ArrowRight class={`w-6 h-6 text-${item.color}`} />
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {index < 2 && (
+                    <div class="hidden md:flex justify-center py-4">
+                      <div class="w-0.5 h-8 bg-gradient-to-b from-primary via-secondary to-accent" />
+                    </div>
+                  )}
                 </div>
-
-                {index < 2 && (
-                  <div class="hidden md:flex justify-center py-4">
-                    <div class="w-0.5 h-8 bg-gradient-to-b from-primary via-secondary to-accent"></div>
-                  </div>
-                )}
-              </div>
-            ))}
+              ))
+            }
           </div>
 
           <div id="testimonials" class="mt-24 flex flex-col items-center gap-8">
             <div class="text-center space-y-4">
-              <p class="text-2xl font-semibold text-foreground">
-                Ready to get started?
-              </p>
-              <p class="text-muted-foreground">
-                Join thousands of families already using Home Planner
-              </p>
+              <p class="text-2xl font-semibold text-foreground">Ready to get started?</p>
+              <p class="text-muted-foreground">Join thousands of families already using Home Planner</p>
             </div>
 
-            <div class="inline-flex flex-col gap-8 p-12 rounded-3xl glass-effect border-2 border-primary/30 shadow-2xl max-w-3xl w-full">
+            <div
+              class="inline-flex flex-col gap-8 p-12 rounded-3xl glass-effect border-2 border-primary/30 shadow-2xl max-w-3xl w-full"
+            >
               <div class="flex items-center justify-center gap-2">
-                {[1, 2, 3, 4, 5].map(() => (
-                  <Star class="w-7 h-7 fill-warning text-warning" />
-                ))}
+                {[1, 2, 3, 4, 5].map(() => <Star class="w-7 h-7 fill-warning text-warning" />)}
               </div>
               <p class="text-2xl text-foreground leading-relaxed text-center">
                 "Home Planner transformed our chaotic family life into smooth coordination.
@@ -383,7 +418,11 @@ import {
 
     <section class="relative py-32 overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent animate-gradient"></div>
-      <div class="absolute inset-0" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMTZjMCA2LjYyNy01LjM3MyAxMi0xMiAxMnMtMTItNS4zNzMtMTItMTIgNS4zNzMtMTIgMTItMTIgMTIgNS4zNzMgMTIgMTJ6bTAgMGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEyLTUuMzczIDEyLTEyIDEyLTEyLTUuMzczLTEyLTEyeiIvPjwvZz48L2c+PC9zdmc+'); opacity: 0.3;"></div>
+      <div
+        class="absolute inset-0"
+        style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMTZjMCA2LjYyNy01LjM3MyAxMi0xMiAxMnMtMTItNS4zNzMtMTItMTIgNS4zNzMtMTIgMTItMTIgMTIgNS4zNzMgMTIgMTJ6bTAgMGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEyLTUuMzczIDEyLTEyIDEyLTEyLTUuMzczLTEyLTEyeiIvPjwvZz48L2c+PC9zdmc+'); opacity: 0.3;"
+      >
+      </div>
 
       <div class="container relative z-10 mx-auto px-4">
         <div class="mx-auto max-w-5xl text-center space-y-12">
@@ -399,7 +438,9 @@ import {
               <div class="w-full sm:w-auto">
                 <GoogleSignInButton client:load />
               </div>
-              <button class="group px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border-2 border-white/30 hover:border-white/50 hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3">
+              <button
+                class="group px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border-2 border-white/30 hover:border-white/50 hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
+              >
                 <Video class="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
                 <span class="text-white font-semibold">Schedule Demo</span>
               </button>
@@ -435,9 +476,7 @@ import {
         <div class="grid md:grid-cols-4 gap-12 mb-12">
           <div class="space-y-4">
             <h3 class="text-xl font-bold text-foreground">Home Planner</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              The modern calendar for coordinated families.
-            </p>
+            <p class="text-sm text-muted-foreground leading-relaxed">The modern calendar for coordinated families.</p>
           </div>
 
           <div class="space-y-4">
@@ -468,9 +507,7 @@ import {
         </div>
 
         <div class="pt-8 border-t border-border/50 text-center">
-          <p class="text-sm text-muted-foreground">
-            © 2024 Home Planner. Made with care for modern families.
-          </p>
+          <p class="text-sm text-muted-foreground">© 2024 Home Planner. Made with care for modern families.</p>
         </div>
       </div>
     </div>

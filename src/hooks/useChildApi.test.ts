@@ -20,9 +20,12 @@ describe("useChildApi", () => {
       const { result } = renderHook(() => useChildApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(typeof result.current.createChild).toBe("function");
@@ -33,9 +36,12 @@ describe("useChildApi", () => {
       const { result } = renderHook(() => useChildApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.isCreating).toBe(false);
@@ -46,9 +52,12 @@ describe("useChildApi", () => {
       const { result } = renderHook(() => useChildApi());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isCreating).toBe(false);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.isCreating).toBe(false);
+        },
+        { timeout: 1000 }
+      );
 
       // Assert
       expect(result.current.error).toBeNull();
@@ -84,7 +93,7 @@ describe("useChildApi", () => {
       // Act
       const command = { name: "Test Child" };
       let promise: Promise<any>;
-      
+
       await act(async () => {
         promise = result.current.createChild(familyId, command);
       });

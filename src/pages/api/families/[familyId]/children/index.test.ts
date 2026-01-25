@@ -207,9 +207,7 @@ describe("POST /api/families/[familyId]/children", () => {
     await familyRepo.addMember(familyId, userId, "admin");
   });
 
-  function createMockContext(
-    params: { familyId?: string; userId?: string; body?: unknown }
-  ): APIContext {
+  function createMockContext(params: { familyId?: string; userId?: string; body?: unknown }): APIContext {
     return {
       params: { familyId: params.familyId ?? familyId },
       request: new Request("http://localhost", {
@@ -430,4 +428,3 @@ describe("POST /api/families/[familyId]/children", () => {
     expect(data.created_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
   });
 });
-

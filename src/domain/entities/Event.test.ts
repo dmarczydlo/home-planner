@@ -19,11 +19,9 @@ describe("Event Domain Entity", () => {
     });
 
     it("should fail validation - invalid user", () => {
-      const participants: ParticipantReferenceDTO[] = [
-        { id: "invalid-user", type: "user" },
-      ];
+      const participants: ParticipantReferenceDTO[] = [{ id: "invalid-user", type: "user" }];
       const familyMembers = [{ user_id: "user-1" }];
-      const children: Array<{ id: string }> = [];
+      const children: { id: string }[] = [];
 
       const result = Event.validateParticipants(participants, familyMembers, children);
 
@@ -36,10 +34,8 @@ describe("Event Domain Entity", () => {
     });
 
     it("should fail validation - invalid child", () => {
-      const participants: ParticipantReferenceDTO[] = [
-        { id: "invalid-child", type: "child" },
-      ];
-      const familyMembers: Array<{ user_id: string }> = [];
+      const participants: ParticipantReferenceDTO[] = [{ id: "invalid-child", type: "child" }];
+      const familyMembers: { user_id: string }[] = [];
       const children = [{ id: "child-1" }];
 
       const result = Event.validateParticipants(participants, familyMembers, children);
@@ -145,9 +141,7 @@ describe("Event Domain Entity", () => {
           title: "Conflicting Event",
           start_time: "2024-01-01T10:00:00Z",
           end_time: "2024-01-01T11:00:00Z",
-          participants: [
-            { id: "user-1", name: "User 1", type: "user" as const, avatar_url: null },
-          ],
+          participants: [{ id: "user-1", name: "User 1", type: "user" as const, avatar_url: null }],
         },
       ];
 
@@ -166,13 +160,13 @@ describe("Event Domain Entity", () => {
     });
 
     it("should succeed - blocker without conflicts", () => {
-      const conflicts: Array<{
+      const conflicts: {
         id: string;
         title: string;
         start_time: string;
         end_time: string;
-        participants: Array<{ id: string; name: string; type: "user" | "child"; avatar_url?: string | null }>;
-      }> = [];
+        participants: { id: string; name: string; type: "user" | "child"; avatar_url?: string | null }[];
+      }[] = [];
 
       const result = Event.checkConflicts("blocker", conflicts);
 
@@ -186,9 +180,7 @@ describe("Event Domain Entity", () => {
           title: "Conflicting Event",
           start_time: "2024-01-01T10:00:00Z",
           end_time: "2024-01-01T11:00:00Z",
-          participants: [
-            { id: "user-1", name: "User 1", type: "user" as const, avatar_url: null },
-          ],
+          participants: [{ id: "user-1", name: "User 1", type: "user" as const, avatar_url: null }],
         },
       ];
 

@@ -13,7 +13,7 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
   const mockSubscription = {
     unsubscribe: mockUnsubscribe,
   };
-  
+
   const createMockClient = () => ({
     auth: {
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
@@ -29,7 +29,7 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
       }),
     },
   });
-  
+
   return {
     ...actual,
     createSupabaseClientForAuth: vi.fn(createMockClient),
@@ -42,8 +42,7 @@ global.fetch = vi.fn();
 
 // Mock child components that are complex
 vi.mock("./EventEditModal", () => ({
-  EventEditModal: ({ isOpen, onClose }: any) =>
-    isOpen ? <div data-testid="event-edit-modal">Edit Modal</div> : null,
+  EventEditModal: ({ isOpen, onClose }: any) => (isOpen ? <div data-testid="event-edit-modal">Edit Modal</div> : null),
 }));
 
 vi.mock("./CustomCalendarDayView", () => ({
@@ -328,7 +327,7 @@ describe("CalendarView", () => {
       const mockSession = {
         access_token: "mock-token",
       };
-      
+
       const supabaseAuth = await import("@/lib/auth/supabaseAuth");
       const mockUnsubscribe = vi.fn();
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
@@ -379,9 +378,12 @@ describe("CalendarView", () => {
       await user.click(submitButton);
 
       // Assert - Should have made additional fetch call for refetch after event creation
-      await waitFor(() => {
-        expect(vi.mocked(global.fetch).mock.calls.length).toBeGreaterThan(initialFetchCount + 1);
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(vi.mocked(global.fetch).mock.calls.length).toBeGreaterThan(initialFetchCount + 1);
+        },
+        { timeout: 3000 }
+      );
     });
   });
 

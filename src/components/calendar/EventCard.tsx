@@ -22,15 +22,9 @@ export function EventCard({ event, onTap, compact = false }: EventCardProps) {
       ? "border-primary/50"
       : "border-accent/30 border-dashed";
 
-  const bgClass = hasConflict
-    ? "bg-destructive/10"
-    : isBlocker
-      ? "bg-primary/10"
-      : "bg-accent/5";
+  const bgClass = hasConflict ? "bg-destructive/10" : isBlocker ? "bg-primary/10" : "bg-accent/5";
 
-  const shadowClass = event.is_synced
-    ? "shadow-lg"
-    : "shadow-md";
+  const shadowClass = event.is_synced ? "shadow-lg" : "shadow-md";
 
   if (compact) {
     return (
@@ -41,9 +35,7 @@ export function EventCard({ event, onTap, compact = false }: EventCardProps) {
           hover:shadow-md hover:scale-[1.02] transition-all duration-200
         `}
       >
-        <div className="text-xs font-semibold text-foreground truncate">
-          {event.title}
-        </div>
+        <div className="text-xs font-semibold text-foreground truncate">{event.title}</div>
       </button>
     );
   }
@@ -65,10 +57,7 @@ export function EventCard({ event, onTap, compact = false }: EventCardProps) {
           </div>
           <div className="flex items-center gap-1.5">
             {event.is_synced && (
-              <div
-                className="p-1.5 rounded-lg bg-success/15 backdrop-blur-sm"
-                title="Synced from external calendar"
-              >
+              <div className="p-1.5 rounded-lg bg-success/15 backdrop-blur-sm" title="Synced from external calendar">
                 <Cloud className="w-3.5 h-3.5 text-success" />
               </div>
             )}
@@ -83,16 +72,12 @@ export function EventCard({ event, onTap, compact = false }: EventCardProps) {
           </div>
         </div>
 
-        <h3 className="font-bold text-foreground text-base line-clamp-2 leading-snug">
-          {event.title}
-        </h3>
+        <h3 className="font-bold text-foreground text-base line-clamp-2 leading-snug">{event.title}</h3>
 
         {event.participants.length > 0 && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Users className="w-4 h-4" />
-            <span className="truncate font-medium">
-              {event.participants.map((p) => p.name).join(", ")}
-            </span>
+            <span className="truncate font-medium">{event.participants.map((p) => p.name).join(", ")}</span>
           </div>
         )}
 
@@ -100,11 +85,7 @@ export function EventCard({ event, onTap, compact = false }: EventCardProps) {
           <span
             className={`
               inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
-              ${
-                isBlocker
-                  ? "bg-primary/20 text-primary"
-                  : "bg-accent/20 text-accent"
-              }
+              ${isBlocker ? "bg-primary/20 text-primary" : "bg-accent/20 text-accent"}
             `}
           >
             {isBlocker ? "Blocker" : "Elastic"}

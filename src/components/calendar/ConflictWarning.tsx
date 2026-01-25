@@ -33,7 +33,8 @@ export function ConflictWarning({ conflicts, isValidating }: ConflictWarningProp
         <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
         <div className="flex-1">
           <p className="text-sm font-medium text-destructive mb-1">
-            Cannot save: This blocker event conflicts with {conflicts.length} existing event{conflicts.length > 1 ? "s" : ""}
+            Cannot save: This blocker event conflicts with {conflicts.length} existing event
+            {conflicts.length > 1 ? "s" : ""}
           </p>
           <p className="text-xs text-destructive/80">
             Save button is disabled until conflict is resolved. Adjust the time to continue.
@@ -43,10 +44,7 @@ export function ConflictWarning({ conflicts, isValidating }: ConflictWarningProp
 
       <div className="space-y-2 mt-3">
         {conflicts.map((conflict) => (
-          <div
-            key={conflict.id}
-            className="p-2 glass-effect rounded border border-destructive/30"
-          >
+          <div key={conflict.id} className="p-2 glass-effect rounded border border-destructive/30">
             <p className="text-sm font-medium text-foreground">{conflict.title}</p>
             <p className="text-xs text-muted-foreground">
               {formatTime(conflict.start_time)} - {formatTime(conflict.end_time)}

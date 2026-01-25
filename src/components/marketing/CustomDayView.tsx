@@ -72,12 +72,12 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
     const startMinutes = start.getHours() * 60 + start.getMinutes();
     const endMinutes = end.getHours() * 60 + end.getMinutes();
     const duration = endMinutes - startMinutes;
-    
+
     // Calculate position relative to timeRange.start
     const rangeStartMinutes = timeRange.start * 60;
     const top = ((startMinutes - rangeStartMinutes) / 60) * 60; // 60px per hour
     const height = (duration / 60) * 60;
-    
+
     return { top: `${top}px`, height: `${Math.max(height, 50)}px` };
   };
 
@@ -103,16 +103,18 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
   return (
     <div className="relative h-full w-full flex flex-col custom-day-view">
       {/* Header */}
-      <div className={`sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4 ${
-        isToday ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" : ""
-      }`}>
+      <div
+        className={`sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4 ${
+          isToday ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" : ""
+        }`}
+      >
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
           <div>
-            <h2 className={`text-xl sm:text-3xl font-black ${
-              isToday 
-                ? "text-primary drop-shadow-[0_0_30px_rgba(139,92,246,0.6)]" 
-                : "text-foreground"
-            }`}>
+            <h2
+              className={`text-xl sm:text-3xl font-black ${
+                isToday ? "text-primary drop-shadow-[0_0_30px_rgba(139,92,246,0.6)]" : "text-foreground"
+              }`}
+            >
               {formatDate(selectedDate)}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground font-semibold mt-0.5 sm:mt-1">
@@ -141,13 +143,7 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
                   key={hour}
                   className="h-[60px] flex items-start justify-end pr-2 sm:pr-4 text-[10px] sm:text-xs font-bold text-muted-foreground"
                 >
-                  {hour === 0
-                    ? "12A"
-                    : hour < 12
-                    ? `${hour}A`
-                    : hour === 12
-                    ? "12P"
-                    : `${hour - 12}P`}
+                  {hour === 0 ? "12A" : hour < 12 ? `${hour}A` : hour === 12 ? "12P" : `${hour - 12}P`}
                 </div>
               ))}
             </div>
@@ -165,34 +161,32 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
             ))}
 
             {/* Current time indicator */}
-            {isToday && (() => {
-              const now = new Date();
-              const currentMinutes = now.getHours() * 60 + now.getMinutes();
-              const rangeStartMinutes = timeRange.start * 60;
-              
-              if (currentMinutes >= rangeStartMinutes && currentMinutes <= timeRange.end * 60) {
-                const top = ((currentMinutes - rangeStartMinutes) / 60) * 60;
-                
-                return (
-                  <div
-                    className="absolute left-0 right-0 z-10"
-                    style={{ top: `${top}px` }}
-                  >
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-primary shadow-lg shadow-primary/50 border-2 border-background" />
-                      <div className="flex-1 h-0.5 bg-gradient-to-r from-primary via-secondary to-transparent" />
+            {isToday &&
+              (() => {
+                const now = new Date();
+                const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                const rangeStartMinutes = timeRange.start * 60;
+
+                if (currentMinutes >= rangeStartMinutes && currentMinutes <= timeRange.end * 60) {
+                  const top = ((currentMinutes - rangeStartMinutes) / 60) * 60;
+
+                  return (
+                    <div className="absolute left-0 right-0 z-10" style={{ top: `${top}px` }}>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 rounded-full bg-primary shadow-lg shadow-primary/50 border-2 border-background" />
+                        <div className="flex-1 h-0.5 bg-gradient-to-r from-primary via-secondary to-transparent" />
+                      </div>
                     </div>
-                  </div>
-                );
-              }
-              return null;
-            })()}
+                  );
+                }
+                return null;
+              })()}
 
             {/* Events */}
             <div className="relative px-4 h-full">
               {dayEvents.map((event) => {
                 const position = getEventPosition(event);
-                
+
                 return (
                   <div
                     key={event.id}

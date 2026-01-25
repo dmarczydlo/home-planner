@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface EditProfileFormProps {
   isOpen: boolean;
@@ -17,13 +10,7 @@ interface EditProfileFormProps {
   onSave: (fullName: string | null, avatarUrl: string | null) => Promise<void>;
 }
 
-export function EditProfileForm({
-  isOpen,
-  onClose,
-  initialFullName,
-  initialAvatarUrl,
-  onSave,
-}: EditProfileFormProps) {
+export function EditProfileForm({ isOpen, onClose, initialFullName, initialAvatarUrl, onSave }: EditProfileFormProps) {
   const [fullName, setFullName] = useState(initialFullName || "");
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,9 +51,7 @@ export function EditProfileForm({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
-            Update your profile information. Changes will be saved immediately.
-          </DialogDescription>
+          <DialogDescription>Update your profile information. Changes will be saved immediately.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -111,20 +96,10 @@ export function EditProfileForm({
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} className="flex-1">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </div>

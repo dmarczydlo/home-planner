@@ -13,15 +13,11 @@ interface Participant {
 
 interface ParticipantSelectorProps {
   familyId: string;
-  selectedParticipants: Array<{ id: string; type: "user" | "child" }>;
-  onSelectionChange: (participants: Array<{ id: string; type: "user" | "child" }>) => void;
+  selectedParticipants: { id: string; type: "user" | "child" }[];
+  onSelectionChange: (participants: { id: string; type: "user" | "child" }[]) => void;
 }
 
-export function ParticipantSelector({
-  familyId,
-  selectedParticipants,
-  onSelectionChange,
-}: ParticipantSelectorProps) {
+export function ParticipantSelector({ familyId, selectedParticipants, onSelectionChange }: ParticipantSelectorProps) {
   const [members, setMembers] = useState<FamilyMemberDTO[]>([]);
   const [children, setChildren] = useState<ChildDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -91,9 +87,7 @@ export function ParticipantSelector({
   if (isLoading) {
     return (
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Participants
-        </label>
+        <div className="block text-sm font-medium text-foreground mb-2">Participants</div>
         <div className="animate-pulse space-y-2">
           <div className="h-10 bg-muted rounded"></div>
           <div className="h-10 bg-muted rounded"></div>
@@ -119,25 +113,27 @@ export function ParticipantSelector({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground mb-2">
-        Participants
-      </label>
+      <div className="block text-sm font-medium text-foreground mb-2">Participants</div>
       <div className="space-y-2 max-h-48 overflow-y-auto border border-primary/20 rounded-lg p-2 glass-effect scrollbar-modern">
         {allParticipants.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            No participants available
-          </p>
+          <p className="text-sm text-muted-foreground text-center py-4">No participants available</p>
         ) : (
           allParticipants.map((participant) => {
-            const isSelected = selectedParticipants.some(
-              (p) => p.id === participant.id && p.type === participant.type
-            );
+            const isSelected = selectedParticipants.some((p) => p.id === participant.id && p.type === participant.type);
 
             return (
               <div
                 key={`${participant.type}-${participant.id}`}
+                role="button"
+                tabIndex={0}
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-card/60 cursor-pointer transition-colors"
                 onClick={() => handleToggle(participant.id, participant.type)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleToggle(participant.id, participant.type);
+                  }
+                }}
               >
                 <Checkbox
                   checked={isSelected}
@@ -151,9 +147,7 @@ export function ParticipantSelector({
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
-                    {participant.name}
-                  </p>
+                  <p className="text-sm font-medium text-foreground truncate">{participant.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {participant.type === "user" ? "Family Member" : "Child"}
                   </p>

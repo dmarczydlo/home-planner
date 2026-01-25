@@ -4,7 +4,6 @@ import {
   NotFoundError,
   ValidationError,
   ForbiddenError,
-  ConflictError,
   DomainError,
   InternalError,
   RateLimitError,
@@ -18,7 +17,6 @@ import type {
   ListExternalCalendarsResponseDTO,
   ExternalCalendarSummaryDTO,
   CalendarAuthResponseDTO,
-  ConnectCalendarCommand,
   CalendarProvider,
   CalendarSyncResultDTO,
   SyncAllCalendarsResponseDTO,
@@ -326,7 +324,8 @@ export class ExternalCalendarService {
       await this.calendarRepo.updateLastSyncedAt(calendarId, syncedAt);
       this.rateLimiter.recordSync(calendarId);
 
-      const status = reconciliationResult.events_removed > 0 || reconciliationResult.events_updated > 0 ? "partial" : "success";
+      const status =
+        reconciliationResult.events_removed > 0 || reconciliationResult.events_updated > 0 ? "partial" : "success";
 
       this.logRepo
         .create({
@@ -368,7 +367,7 @@ export class ExternalCalendarService {
 
     try {
       const calendars = await this.calendarRepo.findByUserId(userId);
-      const results: Array<CalendarSyncResultDTO & { calendar_id: string }> = [];
+      const results: (CalendarSyncResultDTO & { calendar_id: string })[] = [];
 
       for (const calendar of calendars) {
         const syncResult = await this.syncCalendar(userId, calendar.id);
@@ -379,9 +378,7 @@ export class ExternalCalendarService {
           });
         } else {
           const errorMessage =
-            syncResult.error instanceof RateLimitError
-              ? syncResult.error.message
-              : syncResult.error.message;
+            syncResult.error instanceof RateLimitError ? syncResult.error.message : syncResult.error.message;
 
           results.push({
             calendar_id: calendar.id,
@@ -402,7 +399,10 @@ export class ExternalCalendarService {
     }
   }
 
-  private async findSyncedEventsByCalendar(familyId: string, calendarId: string): Promise<Array<{ id: string; external_id?: string; title: string; start_time: string; end_time: string }>> {
+  private async findSyncedEventsByCalendar(
+    familyId: string,
+    calendarId: string
+  ): Promise<{ id: string; external_id?: string; title: string; start_time: string; end_time: string }[]> {
     const allEvents = await this.eventRepo.findByFamilyId(familyId);
     return allEvents
       .filter((e) => e.is_synced && e.external_calendar_id === calendarId)
@@ -415,8 +415,8 @@ export class ExternalCalendarService {
   }
 
   private async reconcileEvents(
-    externalEvents: Array<{ id: string; title: string; start_time: string; end_time: string; is_all_day: boolean }>,
-    existingEvents: Array<{ id: string; title: string; start_time: string; end_time: string }>,
+    externalEvents: { id: string; title: string; start_time: string; end_time: string; is_all_day: boolean }[],
+    existingEvents: { id: string; title: string; start_time: string; end_time: string }[],
     familyId: string,
     calendarId: string
   ): Promise<{ events_added: number; events_updated: number; events_removed: number }> {
@@ -424,12 +424,12 @@ export class ExternalCalendarService {
     let eventsUpdated = 0;
     let eventsRemoved = 0;
 
-    const externalEventMap = new Map<string, typeof externalEvents[0]>();
+    const externalEventMap = new Map<string, (typeof externalEvents)[0]>();
     for (const extEvent of externalEvents) {
       externalEventMap.set(extEvent.id, extEvent);
     }
 
-    const existingEventMap = new Map<string, typeof existingEvents[0]>();
+    const existingEventMap = new Map<string, (typeof existingEvents)[0]>();
     for (const existingEvent of existingEvents) {
       const matchKey = this.getEventMatchKey(existingEvent);
       existingEventMap.set(matchKey, existingEvent);
@@ -514,4 +514,3 @@ export class ExternalCalendarService {
     return "active";
   }
 }
-

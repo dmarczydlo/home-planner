@@ -60,9 +60,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-foreground">
-          Recurrence
-        </label>
+        <div className="block text-sm font-medium text-foreground">Recurrence</div>
         <Button
           type="button"
           variant="ghost"
@@ -71,26 +69,21 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
           className="h-8"
           aria-label={isExpanded ? "Collapse recurrence" : "Expand recurrence"}
         >
-          {isExpanded ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
+          {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
       </div>
 
       {!isExpanded && value && (
         <p className="text-xs text-muted-foreground">
-          Repeats {value.frequency} every {value.interval} {value.frequency === "daily" ? "day(s)" : value.frequency === "weekly" ? "week(s)" : "month(s)"}
+          Repeats {value.frequency} every {value.interval}{" "}
+          {value.frequency === "daily" ? "day(s)" : value.frequency === "weekly" ? "week(s)" : "month(s)"}
         </p>
       )}
 
       {isExpanded && (
         <div className="space-y-4 p-4 border border-primary/20 rounded-lg glass-effect">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Frequency
-            </label>
+            <div className="block text-sm font-medium text-foreground mb-2">Frequency</div>
             <div className="flex gap-2">
               {(["daily", "weekly", "monthly"] as const).map((freq) => (
                 <button
@@ -124,11 +117,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
                 className="w-20 px-3 py-2 border border-primary/20 rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-primary/50"
               />
               <span className="text-sm text-muted-foreground">
-                {value?.frequency === "daily"
-                  ? "day(s)"
-                  : value?.frequency === "weekly"
-                  ? "week(s)"
-                  : "month(s)"}
+                {value?.frequency === "daily" ? "day(s)" : value?.frequency === "weekly" ? "week(s)" : "month(s)"}
               </span>
             </div>
           </div>
@@ -148,12 +137,7 @@ export function RecurrenceEditor({ value, onChange, startDate }: RecurrenceEdito
             />
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleDisable}
-            className="w-full"
-          >
+          <Button type="button" variant="outline" onClick={handleDisable} className="w-full">
             Remove Recurrence
           </Button>
         </div>

@@ -105,9 +105,7 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
         className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-card/40 transition-all duration-300"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm sm:text-base font-semibold text-foreground">
-            Filter by Members
-          </span>
+          <span className="text-sm sm:text-base font-semibold text-foreground">Filter by Members</span>
           {selectedCount > 0 && selectedCount < members.length && (
             <span className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-semibold bg-primary/20 text-primary border border-primary/30 rounded-full">
               {selectedCount} selected
@@ -126,15 +124,8 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
         <div className="px-4 sm:px-6 pb-4 space-y-3">
           {/* Select all option */}
           <div className="flex items-center space-x-2 py-2 border-b border-primary/10">
-            <Checkbox
-              id="select-all"
-              checked={allSelected}
-              onCheckedChange={handleToggleAll}
-            />
-            <Label
-              htmlFor="select-all"
-              className="text-sm font-semibold cursor-pointer text-foreground"
-            >
+            <Checkbox id="select-all" checked={allSelected} onCheckedChange={handleToggleAll} />
+            <Label htmlFor="select-all" className="text-sm font-semibold cursor-pointer text-foreground">
               {allSelected ? "Deselect All" : "Select All"}
             </Label>
           </div>
@@ -166,9 +157,7 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
                       />
                     )}
                     {member.name}
-                    <span className="text-xs text-muted-foreground">
-                      ({member.type})
-                    </span>
+                    <span className="text-xs text-muted-foreground">({member.type})</span>
                   </Label>
                 </div>
               );

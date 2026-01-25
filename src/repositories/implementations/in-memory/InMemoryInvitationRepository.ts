@@ -2,30 +2,25 @@ import type { InvitationRepository } from "../../interfaces/InvitationRepository
 import type { InvitationEntity, InvitationInsert, InvitationUpdate, InvitationStatus } from "@/types";
 
 export class InMemoryInvitationRepository implements InvitationRepository {
-  private invitations: Map<string, InvitationEntity> = new Map();
+  private invitations = new Map<string, InvitationEntity>();
 
   async findById(id: string): Promise<InvitationEntity | null> {
     return this.invitations.get(id) ?? null;
   }
 
   async findByFamilyId(familyId: string, status?: InvitationStatus): Promise<InvitationEntity[]> {
-    let invitations = Array.from(this.invitations.values()).filter(
-      (invitation) => invitation.family_id === familyId
-    );
+    let invitations = Array.from(this.invitations.values()).filter((invitation) => invitation.family_id === familyId);
 
     if (status) {
       invitations = invitations.filter((invitation) => invitation.status === status);
     }
 
-    return invitations.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+    return invitations.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
   async findPendingByEmailAndFamily(email: string, familyId: string): Promise<InvitationEntity | null> {
     const invitation = Array.from(this.invitations.values()).find(
-      (inv) =>
-        inv.invitee_email === email && inv.family_id === familyId && inv.status === "pending"
+      (inv) => inv.invitee_email === email && inv.family_id === familyId && inv.status === "pending"
     );
 
     return invitation ?? null;
@@ -84,4 +79,3 @@ export class InMemoryInvitationRepository implements InvitationRepository {
     this.invitations.set(invitation.id, invitation);
   }
 }
-

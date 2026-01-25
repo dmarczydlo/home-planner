@@ -3,10 +3,7 @@ import type { EventWithParticipantsDTO } from "../../types";
 /**
  * Check if two events overlap in time
  */
-export function eventsOverlap(
-  event1: EventWithParticipantsDTO,
-  event2: EventWithParticipantsDTO
-): boolean {
+export function eventsOverlap(event1: EventWithParticipantsDTO, event2: EventWithParticipantsDTO): boolean {
   const start1 = new Date(event1.start_time).getTime();
   const end1 = new Date(event1.end_time).getTime();
   const start2 = new Date(event2.start_time).getTime();
@@ -24,17 +21,17 @@ export function getConflictingEvents(
 ): EventWithParticipantsDTO[] {
   return allEvents.filter((otherEvent) => {
     if (otherEvent.id === event.id) return false;
-    
+
     // Only check blocker events for conflicts
     if (otherEvent.event_type !== "blocker") return false;
-    
+
     // Check if events overlap in time
     if (!eventsOverlap(event, otherEvent)) return false;
-    
+
     // Check if they share any participants
     const eventParticipantIds = event.participants.map((p) => p.id);
     const otherParticipantIds = otherEvent.participants.map((p) => p.id);
-    
+
     return eventParticipantIds.some((id) => otherParticipantIds.includes(id));
   });
 }
@@ -51,9 +48,7 @@ export function getEventDuration(event: EventWithParticipantsDTO): number {
 /**
  * Sort events by start time
  */
-export function sortEventsByStartTime(
-  events: EventWithParticipantsDTO[]
-): EventWithParticipantsDTO[] {
+export function sortEventsByStartTime(events: EventWithParticipantsDTO[]): EventWithParticipantsDTO[] {
   return [...events].sort((a, b) => {
     const timeA = new Date(a.start_time).getTime();
     const timeB = new Date(b.start_time).getTime();
@@ -78,9 +73,7 @@ export function filterEventsByParticipant(
   events: EventWithParticipantsDTO[],
   participantId: string
 ): EventWithParticipantsDTO[] {
-  return events.filter((event) =>
-    event.participants.some((p) => p.id === participantId)
-  );
+  return events.filter((event) => event.participants.some((p) => p.id === participantId));
 }
 
 /**
@@ -109,25 +102,25 @@ export function isEventHappening(event: EventWithParticipantsDTO): boolean {
 export function eventSpansDay(event: EventWithParticipantsDTO, day: Date): boolean {
   const eventStart = new Date(event.start_time);
   const eventEnd = new Date(event.end_time);
-  
+
   // Normalize dates to start of day for comparison
   const dayStart = new Date(day);
   dayStart.setHours(0, 0, 0, 0);
-  
+
   const dayEnd = new Date(day);
   dayEnd.setHours(23, 59, 59, 999);
-  
+
   // For all-day events, compare dates only
   if (event.is_all_day) {
     const eventStartDate = new Date(eventStart);
     eventStartDate.setHours(0, 0, 0, 0);
-    
+
     const eventEndDate = new Date(eventEnd);
     eventEndDate.setHours(23, 59, 59, 999);
-    
+
     return eventStartDate <= dayEnd && eventEndDate >= dayStart;
   }
-  
+
   // For timed events, check if the event overlaps with the day
   return eventStart <= dayEnd && eventEnd >= dayStart;
 }
@@ -138,10 +131,10 @@ export function eventSpansDay(event: EventWithParticipantsDTO, day: Date): boole
 export function isMultiDayEvent(event: EventWithParticipantsDTO): boolean {
   const start = new Date(event.start_time);
   const end = new Date(event.end_time);
-  
+
   const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
   const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-  
+
   return startDate.getTime() !== endDate.getTime();
 }
 
@@ -151,13 +144,13 @@ export function isMultiDayEvent(event: EventWithParticipantsDTO): boolean {
 export function getEventDaySpan(event: EventWithParticipantsDTO): number {
   const start = new Date(event.start_time);
   const end = new Date(event.end_time);
-  
+
   const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
   const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-  
+
   const diffTime = endDate.getTime() - startDate.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+
   return Math.max(1, diffDays + 1); // At least 1 day
 }
 
@@ -170,7 +163,7 @@ export function eventStartsOnDay(event: EventWithParticipantsDTO, day: Date): bo
   dayStart.setHours(0, 0, 0, 0);
   const dayEnd = new Date(day);
   dayEnd.setHours(23, 59, 59, 999);
-  
+
   return eventStart >= dayStart && eventStart <= dayEnd;
 }
 
@@ -183,7 +176,7 @@ export function eventEndsOnDay(event: EventWithParticipantsDTO, day: Date): bool
   dayStart.setHours(0, 0, 0, 0);
   const dayEnd = new Date(day);
   dayEnd.setHours(23, 59, 59, 999);
-  
+
   return eventEnd >= dayStart && eventEnd <= dayEnd;
 }
 

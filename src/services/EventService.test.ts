@@ -116,13 +116,7 @@ describe("EventService", () => {
       });
 
       // Act
-      const result = await eventService.listEvents(
-        familyId,
-        startDate,
-        endDate,
-        { eventType: "blocker" },
-        userId
-      );
+      const result = await eventService.listEvents(familyId, startDate, endDate, { eventType: "blocker" }, userId);
 
       // Assert
       expect(result.success).toBe(true);
@@ -181,13 +175,7 @@ describe("EventService", () => {
       await eventRepo.update(syncedEvent.id, { is_synced: true });
 
       // Act
-      const result = await eventService.listEvents(
-        familyId,
-        startDate,
-        endDate,
-        { includeSynced: false },
-        userId
-      );
+      const result = await eventService.listEvents(familyId, startDate, endDate, { includeSynced: false }, userId);
 
       // Assert
       expect(result.success).toBe(true);

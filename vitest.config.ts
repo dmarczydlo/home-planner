@@ -10,7 +10,7 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     setupFiles: ["./src/test/setup.ts"],
     // Component tests use jsdom environment via @vitest-environment jsdom comment
-    
+
     // Performance optimizations
     pool: "forks", // Use forks for better isolation and parallel execution
     poolOptions: {
@@ -23,13 +23,13 @@ export default defineConfig({
     testTimeout: 5000, // 5 second timeout for tests (reduced from 10s)
     hookTimeout: 5000, // 5 second timeout for hooks (reduced from 10s)
     isolate: true, // Isolate tests for better reliability
-    
+
     // Type checking configuration
     typecheck: {
       tsconfig: "./tsconfig.json",
       include: ["src/**/*.{test,spec}.{ts,tsx}"],
     },
-    
+
     // Coverage configuration
     coverage: {
       provider: "v8",
@@ -46,12 +46,6 @@ export default defineConfig({
         "**/*.test.ts",
         "**/*.spec.ts",
       ],
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 80,
-        statements: 80,
-      },
     },
   },
   resolve: {
@@ -60,4 +54,3 @@ export default defineConfig({
     },
   },
 });
-

@@ -10,4 +10,3 @@ export interface InvitationRepository {
   update(id: string, data: InvitationUpdate): Promise<InvitationEntity>;
   delete(id: string): Promise<void>;
 }
-

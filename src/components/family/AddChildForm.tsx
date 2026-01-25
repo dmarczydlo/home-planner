@@ -113,6 +113,7 @@ export function AddChildForm({ open, onOpenChange, familyId, editChild, onSucces
                   setValidationError(null);
                 }}
                 disabled={isCreating}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 maxLength={100}
                 aria-required="true"

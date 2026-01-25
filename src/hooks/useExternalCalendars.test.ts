@@ -23,9 +23,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(Array.isArray(result.current.calendars)).toBe(true);
@@ -36,9 +39,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(typeof result.current.isLoading).toBe("boolean");
@@ -49,9 +55,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(result.current.error === null || typeof result.current.error === "string").toBe(true);
@@ -62,9 +71,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(typeof result.current.syncStatus).toBe("object");
@@ -75,9 +87,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(typeof result.current.loadCalendars).toBe("function");
@@ -88,9 +103,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(typeof result.current.syncCalendar).toBe("function");
@@ -101,9 +119,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(typeof result.current.syncAllCalendars).toBe("function");
@@ -114,9 +135,12 @@ describe("useExternalCalendars", () => {
       const { result } = renderHook(() => useExternalCalendars());
 
       // Let mount effects settle to avoid React act() warnings
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+        },
+        { timeout: 2000 }
+      );
 
       // Assert
       expect(typeof result.current.disconnectCalendar).toBe("function");
@@ -179,11 +203,18 @@ describe("useExternalCalendars", () => {
       } as any);
 
       vi.mocked(global.fetch).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          ok: true,
-          status: 200,
-          json: async () => ({ calendars: [] }),
-        } as Response), 100))
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  ok: true,
+                  status: 200,
+                  json: async () => ({ calendars: [] }),
+                } as Response),
+              100
+            )
+          )
       );
 
       // Act
@@ -271,7 +302,7 @@ describe("useExternalCalendars", () => {
         data: { session: mockSession },
         error: null,
       });
-      
+
       // Set up the mock BEFORE rendering the hook
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
@@ -323,19 +354,27 @@ describe("useExternalCalendars", () => {
       try {
         response = await promise;
       } catch (err) {
-        throw new Error(`syncCalendar failed: ${err instanceof Error ? err.message : String(err)}. Current error state: ${result.current.error}`);
+        throw new Error(
+          `syncCalendar failed: ${err instanceof Error ? err.message : String(err)}. Current error state: ${result.current.error}`
+        );
       }
 
       expect(response).toEqual(mockSyncResult);
-      await waitFor(() => {
-        expect(result.current.syncStatus[calendarId]).toBe("success");
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.syncStatus[calendarId]).toBe("success");
+        },
+        { timeout: 5000 }
+      );
 
       // Wait for status to reset to idle (3 seconds)
       // Use waitFor with longer timeout instead of fixed delay
-      await waitFor(() => {
-        expect(result.current.syncStatus[calendarId]).toBe("idle");
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.syncStatus[calendarId]).toBe("idle");
+        },
+        { timeout: 5000 }
+      );
     });
 
     it("handles sync errors", async () => {
@@ -387,9 +426,12 @@ describe("useExternalCalendars", () => {
       });
 
       // Wait for status to reset to idle (3 seconds) - use waitFor with longer timeout
-      await waitFor(() => {
-        expect(result.current.syncStatus[calendarId]).toBe("idle");
-      }, { timeout: 5000, interval: 100 });
+      await waitFor(
+        () => {
+          expect(result.current.syncStatus[calendarId]).toBe("idle");
+        },
+        { timeout: 5000, interval: 100 }
+      );
     });
   });
 
@@ -599,9 +641,12 @@ describe("useExternalCalendars", () => {
         await expect(result.current.disconnectCalendar(calendarId)).rejects.toThrow();
       });
 
-      await waitFor(() => {
-        expect(result.current.error).toBe(errorMessage);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.error).toBe(errorMessage);
+        },
+        { timeout: 10000 }
+      );
 
       // Calendar should still be in the list
       expect(result.current.calendars).toHaveLength(1);

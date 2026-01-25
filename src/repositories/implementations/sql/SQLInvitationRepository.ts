@@ -125,4 +125,3 @@ export class SQLInvitationRepository implements InvitationRepository {
     };
   }
 }
-

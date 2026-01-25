@@ -45,9 +45,8 @@ describe("LoginView", () => {
 
       // Assert
       const alerts = screen.queryAllByRole("alert");
-      const errorAlerts = alerts.filter((alert) =>
-        alert.textContent?.includes("Authentication failed") ||
-        alert.textContent?.includes("error occurred")
+      const errorAlerts = alerts.filter(
+        (alert) => alert.textContent?.includes("Authentication failed") || alert.textContent?.includes("error occurred")
       );
       expect(errorAlerts).toHaveLength(0);
     });
@@ -77,9 +76,7 @@ describe("LoginView", () => {
       render(<LoginView error="no_code" />);
 
       // Assert
-      expect(
-        screen.getByText("Missing authentication code. Please try signing in again.")
-      ).toBeInTheDocument();
+      expect(screen.getByText("Missing authentication code. Please try signing in again.")).toBeInTheDocument();
     });
 
     it("displays correct error message for session_failed", () => {
@@ -128,9 +125,8 @@ describe("LoginView", () => {
 
       // Assert
       const alerts = screen.queryAllByRole("alert");
-      const errorAlerts = alerts.filter((alert) =>
-        alert.textContent?.includes("Authentication failed") ||
-        alert.textContent?.includes("error occurred")
+      const errorAlerts = alerts.filter(
+        (alert) => alert.textContent?.includes("Authentication failed") || alert.textContent?.includes("error occurred")
       );
       expect(errorAlerts).toHaveLength(0);
     });

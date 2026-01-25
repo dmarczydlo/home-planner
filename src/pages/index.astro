@@ -9,7 +9,7 @@ if (Astro.locals.user) {
   // Check if user has completed onboarding
   const userService = new (await import("../services/UserService")).UserService(Astro.locals.repositories.user);
   const result = await userService.getUserProfile(Astro.locals.user.id);
-  
+
   if (result.success) {
     const hasCompletedOnboarding = result.data.families && result.data.families.length > 0;
     return Astro.redirect(hasCompletedOnboarding ? "/calendar/week" : "/onboarding/welcome");

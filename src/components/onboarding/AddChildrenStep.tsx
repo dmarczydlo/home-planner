@@ -65,4 +65,3 @@ export function AddChildrenStep({ className }: AddChildrenStepProps) {
     </div>
   );
 }
-

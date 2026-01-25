@@ -1,7 +1,7 @@
 import type { ChildRepository, Child, CreateChildDTO, UpdateChildDTO } from "../../interfaces/ChildRepository.ts";
 
 export class InMemoryChildRepository implements ChildRepository {
-  private children: Map<string, Child> = new Map();
+  private children = new Map<string, Child>();
 
   async findByFamilyId(familyId: string): Promise<Child[]> {
     return Array.from(this.children.values())

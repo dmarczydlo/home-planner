@@ -56,4 +56,3 @@ export function useInvitationApi(): UseInvitationApiReturn {
 
   return { createInvitation, isCreating, error };
 }
-

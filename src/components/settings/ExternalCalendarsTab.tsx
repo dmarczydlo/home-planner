@@ -6,24 +6,12 @@ import { useExternalCalendars } from "@/hooks/useExternalCalendars";
 import { CalendarCard } from "./CalendarCard";
 import { ConnectCalendarFlow } from "./ConnectCalendarFlow";
 
-interface ExternalCalendarsTabProps {
-  familyId: string;
-}
-
-export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
+export function ExternalCalendarsTab() {
   const [showConnectFlow, setShowConnectFlow] = useState(false);
   const [isSyncingAll, setIsSyncingAll] = useState(false);
-  
-  const {
-    calendars,
-    isLoading,
-    error,
-    syncStatus,
-    loadCalendars,
-    syncCalendar,
-    syncAllCalendars,
-    disconnectCalendar,
-  } = useExternalCalendars();
+
+  const { calendars, isLoading, error, syncStatus, loadCalendars, syncCalendar, syncAllCalendars, disconnectCalendar } =
+    useExternalCalendars();
 
   const handleSyncAll = async () => {
     setIsSyncingAll(true);
@@ -53,18 +41,10 @@ export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-foreground">External Calendars</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Connect and sync your external calendars
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">Connect and sync your external calendars</p>
         </div>
         {calendars.length > 0 && (
-          <Button
-            onClick={handleSyncAll}
-            disabled={isSyncingAll}
-            variant="outline"
-            size="sm"
-            className="shrink-0"
-          >
+          <Button onClick={handleSyncAll} disabled={isSyncingAll} variant="outline" size="sm" className="shrink-0">
             {isSyncingAll ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -113,11 +93,7 @@ export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
                 onDisconnect={disconnectCalendar}
               />
             ))}
-            <Button
-              onClick={() => setShowConnectFlow(true)}
-              variant="outline"
-              className="w-full"
-            >
+            <Button onClick={() => setShowConnectFlow(true)} variant="outline" className="w-full">
               <Plus className="h-4 w-4 mr-2" />
               Connect Another Calendar
             </Button>
@@ -125,11 +101,7 @@ export function ExternalCalendarsTab({ familyId }: ExternalCalendarsTabProps) {
         )}
       </div>
 
-      <ConnectCalendarFlow
-        open={showConnectFlow}
-        onOpenChange={setShowConnectFlow}
-        onSuccess={handleConnectSuccess}
-      />
+      <ConnectCalendarFlow open={showConnectFlow} onOpenChange={setShowConnectFlow} onSuccess={handleConnectSuccess} />
     </div>
   );
 }

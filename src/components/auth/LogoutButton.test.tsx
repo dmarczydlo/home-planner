@@ -234,9 +234,7 @@ describe("LogoutButton", () => {
 
     it("shows loading state during logout", async () => {
       // Arrange
-      const mockSignOut = vi.fn(
-        () => new Promise((resolve) => setTimeout(() => resolve({ error: null }), 100))
-      );
+      const mockSignOut = vi.fn(() => new Promise((resolve) => setTimeout(() => resolve({ error: null }), 100)));
       const createClientSpy = vi.spyOn(supabaseAuth, "createSupabaseClientForAuth");
       createClientSpy.mockReturnValue({
         auth: {
@@ -269,9 +267,7 @@ describe("LogoutButton", () => {
 
     it("disables button during logout", async () => {
       // Arrange
-      const mockSignOut = vi.fn(
-        () => new Promise((resolve) => setTimeout(() => resolve({ error: null }), 100))
-      );
+      const mockSignOut = vi.fn(() => new Promise((resolve) => setTimeout(() => resolve({ error: null }), 100)));
       const createClientSpy = vi.spyOn(supabaseAuth, "createSupabaseClientForAuth");
       createClientSpy.mockReturnValue({
         auth: {
