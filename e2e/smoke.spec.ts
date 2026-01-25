@@ -5,8 +5,11 @@ test.describe("E2E Test Infrastructure", () => {
     // Navigate to the app
     await page.goto("/");
 
-    // Verify page loads
-    await expect(page).toHaveTitle(/Home Planner/i);
+    // Verify page loads - authenticated users redirect to calendar/week which has "Week View - Calendar"
+    // Unauthenticated users see "Home Planner - Coordinate Your Family's Schedule"
+    // So we check for either "Home Planner" or "Calendar" in the title
+    const title = await page.title();
+    expect(title).toMatch(/Home Planner|Calendar/i);
 
     // Verify basic page structure exists
     const body = page.locator("body");
