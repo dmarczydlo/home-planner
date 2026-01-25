@@ -89,27 +89,31 @@ jobs:
 
       - name: Validate required environment variables
         env:
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           if [ -z "$PUBLIC_SUPABASE_URL" ]; then
-            echo "Error: PUBLIC_SUPABASE_URL secret is not set"
+            echo "Error: PUBLIC_SUPABASE_URL variable is not set in the integration environment"
             exit 1
           fi
           if [ -z "$PUBLIC_SUPABASE_ANON_KEY" ]; then
-            echo "Error: PUBLIC_SUPABASE_ANON_KEY secret is not set"
+            echo "Error: PUBLIC_SUPABASE_ANON_KEY variable is not set in the integration environment"
             exit 1
           fi
           echo "Environment variables validated"
 
       - name: Run E2E tests
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.PUBLIC_SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          # Use variables for PUBLIC_ prefixed vars (they're set as variables, not secrets)
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+          # Use vars for SUPABASE_URL as fallback, but prefer vars
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || vars.PUBLIC_SUPABASE_URL }}
+          # Use secrets for service keys
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || vars.PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          TEST_GOOGLE_EMAIL: ${{ secrets.TEST_GOOGLE_EMAIL }}
+          # Use vars for test email
+          TEST_GOOGLE_EMAIL: ${{ vars.TEST_GOOGLE_EMAIL }}
           TEST_ENV: integration
         run: pnpm test:e2e
 
