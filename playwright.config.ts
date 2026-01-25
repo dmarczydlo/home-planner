@@ -10,22 +10,20 @@ if (testEnv === "integration") {
     { name: "PUBLIC_SUPABASE_URL", secret: "PUBLIC_SUPABASE_URL" },
     { name: "PUBLIC_SUPABASE_ANON_KEY", secret: "PUBLIC_SUPABASE_ANON_KEY" },
   ];
-  
-  const missingVars = requiredVars.filter(
-    ({ name }) => {
-      const value = process.env[name];
-      return !value || value.trim() === "";
-    }
-  );
-  
+
+  const missingVars = requiredVars.filter(({ name }) => {
+    const value = process.env[name];
+    return !value || value.trim() === "";
+  });
+
   if (missingVars.length > 0) {
     const missingNames = missingVars.map(({ name }) => name).join(", ");
     const secretNames = missingVars.map(({ secret }) => secret).join(", ");
     throw new Error(
       `Missing required environment variables for integration tests: ${missingNames}\n` +
-      `Please set these secrets in your GitHub repository:\n` +
-      `  - ${secretNames}\n` +
-      `These should be configured in: Settings > Secrets and variables > Actions > Secrets`
+        `Please set these secrets in your GitHub repository:\n` +
+        `  - ${secretNames}\n` +
+        `These should be configured in: Settings > Secrets and variables > Actions > Secrets`
     );
   }
 }
