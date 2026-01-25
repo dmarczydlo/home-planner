@@ -96,7 +96,9 @@ export default defineConfig({
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         TEST_GOOGLE_EMAIL: process.env.TEST_GOOGLE_EMAIL,
         TEST_ENV: process.env.TEST_ENV,
-      }).filter(([_, value]) => value !== undefined && value !== "")
+      })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([, value]) => value !== undefined && value !== "")
     ),
   },
 });
