@@ -87,10 +87,25 @@ jobs:
       - name: Install Playwright browsers with system dependencies
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Validate required environment variables
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$PUBLIC_SUPABASE_URL" ]; then
+            echo "Error: PUBLIC_SUPABASE_URL secret is not set"
+            exit 1
+          fi
+          if [ -z "$PUBLIC_SUPABASE_ANON_KEY" ]; then
+            echo "Error: PUBLIC_SUPABASE_ANON_KEY secret is not set"
+            exit 1
+          fi
+          echo "Environment variables validated"
+
       - name: Run E2E tests
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || secrets.PUBLIC_SUPABASE_ANON_KEY }}
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
