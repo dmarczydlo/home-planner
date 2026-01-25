@@ -302,7 +302,11 @@ export function EventEditModal({
       <div
         className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key !== "Escape") {
+            e.stopPropagation();
+          }
+        }}
         role="document"
       >
         <div className="flex items-center justify-between p-6 border-b border-primary/20">

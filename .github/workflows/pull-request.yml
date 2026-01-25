@@ -140,12 +140,14 @@ jobs:
 
       - name: Download unit test coverage
         uses: actions/download-artifact@v7
+        continue-on-error: true
         with:
           name: unit-test-coverage
           path: coverage/
 
       - name: Download E2E test results
         uses: actions/download-artifact@v7
+        continue-on-error: true
         with:
           name: e2e-test-results
           path: e2e-results/
