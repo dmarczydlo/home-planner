@@ -35,7 +35,7 @@ describe("GET /api/families/[familyId]/invitations", () => {
   });
 
   function createMockContext(params: { familyId?: string; userId?: string; status?: string }): APIContext {
-    const url = new URL("http://localhost/api/invitations");
+    const url = new URL("http://localhost");
     if (params.status) {
       url.searchParams.set("status", params.status);
     }
@@ -142,7 +142,7 @@ describe("GET /api/families/[familyId]/invitations", () => {
   it("should return 400 when family ID is invalid", async () => {
     const context = {
       params: { familyId: "invalid-id" },
-      url: new URL("http://localhost/api/invitations"),
+      url: new URL("http://localhost"),
       locals: {
         user: { id: userId, email: "test@example.com" },
         repositories: {
@@ -162,7 +162,7 @@ describe("GET /api/families/[familyId]/invitations", () => {
   });
 
   it("should return 400 when status is invalid", async () => {
-    const url = new URL("http://localhost/api/invitations");
+    const url = new URL("http://localhost");
     url.searchParams.set("status", "invalid-status");
 
     const context = {
@@ -220,7 +220,7 @@ describe("POST /api/families/[familyId]/invitations", () => {
   }): APIContext {
     return {
       params: { familyId: params.familyId ?? familyId },
-      request: new Request("http://localhost/api/invitations", {
+      request: new Request("http://localhost", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(params.body ?? { invitee_email: "alice@example.com" }),
@@ -304,7 +304,7 @@ describe("POST /api/families/[familyId]/invitations", () => {
   it("should return 400 when email is missing", async () => {
     const context = {
       params: { familyId },
-      request: new Request("http://localhost/api/invitations", {
+      request: new Request("http://localhost", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),

@@ -1,8 +1,5 @@
 import type { UserEntity, FamilyEntity, ChildEntity, EventEntity } from "@/types";
 
-/**
- * Creates a mock user object for testing
- */
 export function createMockUser(overrides?: Partial<UserEntity>): UserEntity {
   return {
     id: "test-user-123",
@@ -15,9 +12,6 @@ export function createMockUser(overrides?: Partial<UserEntity>): UserEntity {
   };
 }
 
-/**
- * Creates a mock family object for testing
- */
 export function createMockFamily(overrides?: Partial<FamilyEntity>): FamilyEntity {
   return {
     id: "test-family-123",
@@ -29,9 +23,6 @@ export function createMockFamily(overrides?: Partial<FamilyEntity>): FamilyEntit
   };
 }
 
-/**
- * Creates a mock child object for testing
- */
 export function createMockChild(overrides?: Partial<ChildEntity>): ChildEntity {
   return {
     id: "test-child-123",
@@ -43,12 +34,9 @@ export function createMockChild(overrides?: Partial<ChildEntity>): ChildEntity {
   };
 }
 
-/**
- * Creates a mock event object for testing
- */
 export function createMockEvent(overrides?: Partial<EventEntity>): EventEntity {
   const now = new Date();
-  const endTime = new Date(now.getTime() + 3600000); // 1 hour later
+  const endTime = new Date(now.getTime() + 3600000);
 
   return {
     id: "test-event-123",
@@ -68,9 +56,6 @@ export function createMockEvent(overrides?: Partial<EventEntity>): EventEntity {
   };
 }
 
-/**
- * Creates multiple mock events for testing
- */
 export function createMockEvents(count: number, overrides?: Partial<EventEntity>): EventEntity[] {
   return Array.from({ length: count }, (_, index) =>
     createMockEvent({
@@ -81,9 +66,6 @@ export function createMockEvents(count: number, overrides?: Partial<EventEntity>
   );
 }
 
-/**
- * Creates a mock family member object for testing
- */
 export function createMockFamilyMember(overrides?: {
   user_id?: string;
   family_id?: string;

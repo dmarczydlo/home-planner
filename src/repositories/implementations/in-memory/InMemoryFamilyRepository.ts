@@ -14,7 +14,7 @@ interface FamilyMemberData {
 
 export class InMemoryFamilyRepository implements FamilyRepository {
   private families = new Map<string, Family>();
-  private familyMembers = new Map<string, Map<string, FamilyMemberData>>(); // familyId -> Map<userId, memberData>
+  private familyMembers = new Map<string, Map<string, FamilyMemberData>>();
   private users = new Map<string, { full_name: string | null; avatar_url: string | null }>();
 
   async findById(id: string): Promise<Family | null> {

@@ -2,17 +2,9 @@ import { type AxeResults } from "axe-core";
 import { type ReactElement } from "react";
 import { render } from "./render";
 
-/**
- * Runs accessibility checks on a rendered component
- * Note: Requires @axe-core/react to be installed
- *
- * @param component - The component to test
- * @returns Promise that resolves to axe results
- */
 export async function checkAccessibility(component: ReactElement): Promise<AxeResults> {
   const { container } = render(component);
 
-  // Dynamic import to avoid requiring axe-core in all tests
   const axe = await import("axe-core");
 
   return new Promise((resolve, reject) => {
@@ -26,10 +18,6 @@ export async function checkAccessibility(component: ReactElement): Promise<AxeRe
   });
 }
 
-/**
- * Asserts that a component has no accessibility violations
- * Throws an error if violations are found
- */
 export async function assertNoAccessibilityViolations(component: ReactElement): Promise<void> {
   const results = await checkAccessibility(component);
 

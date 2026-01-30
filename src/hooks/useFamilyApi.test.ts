@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
@@ -6,14 +5,10 @@ import { useFamilyApi } from "./useFamilyApi";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 import { createMockFamily } from "@/test/utils/mock-data";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useFamilyApi", () => {
   beforeEach(() => {
-    // Use resetAllMocks() to clear both call history AND mock implementations
-    // This prevents mock implementations (like mockImplementation, mockResolvedValue)
-    // from leaking between tests
     vi.resetAllMocks();
   });
 
@@ -22,7 +17,6 @@ describe("useFamilyApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useFamilyApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -38,7 +32,6 @@ describe("useFamilyApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useFamilyApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -54,7 +47,6 @@ describe("useFamilyApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useFamilyApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -101,8 +93,7 @@ describe("useFamilyApi", () => {
         await promise;
       });
 
-      // Assert - State should be updating, but might complete too fast
-      // Check that the function was called and promise exists
+      // Assert
       expect(promise).toBeDefined();
       expect(result.current.error).toBeNull();
       const response = await promise!;
@@ -147,19 +138,18 @@ describe("useFamilyApi", () => {
 
       const { result } = renderHook(() => useFamilyApi());
 
-      // Act - Start the request but keep it pending so we can assert loading state
+      // Act
       const command = { name: "Test Family" };
       let createPromise: Promise<unknown> | null = null;
       await act(async () => {
         createPromise = result.current.createFamily(command);
       });
 
-      // Assert - State updates are async
+      // Assert
       await waitFor(() => {
         expect(result.current.isCreating).toBe(true);
       });
 
-      // Now let the request resolve
       if (!resolveFetch) {
         throw new Error("Expected fetch promise resolver to be set");
       }
@@ -242,14 +232,10 @@ describe("useFamilyApi", () => {
       });
 
       await waitFor(() => {
-        // The hook catches the error and sets it - check that error is set
-        // The error message will be the original error message ("Network error")
-        // because the hook uses err.message when err is an Error instance
         expect(result.current.error).toBeTruthy();
         expect(result.current.isCreating).toBe(false);
       });
 
-      // The hook uses the error message from the Error object
       expect(result.current.error).toBe("Network error");
     });
 
@@ -293,7 +279,6 @@ describe("useFamilyApi", () => {
         },
       } as any);
 
-      // First call fails
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 400,
@@ -302,7 +287,7 @@ describe("useFamilyApi", () => {
 
       const { result } = renderHook(() => useFamilyApi());
 
-      // Act - First attempt fails
+      // Act
       const command = { name: "Test Family" };
       await act(async () => {
         await expect(result.current.createFamily(command)).rejects.toThrow();
@@ -312,14 +297,13 @@ describe("useFamilyApi", () => {
         expect(result.current.error).toBe("Error");
       });
 
-      // Second call succeeds
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => createMockFamily(),
       } as Response);
 
-      // Act - Second attempt
+      // Act
       await act(async () => {
         await result.current.createFamily(command);
       });

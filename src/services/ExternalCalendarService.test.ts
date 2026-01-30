@@ -179,7 +179,7 @@ describe("ExternalCalendarService", () => {
     it("should initiate OAuth successfully - Google", async () => {
       const { createOAuthProvider } = await import("@/lib/oauth/providers");
       const mockProvider = {
-        generateAuthorizationUrl: vi.fn().mockReturnValue("https://accounts.google.com/oauth/authorize?state=test"),
+        generateAuthorizationUrl: vi.fn().mockReturnValue("https:
       };
       vi.mocked(createOAuthProvider).mockReturnValue(mockProvider as any);
 
@@ -195,7 +195,7 @@ describe("ExternalCalendarService", () => {
     it("should initiate OAuth successfully - Microsoft 365", async () => {
       const { createOAuthProvider } = await import("@/lib/oauth/providers");
       const mockProvider = {
-        generateAuthorizationUrl: vi.fn().mockReturnValue("https://login.microsoftonline.com/oauth2/v2.0/authorize"),
+        generateAuthorizationUrl: vi.fn().mockReturnValue("https:
       };
       vi.mocked(createOAuthProvider).mockReturnValue(mockProvider as any);
 
@@ -210,7 +210,7 @@ describe("ExternalCalendarService", () => {
     it("should include returnPath in state", async () => {
       const { createOAuthProvider } = await import("@/lib/oauth/providers");
       const mockProvider = {
-        generateAuthorizationUrl: vi.fn().mockReturnValue("https://example.com/auth"),
+        generateAuthorizationUrl: vi.fn().mockReturnValue("https:
       };
       vi.mocked(createOAuthProvider).mockReturnValue(mockProvider as any);
 

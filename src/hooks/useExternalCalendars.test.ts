@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
@@ -6,12 +5,10 @@ import { useExternalCalendars } from "./useExternalCalendars";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 import type { CalendarSyncResultDTO } from "@/types";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useExternalCalendars", () => {
   beforeEach(() => {
-    // Only clear fetch mock - don't clear module mocks
     if (vi.isMockFunction(global.fetch)) {
       vi.mocked(global.fetch).mockClear();
     }
@@ -22,7 +19,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -38,7 +34,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -54,7 +49,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -70,7 +64,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -86,7 +79,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -102,7 +94,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -118,7 +109,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -134,7 +124,6 @@ describe("useExternalCalendars", () => {
       // Arrange & Act
       const { result } = renderHook(() => useExternalCalendars());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isLoading).toBe(false);
@@ -303,7 +292,6 @@ describe("useExternalCalendars", () => {
         error: null,
       });
 
-      // Set up the mock BEFORE rendering the hook
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
           getSession: mockGetSession,
@@ -316,7 +304,6 @@ describe("useExternalCalendars", () => {
         },
       } as any);
 
-      // Mock loadCalendars call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -329,26 +316,21 @@ describe("useExternalCalendars", () => {
         expect(result.current.calendars).toHaveLength(1);
       });
 
-      // Mock sync call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockSyncResult,
       } as Response);
 
-      // Mock reload calendars after sync
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ calendars: mockCalendars }),
       } as Response);
 
-      // Act - Call syncCalendar
+      // Act
       const promise = result.current.syncCalendar(calendarId);
 
-      // Note: The status is set to "syncing" synchronously at the start of syncCalendar,
-      // but due to React state batching, we may not be able to reliably check it immediately.
-      // Instead, we verify the function executes by awaiting the promise and checking the final status.
 
       let response: CalendarSyncResultDTO;
       try {
@@ -367,8 +349,6 @@ describe("useExternalCalendars", () => {
         { timeout: 5000 }
       );
 
-      // Wait for status to reset to idle (3 seconds)
-      // Use waitFor with longer timeout instead of fixed delay
       await waitFor(
         () => {
           expect(result.current.syncStatus[calendarId]).toBe("idle");
@@ -395,7 +375,6 @@ describe("useExternalCalendars", () => {
         },
       } as any);
 
-      // Mock loadCalendars call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -408,14 +387,13 @@ describe("useExternalCalendars", () => {
         expect(result.current.calendars).toHaveLength(1);
       });
 
-      // Mock sync call failure
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({ message: errorMessage }),
       } as Response);
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       await act(async () => {
         await expect(result.current.syncCalendar(calendarId)).rejects.toThrow();
       });
@@ -425,7 +403,6 @@ describe("useExternalCalendars", () => {
         expect(result.current.error).toBe(errorMessage);
       });
 
-      // Wait for status to reset to idle (3 seconds) - use waitFor with longer timeout
       await waitFor(
         () => {
           expect(result.current.syncStatus[calendarId]).toBe("idle");
@@ -455,7 +432,6 @@ describe("useExternalCalendars", () => {
         },
       } as any);
 
-      // Mock loadCalendars call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -468,21 +444,19 @@ describe("useExternalCalendars", () => {
         expect(result.current.calendars).toHaveLength(2);
       });
 
-      // Mock sync all call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({}),
       } as Response);
 
-      // Mock reload calendars after sync
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ calendars: mockCalendars }),
       } as Response);
 
-      // Act - Wrap in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.syncAllCalendars();
       });
@@ -513,7 +487,6 @@ describe("useExternalCalendars", () => {
         },
       } as any);
 
-      // Mock loadCalendars call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -526,14 +499,13 @@ describe("useExternalCalendars", () => {
         expect(result.current.calendars).toHaveLength(1);
       });
 
-      // Mock sync all call failure
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({ message: errorMessage }),
       } as Response);
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       await act(async () => {
         await expect(result.current.syncAllCalendars()).rejects.toThrow();
       });
@@ -565,7 +537,6 @@ describe("useExternalCalendars", () => {
         },
       } as any);
 
-      // Mock loadCalendars call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -578,14 +549,13 @@ describe("useExternalCalendars", () => {
         expect(result.current.calendars).toHaveLength(2);
       });
 
-      // Mock disconnect call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({}),
       } as Response);
 
-      // Act - Wrap in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.disconnectCalendar(calendarId);
       });
@@ -616,7 +586,6 @@ describe("useExternalCalendars", () => {
         },
       } as any);
 
-      // Mock loadCalendars call
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -629,14 +598,13 @@ describe("useExternalCalendars", () => {
         expect(result.current.calendars).toHaveLength(1);
       });
 
-      // Mock disconnect call failure
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({ message: errorMessage }),
       } as Response);
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       await act(async () => {
         await expect(result.current.disconnectCalendar(calendarId)).rejects.toThrow();
       });
@@ -648,7 +616,6 @@ describe("useExternalCalendars", () => {
         { timeout: 10000 }
       );
 
-      // Calendar should still be in the list
       expect(result.current.calendars).toHaveLength(1);
     });
   });

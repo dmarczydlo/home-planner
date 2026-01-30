@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import React, { type ReactNode } from "react";
@@ -7,7 +6,6 @@ import { useCalendarEvents } from "./useCalendarEvents";
 import { CalendarProvider, useCalendar } from "@/contexts/CalendarContext";
 import { createMockEvent } from "@/test/utils/mock-data";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useCalendarEvents", () => {
@@ -28,7 +26,6 @@ describe("useCalendarEvents", () => {
         wrapper: CalendarProvider,
       });
 
-      // Let the mount effect settle to avoid React act() warnings
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
@@ -49,7 +46,6 @@ describe("useCalendarEvents", () => {
         wrapper: CalendarProvider,
       });
 
-      // Let the mount effect settle to avoid React act() warnings
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
@@ -70,7 +66,6 @@ describe("useCalendarEvents", () => {
         wrapper: CalendarProvider,
       });
 
-      // Let the mount effect settle to avoid React act() warnings
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
@@ -91,7 +86,6 @@ describe("useCalendarEvents", () => {
         wrapper: CalendarProvider,
       });
 
-      // Let the mount effect settle to avoid React act() warnings
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
@@ -211,7 +205,6 @@ describe("useCalendarEvents", () => {
         createMockEvent({ id: "event-2", family_id: familyId }),
       ];
 
-      // Mock initial load
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -226,14 +219,13 @@ describe("useCalendarEvents", () => {
         expect(result.current.events).toHaveLength(1);
       });
 
-      // Mock refetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ events: updatedEvents }),
       } as Response);
 
-      // Act - Wrap refetch in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.refetch();
       });
@@ -249,7 +241,6 @@ describe("useCalendarEvents", () => {
       const familyId = "test-family-123";
       const initialEvents = [createMockEvent({ id: "event-1", family_id: familyId })];
 
-      // Mock initial load
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -264,14 +255,13 @@ describe("useCalendarEvents", () => {
         expect(result.current.events).toHaveLength(1);
       });
 
-      // Mock refetch error
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
         statusText: "Internal Server Error",
       } as Response);
 
-      // Act - Wrap refetch in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.refetch();
       });
@@ -295,7 +285,6 @@ describe("useCalendarEvents", () => {
         json: async () => ({ events: [] }),
       } as Response);
 
-      // Create a wrapper component that sets filters
       let setFiltersRef: ((filters: { participantIds: string[] }) => void) | null = null;
       const FilterWrapper = ({ children }: { children: ReactNode }) => {
         const { setFilters } = useCalendar();
@@ -309,7 +298,7 @@ describe("useCalendarEvents", () => {
         return React.createElement(CalendarProvider, null, React.createElement(FilterWrapper, null, children));
       };
 
-      // Act - Render hook and wait for initial load
+      // Act
       const { result } = renderHook(() => useCalendarEvents(familyId), {
         wrapper: TestWrapper,
       });
@@ -318,7 +307,6 @@ describe("useCalendarEvents", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Wait for setFiltersRef to be available
       await waitFor(
         () => {
           expect(setFiltersRef).not.toBeNull();
@@ -326,17 +314,14 @@ describe("useCalendarEvents", () => {
         { timeout: 1000 }
       );
 
-      // Clear previous fetch calls to isolate the filter fetch
       vi.mocked(global.fetch).mockClear();
 
-      // Set participant filters - this should trigger a refetch
       await act(async () => {
         if (setFiltersRef) {
           setFiltersRef({ participantIds });
         }
       });
 
-      // Wait for the hook to refetch with filters
       await waitFor(
         () => {
           expect(global.fetch).toHaveBeenCalled();
@@ -344,7 +329,7 @@ describe("useCalendarEvents", () => {
         { timeout: 2000 }
       );
 
-      // Assert - Verify fetch was called with participant_ids in query
+      // Assert
       const fetchCalls = vi.mocked(global.fetch).mock.calls;
       expect(fetchCalls.length).toBeGreaterThan(0);
 
@@ -354,7 +339,6 @@ describe("useCalendarEvents", () => {
       expect(fetchUrl).toContain("/api/events");
       expect(fetchUrl).toContain("participant_ids");
 
-      // Verify the query parameter format
       const url = new URL(fetchUrl, "http://localhost");
       const participantIdsParam = url.searchParams.get("participant_ids");
       expect(participantIdsParam).toBe("user-1,user-2");
@@ -371,7 +355,7 @@ describe("useCalendarEvents", () => {
         if (options?.signal) {
           options.signal.addEventListener("abort", abortSpy);
         }
-        return new Promise(() => {}); // Never resolves
+        return new Promise(() => {});
       });
 
       // Act

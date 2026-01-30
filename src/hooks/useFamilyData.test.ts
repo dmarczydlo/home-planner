@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
@@ -6,7 +5,6 @@ import { useFamilyData } from "./useFamilyData";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 import { createMockFamily, createMockChild } from "@/test/utils/mock-data";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useFamilyData", () => {
@@ -70,14 +68,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockFamily,
       } as Response);
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -128,7 +124,6 @@ describe("useFamilyData", () => {
           )
       );
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -214,14 +209,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: [], children: [] }),
       } as Response);
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -234,7 +227,6 @@ describe("useFamilyData", () => {
         expect(result.current.familyDetails).not.toBeNull();
       });
 
-      // Mock members refresh
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -285,14 +277,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: [], children: [] }),
       } as Response);
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -305,7 +295,6 @@ describe("useFamilyData", () => {
         expect(result.current.familyDetails).not.toBeNull();
       });
 
-      // Mock children refresh
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -345,14 +334,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: [], children: [] }),
       } as Response);
 
-      // Mock initial invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -365,7 +352,6 @@ describe("useFamilyData", () => {
         expect(result.current.familyDetails).not.toBeNull();
       });
 
-      // Mock invitations refresh
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -406,14 +392,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: mockMembers, children: [] }),
       } as Response);
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -426,7 +410,6 @@ describe("useFamilyData", () => {
         expect(result.current.members).toHaveLength(2);
       });
 
-      // Mock remove member
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -479,14 +462,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: [], children: mockChildren }),
       } as Response);
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -499,7 +480,6 @@ describe("useFamilyData", () => {
         expect(result.current.children).toHaveLength(2);
       });
 
-      // Mock remove child
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -541,14 +521,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: [], children: [] }),
       } as Response);
 
-      // Mock initial invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -561,7 +539,6 @@ describe("useFamilyData", () => {
         expect(result.current.invitations).toHaveLength(2);
       });
 
-      // Mock cancel invitation
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -603,14 +580,12 @@ describe("useFamilyData", () => {
         },
       } as any);
 
-      // Mock initial family fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: familyId, name: "Test Family", members: mockMembers, children: [] }),
       } as Response);
 
-      // Mock invitations fetch
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -623,7 +598,6 @@ describe("useFamilyData", () => {
         expect(result.current.members).toHaveLength(2);
       });
 
-      // Mock update role
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,

@@ -44,7 +44,6 @@ interface ImportMetaEnv {
   readonly OAUTH_STATE_SECRET?: string;
   readonly FRONTEND_URL?: string;
   readonly TEST_GOOGLE_EMAIL?: string;
-  // more env variables...
 }
 
 interface ImportMeta {

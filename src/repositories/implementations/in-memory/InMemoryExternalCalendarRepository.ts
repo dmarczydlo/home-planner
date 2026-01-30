@@ -75,7 +75,5 @@ export class InMemoryExternalCalendarRepository implements ExternalCalendarRepos
   }
 
   async deleteEventsByCalendarId(): Promise<void> {
-    // In-memory implementation - events would be managed separately
-    // This is a no-op for the in-memory repository
   }
 }

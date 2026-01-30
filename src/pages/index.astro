@@ -4,9 +4,7 @@ import Layout from "../layouts/Layout.astro";
 
 export const prerender = false;
 
-// If user is authenticated, redirect to appropriate page
 if (Astro.locals.user) {
-  // Check if user has completed onboarding
   const userService = new (await import("../services/UserService")).UserService(Astro.locals.repositories.user);
   const result = await userService.getUserProfile(Astro.locals.user.id);
 

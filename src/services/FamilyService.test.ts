@@ -315,7 +315,7 @@ describe("FamilyService", () => {
       const family = await familyRepo.create({ name: "The Smiths" });
       familyId = family.id;
       await familyRepo.addMember(familyId, userId, "admin");
-      familyRepo.setUser(userId, { full_name: "John Doe", avatar_url: "https://example.com/avatar.jpg" });
+      familyRepo.setUser(userId, { full_name: "John Doe", avatar_url: "https:
     });
 
     it("should return members when user is a member", async () => {
@@ -333,7 +333,7 @@ describe("FamilyService", () => {
         expect(result.data).toHaveLength(2);
         expect(result.data[0].user_id).toBe(userId);
         expect(result.data[0].full_name).toBe("John Doe");
-        expect(result.data[0].avatar_url).toBe("https://example.com/avatar.jpg");
+        expect(result.data[0].avatar_url).toBe("https:
         expect(result.data[0].role).toBe("admin");
         expect(result.data[1].user_id).toBe(memberUserId);
         expect(result.data[1].full_name).toBe("Jane Doe");

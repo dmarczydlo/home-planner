@@ -60,7 +60,6 @@ export function DayView({ events, isLoading, onSelectEvent }: DayViewProps) {
   const handleSelectEvent = (event: { id: string; start?: Date }) => {
     const originalEvent = events.find((e) => e.id === event.id);
     if (originalEvent && onSelectEvent) {
-      // For recurring events, store the occurrence date in the event object
       const eventWithOccurrence = {
         ...originalEvent,
         _occurrenceDate: event.start ? new Date(event.start).toISOString().split("T")[0] : undefined,

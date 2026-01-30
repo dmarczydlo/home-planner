@@ -16,19 +16,18 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 function getEventColor(event: EventWithParticipantsDTO): string {
   if (event.has_conflict) {
-    return "#ef4444"; // Red for conflicts
+    return "#ef4444";
   }
   if (event.event_type === "blocker") {
-    return "#3b82f6"; // Blue for blockers
+    return "#3b82f6";
   }
-  // Elastic events - use first participant's color or default
   if (event.participants && event.participants.length > 0) {
     const participant = event.participants[0];
     const colors = ["#8b5cf6", "#06b6d4", "#ec4899", "#10b981", "#f59e0b", "#ef4444"];
     const hash = participant.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
   }
-  return "#6b7280"; // Default gray
+  return "#6b7280";
 }
 
 export function CustomCalendarWeekView({
@@ -79,7 +78,7 @@ export function CustomCalendarWeekView({
     const endMinutes = end.getHours() * 60 + end.getMinutes();
     const duration = endMinutes - startMinutes;
 
-    const top = (startMinutes / 60) * 60; // 60px per hour
+    const top = (startMinutes / 60) * 60;
     const height = (duration / 60) * 60;
 
     return { top: `${top}px`, height: `${Math.max(height, 32)}px` };
@@ -112,7 +111,7 @@ export function CustomCalendarWeekView({
 
   return (
     <div data-testid="week-view" className="relative h-full w-full flex flex-col custom-week-view">
-      {/* Day headers */}
+      
       <div className="border-b border-primary/20 sticky top-0 z-20 bg-background/95 backdrop-blur-xl">
         <div className="grid grid-cols-7">
           {weekDays.map((day, index) => {
@@ -180,10 +179,10 @@ export function CustomCalendarWeekView({
         </div>
       </div>
 
-      {/* Calendar grid - Full 24 hours */}
+      
       <div className="flex-1 overflow-auto">
         <div className="flex relative" style={{ minHeight: `${24 * 60}px` }}>
-          {/* Time axis */}
+          
           <div className="w-12 sm:w-16 flex-shrink-0 sticky left-0 bg-background/95 backdrop-blur-xl z-10 border-r border-primary/20">
             <div className="pt-2">
               {HOURS.map((hour) => (
@@ -197,12 +196,12 @@ export function CustomCalendarWeekView({
             </div>
           </div>
 
-          {/* Day columns */}
+          
           <div
             className="flex-1 grid grid-cols-7 relative overflow-x-auto"
             style={{ minHeight: `${24 * 60}px`, minWidth: "700px" }}
           >
-            {/* Hour lines */}
+            
             {HOURS.map((hour) => (
               <div
                 key={hour}
@@ -211,10 +210,10 @@ export function CustomCalendarWeekView({
               />
             ))}
 
-            {/* Day columns structure */}
+            
             {weekDays.map((day, dayIndex) => (
               <div key={dayIndex} className="relative border-r border-primary/10 last:border-r-0 min-w-[100px]">
-                {/* Clickable time slots */}
+                
                 {HOURS.map((hour) => (
                   <div
                     key={hour}
@@ -242,7 +241,7 @@ export function CustomCalendarWeekView({
               </div>
             ))}
 
-            {/* Multi-day all-day events layer */}
+            
             <div className="absolute top-0 left-0 right-0 h-8 border-b border-primary/10 pointer-events-none">
               {events
                 .filter((e) => e.is_all_day && isMultiDayEvent(e))
@@ -250,7 +249,6 @@ export function CustomCalendarWeekView({
                   const eventStart = new Date(event.start_time);
                   const eventEnd = new Date(event.end_time);
 
-                  // Find start and end day indices in the week
                   let startDayIndex = -1;
                   let endDayIndex = -1;
 
@@ -312,7 +310,7 @@ export function CustomCalendarWeekView({
                 })}
             </div>
 
-            {/* Single-day all-day events */}
+            
             {weekDays.map((day, dayIndex) => {
               const dayEvents = getEventsForDay(day);
               const singleDayAllDayEvents = dayEvents.filter((e) => e.is_all_day && !isMultiDayEvent(e));
@@ -356,7 +354,7 @@ export function CustomCalendarWeekView({
               );
             })}
 
-            {/* Multi-day timed events */}
+            
             {events
               .filter((e) => !e.is_all_day && isMultiDayEvent(e))
               .map((event) => {
@@ -432,7 +430,7 @@ export function CustomCalendarWeekView({
                 );
               })}
 
-            {/* Single-day timed events */}
+            
             {weekDays.map((day, dayIndex) => {
               const dayEvents = getEventsForDay(day);
               const singleDayTimedEvents = dayEvents.filter((e) => !e.is_all_day && !isMultiDayEvent(e));

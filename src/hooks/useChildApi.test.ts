@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
@@ -6,7 +5,6 @@ import { useChildApi } from "./useChildApi";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 import { createMockChild } from "@/test/utils/mock-data";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useChildApi", () => {
@@ -19,7 +17,6 @@ describe("useChildApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useChildApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -35,7 +32,6 @@ describe("useChildApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useChildApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -51,7 +47,6 @@ describe("useChildApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useChildApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -98,8 +93,7 @@ describe("useChildApi", () => {
         promise = result.current.createChild(familyId, command);
       });
 
-      // Assert - State should be updating, but might complete too fast
-      // Check that the function was called and promise exists
+      // Assert
       expect(promise!).toBeDefined();
       expect(result.current.error).toBeNull();
 
@@ -146,7 +140,7 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act - Start request but keep it pending so we can assert loading state
+      // Act
       const command = { name: "Test Child" };
       let promise: Promise<any> | null = null;
 
@@ -204,7 +198,7 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { name: "Test Child" };
       await act(async () => {
         await expect(result.current.createChild(familyId, command)).rejects.toThrow();
@@ -236,7 +230,7 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { name: "Test Child" };
       await act(async () => {
         await expect(result.current.createChild(familyId, command)).rejects.toThrow();
@@ -265,7 +259,7 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { name: "Test Child" };
       await act(async () => {
         await expect(result.current.createChild(familyId, command)).rejects.toThrow("Not authenticated");
@@ -293,7 +287,6 @@ describe("useChildApi", () => {
         },
       } as any);
 
-      // First call fails
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 400,
@@ -302,7 +295,7 @@ describe("useChildApi", () => {
 
       const { result } = renderHook(() => useChildApi());
 
-      // Act - First attempt fails - Wrap in act() to avoid React warnings
+      // Act
       const command = { name: "Test Child" };
       await act(async () => {
         await expect(result.current.createChild(familyId, command)).rejects.toThrow();
@@ -312,14 +305,13 @@ describe("useChildApi", () => {
         expect(result.current.error).toBe("Error");
       });
 
-      // Second call succeeds
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => createMockChild(),
       } as Response);
 
-      // Act - Second attempt - Wrap in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.createChild(familyId, command);
       });

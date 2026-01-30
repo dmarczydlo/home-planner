@@ -29,10 +29,10 @@ export interface OAuthProvider {
 export class GoogleOAuthProvider implements OAuthProvider {
   private readonly clientId: string;
   private readonly clientSecret: string;
-  private readonly baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
-  private readonly tokenUrl = "https://oauth2.googleapis.com/token";
-  private readonly revokeUrl = "https://oauth2.googleapis.com/revoke";
-  private readonly apiBaseUrl = "https://www.googleapis.com/calendar/v3";
+  private readonly baseUrl = "https:
+  private readonly tokenUrl = "https:
+  private readonly revokeUrl = "https:
+  private readonly apiBaseUrl = "https:
 
   constructor() {
     this.clientId = import.meta.env.GOOGLE_CLIENT_ID || "";
@@ -47,7 +47,7 @@ export class GoogleOAuthProvider implements OAuthProvider {
       client_id: this.clientId,
       redirect_uri: redirectUri,
       response_type: "code",
-      scope: "https://www.googleapis.com/auth/calendar.readonly",
+      scope: "https:
       access_type: "offline",
       prompt: "consent",
       state,
@@ -129,7 +129,7 @@ export class GoogleOAuthProvider implements OAuthProvider {
   }
 
   async getUserEmail(accessToken: string): Promise<string> {
-    const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+    const response = await fetch("https:
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -190,7 +190,7 @@ export class MicrosoftOAuthProvider implements OAuthProvider {
   private readonly tenantId: string;
   private readonly baseUrl: string;
   private readonly tokenUrl: string;
-  private readonly apiBaseUrl = "https://graph.microsoft.com/v1.0";
+  private readonly apiBaseUrl = "https:
 
   constructor() {
     this.clientId = import.meta.env.MICROSOFT_CLIENT_ID || "";
@@ -199,8 +199,8 @@ export class MicrosoftOAuthProvider implements OAuthProvider {
     if (!this.clientId || !this.clientSecret) {
       throw new Error("MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET must be set");
     }
-    this.baseUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/authorize`;
-    this.tokenUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
+    this.baseUrl = `https:
+    this.tokenUrl = `https:
   }
 
   generateAuthorizationUrl(state: string, redirectUri: string): string {
@@ -273,7 +273,7 @@ export class MicrosoftOAuthProvider implements OAuthProvider {
   }
 
   async revokeToken(token: string): Promise<void> {
-    const revokeUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/logout`;
+    const revokeUrl = `https:
     try {
       await fetch(revokeUrl, {
         method: "POST",

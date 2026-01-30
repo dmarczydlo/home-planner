@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, within } from "@/test/utils/render";
@@ -6,8 +5,6 @@ import userEvent from "@testing-library/user-event";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 
-// Note: Supabase auth is already mocked in src/test/utils/render.tsx
-// This mock is for the specific function used by this component
 vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/auth/supabaseAuth")>();
   return {
@@ -44,7 +41,7 @@ describe("GoogleSignInButton", () => {
     it("shows loading state during authentication", async () => {
       // Arrange
       vi.spyOn(supabaseAuth, "signInWithGoogle").mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {})
       );
       const user = userEvent.setup();
       render(<GoogleSignInButton />);
@@ -161,8 +158,6 @@ describe("GoogleSignInButton", () => {
   describe("Error Handling", () => {
     it("displays network error message correctly", async () => {
       // Arrange
-      // Use a non-network error to avoid retry logic, but test the error display
-      // OR use a popup error which also gets special handling
       const popupError = new Error("popup blocked");
       const signInSpy = vi.spyOn(supabaseAuth, "signInWithGoogle").mockRejectedValue(popupError);
       const user = userEvent.setup();
@@ -172,8 +167,7 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button", { name: /sign in with google/i });
       await user.click(button);
 
-      // Assert - Wait for error to appear
-      // Component transforms "popup blocked" to "Popup blocked. Please allow popups..."
+      // Assert
       await waitFor(
         () => {
           const alerts = screen.getAllByRole("alert");
@@ -189,7 +183,6 @@ describe("GoogleSignInButton", () => {
 
     it("allows retry after error", async () => {
       // Arrange
-      // Use a non-network error to avoid retry logic
       const signInSpy = vi
         .spyOn(supabaseAuth, "signInWithGoogle")
         .mockRejectedValueOnce(new Error("Failed"))
@@ -197,23 +190,21 @@ describe("GoogleSignInButton", () => {
       const user = userEvent.setup();
       render(<GoogleSignInButton />);
 
-      // Act - First click fails
+      // Act
       const button = screen.getByRole("button", { name: /sign in with google/i });
       await user.click(button);
 
-      // Wait for error to appear (may be multiple alerts from AuthProvider and component)
       await waitFor(
         () => {
           const alerts = screen.getAllByRole("alert");
           expect(alerts.length).toBeGreaterThan(0);
-          // Find the component's error alert
           const componentAlert = alerts.find((alert) => alert.textContent?.includes("Sign in failed"));
           expect(componentAlert).toBeInTheDocument();
         },
         { timeout: 2000 }
       );
 
-      // Act - Retry (find the "Try Again" button within the component's alert)
+      // Act
       const alerts = screen.getAllByRole("alert");
       const componentAlert = alerts.find((alert) => alert.textContent?.includes("Sign in failed"));
 

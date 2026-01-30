@@ -26,10 +26,9 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
     });
   }, [events, selectedDate]);
 
-  // Calculate the time range needed to show all events
   const timeRange = useMemo(() => {
     if (dayEvents.length === 0) {
-      return { start: 8, end: 20 }; // Default 8 AM to 8 PM
+      return { start: 8, end: 20 };
     }
 
     let minHour = 24;
@@ -42,7 +41,6 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
       maxHour = Math.max(maxHour, endHour);
     });
 
-    // Add padding
     minHour = Math.max(0, Math.floor(minHour) - 1);
     maxHour = Math.min(24, Math.ceil(maxHour) + 1);
 
@@ -73,9 +71,8 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
     const endMinutes = end.getHours() * 60 + end.getMinutes();
     const duration = endMinutes - startMinutes;
 
-    // Calculate position relative to timeRange.start
     const rangeStartMinutes = timeRange.start * 60;
-    const top = ((startMinutes - rangeStartMinutes) / 60) * 60; // 60px per hour
+    const top = ((startMinutes - rangeStartMinutes) / 60) * 60;
     const height = (duration / 60) * 60;
 
     return { top: `${top}px`, height: `${Math.max(height, 50)}px` };
@@ -102,7 +99,6 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
 
   return (
     <div className="relative h-full w-full flex flex-col custom-day-view">
-      {/* Header */}
       <div
         className={`sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4 ${
           isToday ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" : ""
@@ -132,10 +128,8 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
         )}
       </div>
 
-      {/* Calendar area - Auto-fit height */}
       <div className="flex-1 overflow-auto">
         <div className="flex relative" style={{ minHeight: `${totalHeight}px` }}>
-          {/* Time axis */}
           <div className="w-14 sm:w-20 flex-shrink-0 sticky left-0 bg-background/95 backdrop-blur-xl z-20 border-r border-primary/20">
             <div className="pt-2">
               {hours.map((hour) => (
@@ -149,9 +143,7 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
             </div>
           </div>
 
-          {/* Main calendar area */}
           <div className="flex-1 relative" style={{ minHeight: `${totalHeight}px` }}>
-            {/* Hour lines */}
             {hours.map((hour) => (
               <div
                 key={hour}
@@ -160,7 +152,6 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
               />
             ))}
 
-            {/* Current time indicator */}
             {isToday &&
               (() => {
                 const now = new Date();
@@ -182,7 +173,6 @@ export function CustomDayView({ events, selectedDate }: CustomDayViewProps) {
                 return null;
               })()}
 
-            {/* Events */}
             <div className="relative px-4 h-full">
               {dayEvents.map((event) => {
                 const position = getEventPosition(event);

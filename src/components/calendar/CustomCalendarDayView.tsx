@@ -57,7 +57,6 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
     const dayEnd = new Date(state.currentDate);
     dayEnd.setHours(23, 59, 59, 999);
 
-    // For multi-day events, adjust start/end times to the current day boundaries
     const start = eventStart < dayStart ? dayStart : eventStart;
     const end = eventEnd > dayEnd ? dayEnd : eventEnd;
 
@@ -107,7 +106,6 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
 
   return (
     <div data-testid="day-view" className="relative h-full w-full flex flex-col custom-day-view">
-      {/* Header */}
       <div
         className={`sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4 ${
           isToday ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" : ""
@@ -137,10 +135,8 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
         )}
       </div>
 
-      {/* Calendar area - Full 24 hours */}
       <div className="flex-1 overflow-auto">
         <div className="flex relative" style={{ minHeight: `${24 * 60}px` }}>
-          {/* Time axis */}
           <div className="w-14 sm:w-20 flex-shrink-0 sticky left-0 bg-background/95 backdrop-blur-xl z-20 border-r border-primary/20">
             <div className="pt-2">
               {HOURS.map((hour) => (
@@ -154,9 +150,7 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
             </div>
           </div>
 
-          {/* Main calendar area */}
           <div className="flex-1 relative" style={{ minHeight: `${24 * 60}px` }}>
-            {/* Hour lines */}
             {HOURS.map((hour) => (
               <div
                 key={hour}
@@ -165,7 +159,6 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
               />
             ))}
 
-            {/* Current time indicator */}
             {isToday &&
               (() => {
                 const now = new Date();
@@ -182,7 +175,6 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
                 );
               })()}
 
-            {/* All-day events */}
             <div className="absolute top-0 left-0 right-0 h-10 border-b border-primary/20 bg-background/50 backdrop-blur-sm z-5">
               {dayEvents
                 .filter((e) => e.is_all_day)
@@ -213,7 +205,6 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
                 ))}
             </div>
 
-            {/* Clickable time slots */}
             {HOURS.map((hour) => (
               <div
                 key={hour}
@@ -239,7 +230,6 @@ export function CustomCalendarDayView({ events, isLoading, onSelectEvent }: Cust
               />
             ))}
 
-            {/* Timed events */}
             <div className="relative px-2 sm:px-4 h-full" style={{ paddingTop: "40px" }}>
               {dayEvents
                 .filter((e) => !e.is_all_day)

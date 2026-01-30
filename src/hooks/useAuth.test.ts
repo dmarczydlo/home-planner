@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
@@ -7,7 +6,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 import { createMockUser } from "@/test/utils/mock-data";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useAuth", () => {
@@ -90,7 +88,7 @@ describe("useAuth", () => {
       // Arrange
       vi.spyOn(supabaseAuth, "createSupabaseClientForAuth").mockReturnValue({
         auth: {
-          getSession: vi.fn(() => new Promise(() => {})), // Never resolves
+          getSession: vi.fn(() => new Promise(() => {})),
           signOut: vi.fn().mockResolvedValue({ error: null }),
           onAuthStateChange: vi.fn(() => ({
             data: {
@@ -165,7 +163,6 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.logout).toBe("function");
 
-      // Test logout - Wrap in act() to avoid React warnings
       await act(async () => {
         await result.current.logout();
       });
@@ -199,7 +196,6 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.checkAuth).toBe("function");
 
-      // Test checkAuth - Wrap in act() to avoid React warnings
       await act(async () => {
         await result.current.checkAuth();
       });
@@ -249,7 +245,6 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.refreshUser).toBe("function");
 
-      // Test refreshUser - Wrap in act() to avoid React warnings
       await act(async () => {
         await result.current.refreshUser();
       });
@@ -284,7 +279,6 @@ describe("useAuth", () => {
       // Assert
       expect(typeof result.current.clearError).toBe("function");
 
-      // Test clearError
       await act(async () => {
         result.current.clearError();
       });
@@ -346,7 +340,6 @@ describe("useAuth", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Wrap logout in act() to avoid React warnings
       await act(async () => {
         await result.current.logout();
       });

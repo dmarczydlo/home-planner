@@ -197,7 +197,7 @@ describe("Event Domain Entity", () => {
           start_time: "2024-01-01T10:00:00Z",
           end_time: "2024-01-01T11:00:00Z",
           participants: [
-            { id: "user-1", name: "User 1", type: "user" as const, avatar_url: "https://example.com/avatar.jpg" },
+            { id: "user-1", name: "User 1", type: "user" as const, avatar_url: "https:
             { id: "child-1", name: "Child 1", type: "child" as const },
           ],
         },

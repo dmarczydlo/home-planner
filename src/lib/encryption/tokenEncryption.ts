@@ -30,16 +30,13 @@ export async function encryptToken(token: string): Promise<string> {
     const salt = randomBytes(SALT_LENGTH);
     const key = await deriveKey(password, salt);
     const iv = randomBytes(IV_LENGTH);
-    // @ts-expect-error - Node.js Buffer type compatibility issue with TypeScript strict mode
     const cipher = createCipheriv(ALGORITHM, key, iv);
 
     const encrypted1 = cipher.update(token, "utf8");
     const encrypted2 = cipher.final();
-    // @ts-expect-error - Node.js Buffer type compatibility issue with TypeScript strict mode
     const encrypted = Buffer.concat([encrypted1, encrypted2]);
     const tag = cipher.getAuthTag();
 
-    // @ts-expect-error - Node.js Buffer type compatibility issue with TypeScript strict mode
     const result = Buffer.concat([salt, iv, tag, encrypted]);
     return result.toString("base64");
   } catch (error) {
@@ -58,16 +55,11 @@ export async function decryptToken(encryptedToken: string): Promise<string> {
     const encrypted = Buffer.from(data.subarray(SALT_LENGTH + IV_LENGTH + TAG_LENGTH));
 
     const key = await deriveKey(password, salt);
-    // @ts-expect-error - Node.js Buffer type compatibility issue with TypeScript strict mode
     const decipher = createDecipheriv(ALGORITHM, key, iv);
-    // @ts-expect-error - Node.js Buffer type compatibility issue with TypeScript strict mode
     decipher.setAuthTag(tag as unknown as Buffer);
 
-    // @ts-expect-error - Node.js Buffer type compatibility issue with TypeScript strict mode
     const decrypted1 = decipher.update(encrypted);
     const decrypted2 = decipher.final();
-    // Buffer.concat type issue with strict TypeScript - Buffer is compatible at runtime
-    // Using Uint8Array to avoid type issues, then converting back to Buffer
     const decryptedArray = new Uint8Array(decrypted1.length + decrypted2.length);
     decryptedArray.set(decrypted1);
     decryptedArray.set(decrypted2, decrypted1.length);

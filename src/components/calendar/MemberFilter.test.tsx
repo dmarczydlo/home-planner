@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@/test/utils/render";
@@ -7,7 +6,6 @@ import { MemberFilter } from "./MemberFilter";
 import { CalendarProvider } from "@/contexts/CalendarContext";
 import { createMockChild } from "@/test/utils/mock-data";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("MemberFilter", () => {
@@ -53,7 +51,7 @@ describe("MemberFilter", () => {
         </CalendarProvider>
       );
 
-      // Assert - During loading, the text might not be visible, but the loading skeleton should be
+      // Assert
       const loadingSkeleton = document.querySelector(".animate-pulse");
       expect(loadingSkeleton).toBeInTheDocument();
     });
@@ -82,17 +80,15 @@ describe("MemberFilter", () => {
         </CalendarProvider>
       );
 
-      // Wait for data to load
       await waitFor(() => {
         expect(screen.getByText(/filter by members/i)).toBeInTheDocument();
       });
 
-      // Expand filter
       const headerButton = screen.getByText(/filter by members/i);
       const user = userEvent.setup();
       await user.click(headerButton);
 
-      // Assert - Wait for members to be rendered
+      // Assert
       await waitFor(
         () => {
           expect(screen.getByText("User 1")).toBeInTheDocument();
@@ -127,7 +123,7 @@ describe("MemberFilter", () => {
         expect(screen.getByText(/filter by members/i)).toBeInTheDocument();
       });
 
-      // Act - Expand
+      // Act
       const headerButton = screen.getByText(/filter by members/i);
       await user.click(headerButton);
 
@@ -136,7 +132,7 @@ describe("MemberFilter", () => {
         expect(screen.getByText(/select all/i)).toBeInTheDocument();
       });
 
-      // Act - Collapse
+      // Act
       await user.click(headerButton);
 
       // Assert
@@ -168,7 +164,6 @@ describe("MemberFilter", () => {
         expect(screen.getByText(/filter by members/i)).toBeInTheDocument();
       });
 
-      // Expand filter
       const headerButton = screen.getByText(/filter by members/i);
       await user.click(headerButton);
 
@@ -176,7 +171,7 @@ describe("MemberFilter", () => {
         expect(screen.getByText("User 1")).toBeInTheDocument();
       });
 
-      // Act - Toggle member
+      // Act
       const checkbox = screen.getByLabelText(/user 1/i);
       await user.click(checkbox);
 
@@ -212,7 +207,6 @@ describe("MemberFilter", () => {
         expect(screen.getByText(/filter by members/i)).toBeInTheDocument();
       });
 
-      // Expand filter
       const headerButton = screen.getByText(/filter by members/i);
       await user.click(headerButton);
 
@@ -220,7 +214,7 @@ describe("MemberFilter", () => {
         expect(screen.getByText(/select all/i)).toBeInTheDocument();
       });
 
-      // Act - Select all
+      // Act
       const selectAllCheckbox = screen.getByLabelText(/select all/i);
       await user.click(selectAllCheckbox);
 
@@ -258,10 +252,7 @@ describe("MemberFilter", () => {
 
       // Act
       const headerButton = screen.getByText(/filter by members/i);
-      await user.click(headerButton); // Use click instead of keyboard for reliability
-      // Alternative: focus and press Enter
-      // headerButton.focus();
-      // await user.keyboard("{Enter}");
+      await user.click(headerButton);
 
       // Assert
       await waitFor(

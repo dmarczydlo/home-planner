@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@/test/utils/render";
@@ -6,7 +5,6 @@ import { userEvent } from "@testing-library/user-event";
 import { AuthErrorDisplay } from "./AuthErrorDisplay";
 import * as useAuthHook from "@/hooks/useAuth";
 
-// Mock the useAuth hook
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: vi.fn(),
 }));

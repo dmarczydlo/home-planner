@@ -99,7 +99,6 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
 
   return (
     <div className="border-b border-primary/20 glass-effect backdrop-blur-xl">
-      {/* Filter header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-card/40 transition-all duration-300"
@@ -119,10 +118,8 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
         )}
       </button>
 
-      {/* Filter content */}
       {isExpanded && (
         <div className="px-4 sm:px-6 pb-4 space-y-3">
-          {/* Select all option */}
           <div className="flex items-center space-x-2 py-2 border-b border-primary/10">
             <Checkbox id="select-all" checked={allSelected} onCheckedChange={handleToggleAll} />
             <Label htmlFor="select-all" className="text-sm font-semibold cursor-pointer text-foreground">
@@ -130,7 +127,6 @@ export function MemberFilter({ familyId }: MemberFilterProps) {
             </Label>
           </div>
 
-          {/* Member checkboxes */}
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {members.map((member) => {
               const isChecked = state.filters.participantIds.includes(member.id);

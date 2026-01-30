@@ -1,11 +1,9 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
 import { useInvitationApi } from "./useInvitationApi";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useInvitationApi", () => {
@@ -18,7 +16,6 @@ describe("useInvitationApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useInvitationApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -34,7 +31,6 @@ describe("useInvitationApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useInvitationApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -50,7 +46,6 @@ describe("useInvitationApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useInvitationApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isCreating).toBe(false);
@@ -103,8 +98,7 @@ describe("useInvitationApi", () => {
         promise = result.current.createInvitation(familyId, command);
       });
 
-      // Assert - State should be updating, but might complete too fast
-      // Check that the function was called and promise exists
+      // Assert
       expect(promise!).toBeDefined();
       expect(result.current.error).toBeNull();
 
@@ -151,7 +145,7 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act - Start request but keep it pending so we can assert loading state
+      // Act
       const command = { email: "test@example.com" };
       let promise: Promise<any> | null = null;
 
@@ -209,7 +203,7 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { email: "test@example.com" };
       await act(async () => {
         await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
@@ -241,7 +235,7 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { email: "test@example.com" };
       await act(async () => {
         await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
@@ -270,7 +264,7 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { email: "test@example.com" };
       await act(async () => {
         await expect(result.current.createInvitation(familyId, command)).rejects.toThrow("Not authenticated");
@@ -298,7 +292,6 @@ describe("useInvitationApi", () => {
         },
       } as any);
 
-      // First call fails
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 400,
@@ -307,7 +300,7 @@ describe("useInvitationApi", () => {
 
       const { result } = renderHook(() => useInvitationApi());
 
-      // Act - First attempt fails - Wrap in act() to avoid React warnings
+      // Act
       const command = { email: "test@example.com" };
       await act(async () => {
         await expect(result.current.createInvitation(familyId, command)).rejects.toThrow();
@@ -317,14 +310,13 @@ describe("useInvitationApi", () => {
         expect(result.current.error).toBe("Error");
       });
 
-      // Second call succeeds
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ invitation: { id: "inv-123", email: "test@example.com" } }),
       } as Response);
 
-      // Act - Second attempt - Wrap in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.createInvitation(familyId, command);
       });

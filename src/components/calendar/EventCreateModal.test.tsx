@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, within, act } from "@/test/utils/render";
@@ -7,10 +6,8 @@ import { EventCreateModal } from "./EventCreateModal";
 import { CalendarProvider } from "@/contexts/CalendarContext";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 
-// Mock fetch
 global.fetch = vi.fn();
 
-// Mock AuthContext to avoid onAuthStateChange issues
 vi.mock("@/contexts/AuthContext", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react");
@@ -24,7 +21,6 @@ vi.mock("@/contexts/AuthContext", () => {
   };
 });
 
-// Mock child components
 vi.mock("./ParticipantSelector", () => ({
   ParticipantSelector: ({ selectedParticipants, onSelectionChange }: any) => (
     <div data-testid="participant-selector">
@@ -164,11 +160,11 @@ describe("EventCreateModal", () => {
         </CalendarProvider>
       );
 
-      // Act - Try to submit without filling required fields
+      // Act
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Assert - HTML5 validation should prevent submission
+      // Assert
       const titleInput = screen.getByLabelText(/event title/i);
       expect(titleInput).toBeRequired();
     });
@@ -182,7 +178,7 @@ describe("EventCreateModal", () => {
         </CalendarProvider>
       );
 
-      // Act - Set end time before start time
+      // Act
       const startInput = screen.getByLabelText(/start time/i);
       const endInput = screen.getByLabelText(/end time/i);
 
@@ -194,7 +190,7 @@ describe("EventCreateModal", () => {
       await user.type(startInput, futureDate.toISOString().slice(0, 16));
       await user.type(endInput, pastDate.toISOString().slice(0, 16));
 
-      // Assert - Browser validation should handle this
+      // Assert
       expect(endInput).toBeInTheDocument();
     });
   });
@@ -233,17 +229,16 @@ describe("EventCreateModal", () => {
         </CalendarProvider>
       );
 
-      // Act - Fill form
+      // Act
       const titleInput = screen.getByLabelText(/event title/i);
 
       await user.clear(titleInput);
       await user.type(titleInput, "Test Event");
 
-      // Submit form by clicking submit button
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Assert - Wait for callbacks
+      // Assert
       await waitFor(
         () => {
           expect(mockOnEventCreated).toHaveBeenCalled();
@@ -269,7 +264,6 @@ describe("EventCreateModal", () => {
         },
       } as any);
 
-      // Keep the request pending so we can reliably assert the loading UI
       let resolveSubmit: (value: Response) => void;
       const submitPromise = new Promise<Response>((resolve) => {
         resolveSubmit = resolve;
@@ -300,7 +294,7 @@ describe("EventCreateModal", () => {
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Assert - Check for loading state ("Creating...") while request is in-flight
+      // Assert
       await waitFor(
         () => {
           const creatingButton = screen.getByRole("button", { name: /creating/i });
@@ -309,7 +303,6 @@ describe("EventCreateModal", () => {
         { timeout: 5000 }
       );
 
-      // Cleanup: resolve the pending request so the test doesn't leak async work
       await act(async () => {
         resolveSubmit!({
           ok: true,
@@ -450,7 +443,6 @@ describe("EventCreateModal", () => {
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Wait for submission to start - check if button shows "Creating..."
       await waitFor(
         () => {
           expect(screen.getByRole("button", { name: /creating/i })).toBeInTheDocument();
@@ -458,14 +450,12 @@ describe("EventCreateModal", () => {
         { timeout: 2000 }
       );
 
-      // Try to close during submission
       const closeButton = screen.getByRole("button", { name: /close/i });
       await user.click(closeButton);
 
-      // Assert - Modal should not close during submission
+      // Assert
       expect(mockOnClose).not.toHaveBeenCalled();
 
-      // Clean up - resolve the promise
       await act(async () => {
         resolveSubmit!();
         await submitPromise;
@@ -541,7 +531,7 @@ describe("EventCreateModal", () => {
       await user.type(startInput, now.toISOString().slice(0, 16));
       await user.type(endInput, endTime.toISOString().slice(0, 16));
 
-      // Assert - Wait for validation
+      // Assert
       await waitFor(
         () => {
           expect(screen.getByTestId("conflict-warning")).toBeInTheDocument();
@@ -621,13 +611,11 @@ describe("EventCreateModal", () => {
       const titleInput = screen.getByLabelText(/event title/i);
       await user.click(titleInput);
 
-      // Assert - Title input should be focused
+      // Assert
       expect(titleInput).toHaveFocus();
 
-      // Tab to next element
       await user.tab();
 
-      // The next focusable element after title should be the all-day checkbox
       const allDayCheckbox = screen.getByLabelText(/all day event/i);
       expect(allDayCheckbox).toHaveFocus();
     });
@@ -641,10 +629,10 @@ describe("EventCreateModal", () => {
         </CalendarProvider>
       );
 
-      // Act - Press Escape key
+      // Act
       await user.keyboard("{Escape}");
 
-      // Assert - Modal should close on ESC
+      // Assert
       await waitFor(
         () => {
           expect(mockOnClose).toHaveBeenCalled();
@@ -697,7 +685,7 @@ describe("EventCreateModal", () => {
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Assert - Modal closes after successful submission
+      // Assert
       await waitFor(
         () => {
           expect(mockOnClose).toHaveBeenCalled();
@@ -706,7 +694,6 @@ describe("EventCreateModal", () => {
         { timeout: 3000 }
       );
 
-      // Re-open modal and check form is reset
       rerender(
         <CalendarProvider>
           <EventCreateModal familyId={mockFamilyId} isOpen={true} onClose={vi.fn()} />

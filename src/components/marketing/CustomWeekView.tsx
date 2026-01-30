@@ -33,10 +33,9 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
     });
   }, [weekStart]);
 
-  // Calculate the time range needed to show all events
   const timeRange = useMemo(() => {
     if (events.length === 0) {
-      return { start: 8, end: 20 }; // Default 8 AM to 8 PM
+      return { start: 8, end: 20 };
     }
 
     let minHour = 24;
@@ -49,7 +48,6 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
       maxHour = Math.max(maxHour, endHour);
     });
 
-    // Add padding
     minHour = Math.max(0, Math.floor(minHour) - 1);
     maxHour = Math.min(24, Math.ceil(maxHour) + 1);
 
@@ -91,9 +89,8 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
     const endMinutes = end.getHours() * 60 + end.getMinutes();
     const duration = endMinutes - startMinutes;
 
-    // Calculate position relative to timeRange.start
     const rangeStartMinutes = timeRange.start * 60;
-    const top = ((startMinutes - rangeStartMinutes) / 60) * 60; // 60px per hour for compact view
+    const top = ((startMinutes - rangeStartMinutes) / 60) * 60;
     const height = (duration / 60) * 60;
 
     return { top: `${top}px`, height: `${Math.max(height, 32)}px` };
@@ -111,7 +108,7 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
 
   return (
     <div className="relative h-full w-full flex flex-col custom-week-view">
-      {/* Day headers */}
+      
       <div className="border-b border-primary/20 sticky top-0 z-20 bg-background/95 backdrop-blur-xl">
         <div className="grid grid-cols-7 overflow-x-auto">
           {weekDays.map((day, index) => {
@@ -160,10 +157,10 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
         </div>
       </div>
 
-      {/* Calendar grid - Auto-fit height */}
+      
       <div className="flex-1 overflow-auto overflow-x-auto">
         <div className="flex relative" style={{ minHeight: `${totalHeight}px` }}>
-          {/* Time axis */}
+          
           <div className="w-12 sm:w-16 flex-shrink-0 sticky left-0 bg-background/95 backdrop-blur-xl z-10 border-r border-primary/20">
             <div className="pt-2">
               {hours.map((hour) => (
@@ -177,12 +174,12 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
             </div>
           </div>
 
-          {/* Day columns */}
+          
           <div
             className="flex-1 grid grid-cols-7 relative"
             style={{ minHeight: `${totalHeight}px`, minWidth: "700px" }}
           >
-            {/* Hour lines */}
+            
             {hours.map((hour) => (
               <div
                 key={hour}
@@ -191,13 +188,13 @@ export function CustomWeekView({ events, selectedDate }: CustomWeekViewProps) {
               />
             ))}
 
-            {/* Day columns */}
+            
             {weekDays.map((day, dayIndex) => {
               const dayEvents = getEventsForDay(day);
 
               return (
                 <div key={dayIndex} className="relative border-r border-primary/10 last:border-r-0 min-w-[100px]">
-                  {/* Events */}
+                  
                   {dayEvents.map((event) => {
                     const position = getEventPosition(event);
 

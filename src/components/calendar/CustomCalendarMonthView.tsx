@@ -102,12 +102,10 @@ export function CustomCalendarMonthView({
 
   return (
     <div data-testid="month-view" className="relative h-full w-full flex flex-col custom-month-view">
-      {/* Month header */}
       <div className="sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4">
         <h2 className="text-xl sm:text-3xl font-black text-foreground">{formatMonthYear(monthStart)}</h2>
       </div>
 
-      {/* Day names header */}
       <div className="border-b border-primary/20 bg-background/95 backdrop-blur-xl sticky top-[57px] sm:top-[73px] z-20">
         <div className="grid grid-cols-7">
           {DAYS.map((dayName, index) => (
@@ -120,7 +118,6 @@ export function CustomCalendarMonthView({
         </div>
       </div>
 
-      {/* Calendar grid */}
       <div className="flex-1 overflow-auto relative">
         <div className="grid grid-cols-7" style={{ gridTemplateRows: "repeat(6, minmax(100px, 1fr))" }}>
           {calendarDays.map((day, index) => {
@@ -128,7 +125,6 @@ export function CustomCalendarMonthView({
             const today = isToday(day);
             const currentMonth = isCurrentMonth(day);
 
-            // Filter out multi-day events - they'll be rendered separately
             const singleDayEvents = dayEvents.filter((e) => !isMultiDayEvent(e));
 
             return (
@@ -159,7 +155,6 @@ export function CustomCalendarMonthView({
                   !currentMonth ? "opacity-40" : ""
                 } ${today ? "bg-gradient-to-br from-primary/15 via-primary/10 to-secondary/5" : "hover:bg-card/20"}`}
               >
-                {/* Date number */}
                 <div className="flex items-center justify-between mb-1 sm:mb-1.5 px-1 min-h-[20px]">
                   <span
                     className={`text-xs sm:text-sm font-bold ${
@@ -177,7 +172,6 @@ export function CustomCalendarMonthView({
                   )}
                 </div>
 
-                {/* Single-day events */}
                 <div className="space-y-0.5 sm:space-y-1 relative z-10 mt-0.5">
                   {singleDayEvents.slice(0, 2).map((event) => {
                     const color = getEventColor(event);
@@ -245,12 +239,10 @@ export function CustomCalendarMonthView({
           })}
         </div>
 
-        {/* Multi-day events layer - render as horizontal bars per row */}
         {Array.from({ length: 6 }, (_, rowIndex) => {
           const rowStartIndex = rowIndex * 7;
           const rowDays = calendarDays.slice(rowStartIndex, rowStartIndex + 7);
 
-          // Find the maximum number of single-day events in any cell of this row
           const maxSingleDayEvents = Math.max(
             ...rowDays.map((day) => {
               const dayEvents = getEventsForDay(day);
@@ -258,7 +250,6 @@ export function CustomCalendarMonthView({
             })
           );
 
-          // Get all multi-day events for this row
           const multiDayEventsInRow = events.filter((e) => {
             if (!isMultiDayEvent(e)) return false;
             const eventStart = new Date(e.start_time);
@@ -296,7 +287,6 @@ export function CustomCalendarMonthView({
                 const eventEndDate = new Date(eventEnd);
                 eventEndDate.setHours(23, 59, 59, 999);
 
-                // Find which days in this row the event spans
                 let rowStartCol = -1;
                 let rowEndCol = -1;
 
@@ -320,11 +310,9 @@ export function CustomCalendarMonthView({
                 const widthPercent = ((rowEndCol - rowStartCol + 1) / 7) * 100;
                 const color = getEventColor(event);
 
-                // Check if this is the first day of the event (for showing title)
                 const globalStartIndex = rowStartIndex + rowStartCol;
                 const isFirstDay = globalStartIndex === 0 || !eventSpansDay(event, calendarDays[globalStartIndex - 1]);
 
-                // Calculate top position: below date (24px) + single-day events (maxSingleDayEvents * 24px) + previous multi-day events
                 const topOffset = 24 + maxSingleDayEvents * 24 + eventIndex * 22;
 
                 return (

@@ -4,7 +4,6 @@ const isCI = !!process.env.CI;
 const testEnv = process.env.TEST_ENV || (isCI ? "mock" : "mock");
 const AUTH_FILE = ".auth/user.json";
 
-// Validate required environment variables for integration tests
 if (testEnv === "integration") {
   const requiredVars = [
     { name: "PUBLIC_SUPABASE_URL", secret: "PUBLIC_SUPABASE_URL" },
@@ -28,7 +27,6 @@ if (testEnv === "integration") {
   }
 }
 
-// Get environment variables with fallbacks
 const getEnvVar = (name: string, fallback?: string): string | undefined => {
   const value = process.env[name] || fallback;
   return value && value !== "" ? value : undefined;
@@ -50,30 +48,25 @@ export default defineConfig({
   },
 
   projects: [
-    // Setup project: Authenticate once and save storage state
     {
       name: "setup",
       testMatch: /.*\.setup\.ts/,
     },
-    // Main test project: Use saved storage state for authenticated tests
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
-        // Use storage state for authenticated tests
-        // If auth file doesn't exist, tests will need to handle authentication
         storageState: AUTH_FILE,
       },
       dependencies: ["setup"],
     },
-    // Unauthenticated tests (if needed)
     {
       name: "chromium-unauthenticated",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
-        storageState: undefined, // No authentication
+        storageState: undefined,
       },
       testMatch: /.*\.unauthenticated\.spec\.ts/,
     },
@@ -88,7 +81,6 @@ export default defineConfig({
     stderr: "pipe",
     env: Object.fromEntries(
       Object.entries({
-        // Use PUBLIC_ prefixed vars as primary, fallback to non-prefixed
         SUPABASE_URL: getEnvVar("SUPABASE_URL", process.env.PUBLIC_SUPABASE_URL),
         SUPABASE_KEY: getEnvVar("SUPABASE_KEY", process.env.PUBLIC_SUPABASE_ANON_KEY),
         PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL,

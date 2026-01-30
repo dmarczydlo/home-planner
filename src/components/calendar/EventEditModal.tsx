@@ -284,7 +284,6 @@ export function EventEditModal({
   };
 
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={handleClose}
@@ -298,7 +297,6 @@ export function EventEditModal({
       aria-label="Edit event"
       tabIndex={-1}
     >
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="glass-effect rounded-lg border border-primary/20 shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto scrollbar-modern"
         onClick={(e) => e.stopPropagation()}

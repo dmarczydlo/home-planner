@@ -87,7 +87,7 @@ export function EditProfileForm({ isOpen, onClose, initialFullName, initialAvata
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://example.com/avatar.jpg"
+              placeholder="https:
               disabled={isSubmitting}
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
@@ -76,12 +75,12 @@ describe("useOnboarding", () => {
         wrapper: OnboardingProvider,
       });
 
-      // Act - Try to go beyond step 4
+      // Act
       act(() => {
-        result.current.nextStep(); // Step 2
-        result.current.nextStep(); // Step 3
-        result.current.nextStep(); // Step 4
-        result.current.nextStep(); // Should stay at 4
+        result.current.nextStep();
+        result.current.nextStep();
+        result.current.nextStep();
+        result.current.nextStep();
       });
 
       // Assert
@@ -96,8 +95,8 @@ describe("useOnboarding", () => {
 
       // Act
       act(() => {
-        result.current.nextStep(); // Step 2
-        result.current.previousStep(); // Back to 1
+        result.current.nextStep();
+        result.current.previousStep();
       });
 
       // Assert
@@ -112,7 +111,7 @@ describe("useOnboarding", () => {
 
       // Act
       act(() => {
-        result.current.previousStep(); // Should stay at 1
+        result.current.previousStep();
       });
 
       // Assert

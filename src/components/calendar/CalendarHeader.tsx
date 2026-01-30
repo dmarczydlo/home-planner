@@ -7,7 +7,6 @@ interface CalendarHeaderProps {
 }
 
 export function CalendarHeader({ onRefresh, onSettingsClick, isRefreshing = false }: CalendarHeaderProps) {
-  // Only render if there are action buttons, otherwise return null
   if (!onRefresh && !onSettingsClick) {
     return null;
   }

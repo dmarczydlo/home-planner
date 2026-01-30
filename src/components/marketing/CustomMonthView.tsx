@@ -27,12 +27,10 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
   const calendarDays = useMemo(() => {
     const days: Date[] = [];
 
-    // Start from the first day of the week that contains monthStart
     const startDate = new Date(monthStart);
     const dayOfWeek = startDate.getDay();
     startDate.setDate(startDate.getDate() - dayOfWeek);
 
-    // Generate 42 days (6 weeks)
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
@@ -75,12 +73,12 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
 
   return (
     <div className="relative h-full w-full flex flex-col custom-month-view">
-      {/* Month header */}
+      
       <div className="sticky top-0 z-30 border-b border-primary/20 bg-background/95 backdrop-blur-xl px-4 sm:px-8 py-3 sm:py-4">
         <h2 className="text-xl sm:text-3xl font-black text-foreground">{formatMonthYear(monthStart)}</h2>
       </div>
 
-      {/* Day names header */}
+      
       <div className="border-b border-primary/20 bg-background/95 backdrop-blur-xl sticky top-[57px] sm:top-[73px] z-20">
         <div className="grid grid-cols-7">
           {DAYS.map((dayName, index) => (
@@ -93,7 +91,7 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
         </div>
       </div>
 
-      {/* Calendar grid */}
+      
       <div className="flex-1 overflow-auto">
         <div className="grid grid-cols-7" style={{ gridTemplateRows: "repeat(6, minmax(100px, 1fr))" }}>
           {calendarDays.map((day, index) => {
@@ -108,7 +106,7 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
                   !currentMonth ? "opacity-40" : ""
                 } ${today ? "bg-gradient-to-br from-primary/15 via-primary/10 to-secondary/5" : "hover:bg-card/20"}`}
               >
-                {/* Date number */}
+                
                 <div className="flex items-center justify-between mb-0.5 sm:mb-1">
                   <span
                     className={`text-xs sm:text-sm font-bold ${
@@ -126,7 +124,7 @@ export function CustomMonthView({ events, selectedDate }: CustomMonthViewProps) 
                   )}
                 </div>
 
-                {/* Events */}
+                
                 <div className="space-y-0.5 sm:space-y-1">
                   {dayEvents.slice(0, 2).map((event) => (
                     <div

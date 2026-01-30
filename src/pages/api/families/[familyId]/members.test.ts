@@ -26,7 +26,7 @@ describe("GET /api/families/[familyId]/members", () => {
     const family = await familyRepo.create({ name: "The Smiths" });
     familyId = family.id;
     await familyRepo.addMember(familyId, userId, "admin");
-    familyRepo.setUser(userId, { full_name: "John Doe", avatar_url: "https://example.com/avatar.jpg" });
+    familyRepo.setUser(userId, { full_name: "John Doe", avatar_url: "https:
   });
 
   function createMockContext(params: { familyId?: string; userId?: string }): APIContext {

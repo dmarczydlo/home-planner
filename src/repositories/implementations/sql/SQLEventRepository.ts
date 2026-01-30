@@ -314,8 +314,6 @@ export class SQLEventRepository implements EventRepository {
       return;
     }
 
-    // Insert participants with explicit null handling for the polymorphic relationship
-    // After migration, the primary key is 'id' (not the composite key), so NULLs are allowed
     const inserts: Database["public"]["Tables"]["event_participants"]["Insert"][] = participants.map((p) => {
       if (!p.id || !p.type) {
         throw new Error(`Invalid participant: ${JSON.stringify(p)}`);

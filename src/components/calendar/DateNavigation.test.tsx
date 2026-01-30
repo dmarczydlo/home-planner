@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@/test/utils/render";
@@ -65,7 +64,7 @@ describe("DateNavigation", () => {
       const prevButton = screen.getByRole("button", { name: /previous/i });
       await user.click(prevButton);
 
-      // Assert - Date should have changed (we can't easily test the exact date without accessing context)
+      // Assert
       expect(prevButton).toBeInTheDocument();
     });
 
@@ -97,14 +96,14 @@ describe("DateNavigation", () => {
         </CalendarProvider>
       );
 
-      // Assert - Today button should be visible when not on today
+      // Assert
       const todayButton = screen.getByRole("button", { name: /today/i });
       expect(todayButton).toBeInTheDocument();
 
       // Act
       await user.click(todayButton);
 
-      // Assert - After clicking today, the button should disappear (because we're now on today)
+      // Assert
       await waitFor(() => {
         expect(screen.queryByRole("button", { name: /today/i })).not.toBeInTheDocument();
       });

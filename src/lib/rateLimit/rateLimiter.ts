@@ -2,7 +2,7 @@ import type { Result } from "@/domain/result";
 import { ok, err } from "@/domain/result";
 import { RateLimitError } from "@/domain/errors";
 
-const SYNC_RATE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+const SYNC_RATE_LIMIT_MS = 5 * 60 * 1000;
 
 class RateLimitStore {
   private lastSyncTimes = new Map<string, number>();
@@ -33,7 +33,7 @@ const rateLimitStore = new RateLimitStore();
 
 setInterval(() => {
   rateLimitStore.clearExpired();
-}, 60 * 1000); // Clean up expired entries every minute
+}, 60 * 1000);
 
 export class RateLimiter {
   async checkSyncRateLimit(calendarId: string): Promise<Result<void, RateLimitError>> {

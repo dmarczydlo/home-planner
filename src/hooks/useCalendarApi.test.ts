@@ -1,11 +1,9 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@/test/utils/render";
 import { useCalendarApi } from "./useCalendarApi";
 import * as supabaseAuth from "@/lib/auth/supabaseAuth";
 
-// Mock fetch
 global.fetch = vi.fn();
 
 describe("useCalendarApi", () => {
@@ -18,7 +16,6 @@ describe("useCalendarApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useCalendarApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isConnecting).toBe(false);
@@ -34,7 +31,6 @@ describe("useCalendarApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useCalendarApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isConnecting).toBe(false);
@@ -50,7 +46,6 @@ describe("useCalendarApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useCalendarApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isConnecting).toBe(false);
@@ -66,7 +61,6 @@ describe("useCalendarApi", () => {
       // Arrange & Act
       const { result } = renderHook(() => useCalendarApi());
 
-      // Let mount effects settle to avoid React act() warnings
       await waitFor(
         () => {
           expect(result.current.isConnecting).toBe(false);
@@ -86,7 +80,7 @@ describe("useCalendarApi", () => {
         access_token: "mock-token",
       };
       const mockResponse = {
-        auth_url: "https://example.com/auth",
+        auth_url: "https:
         calendar: {
           id: "cal-123",
           name: "Test Calendar",
@@ -118,8 +112,7 @@ describe("useCalendarApi", () => {
         promise = result.current.connectCalendar(command);
       });
 
-      // Assert - State should be updating, but might complete too fast
-      // Check that the function was called and promise exists
+      // Assert
       expect(promise!).toBeDefined();
       expect(result.current.error).toBeNull();
 
@@ -165,7 +158,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act - Start request but keep it pending so we can assert loading state
+      // Act
       const command = { provider: "google" as const };
       let promise: Promise<any> | null = null;
 
@@ -173,7 +166,7 @@ describe("useCalendarApi", () => {
         promise = result.current.connectCalendar(command);
       });
 
-      // Assert - State updates are async
+      // Assert
       await waitFor(() => {
         expect(result.current.isConnecting).toBe(true);
       });
@@ -185,7 +178,7 @@ describe("useCalendarApi", () => {
       (resolveFetch as (value: any) => void)({
         ok: true,
         status: 200,
-        json: async () => ({ auth_url: "https://example.com/auth" }),
+        json: async () => ({ auth_url: "https:
       } as Response);
 
       await act(async () => {
@@ -222,7 +215,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { provider: "google" as const };
       await act(async () => {
         await expect(result.current.connectCalendar(command)).rejects.toThrow();
@@ -247,7 +240,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       const command = { provider: "google" as const };
       await act(async () => {
         await expect(result.current.connectCalendar(command)).rejects.toThrow("Not authenticated");
@@ -288,7 +281,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act - Wrap in act() to avoid React warnings
+      // Act
       let promise: Promise<any>;
 
       await act(async () => {
@@ -335,7 +328,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       await act(async () => {
         await expect(result.current.listCalendars()).rejects.toThrow();
       });
@@ -358,7 +351,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act & Assert - Wrap in act() to avoid React warnings
+      // Act & Assert
       await act(async () => {
         await expect(result.current.listCalendars()).rejects.toThrow("Not authenticated");
       });
@@ -383,7 +376,6 @@ describe("useCalendarApi", () => {
         },
       } as any);
 
-      // First call fails
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
@@ -392,7 +384,7 @@ describe("useCalendarApi", () => {
 
       const { result } = renderHook(() => useCalendarApi());
 
-      // Act - First attempt fails - Wrap in act() to avoid React warnings
+      // Act
       await act(async () => {
         await expect(result.current.listCalendars()).rejects.toThrow();
       });
@@ -401,14 +393,13 @@ describe("useCalendarApi", () => {
         expect(result.current.error).toBe("Error");
       });
 
-      // Second call succeeds
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ calendars: [] }),
       } as Response);
 
-      // Act - Second attempt - Wrap in act() to avoid React warnings
+      // Act
       await act(async () => {
         await result.current.listCalendars();
       });

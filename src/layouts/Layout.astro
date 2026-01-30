@@ -35,8 +35,8 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content="The modern family calendar app that keeps everyone in sync." />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https:
+    <link rel="preconnect" href="https:
   </head>
   <body>
     {showNavbar && <Navbar client:load />}
@@ -50,7 +50,7 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
         const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
         if (!supabaseUrl) return;
 
-        const storageKey = `sb-${supabaseUrl.split("//")[1].split(".")[0]}-auth-token`;
+        const storageKey = `sb-${supabaseUrl.split("
         const storedSession = localStorage.getItem(storageKey);
 
         if (storedSession) {
@@ -71,13 +71,11 @@ const { title = "Home Planner", showNavbar = true } = Astro.props;
                     expires_in: session.expires_in,
                   }),
                 }).catch(() => {
-                  // Silently fail - cookie sync is best effort
                 });
               }
             }
           } catch (e) {
             console.error("Error parsing session:", e);
-            // Ignore parsing errors
           }
         }
       })();

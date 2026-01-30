@@ -1,6 +1,6 @@
 import { createHmac, randomBytes } from "crypto";
 
-const STATE_TOKEN_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
+const STATE_TOKEN_EXPIRY_MS = 10 * 60 * 1000;
 const NONCE_LENGTH = 16;
 
 interface StateTokenPayload {

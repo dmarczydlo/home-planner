@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@/test/utils/render";
@@ -6,7 +5,6 @@ import userEvent from "@testing-library/user-event";
 import { CalendarView } from "./CalendarView";
 import { createMockEvent } from "@/test/utils/mock-data";
 
-// Mock Supabase auth BEFORE any imports that use it
 vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/auth/supabaseAuth")>();
   const mockUnsubscribe = vi.fn();
@@ -19,7 +17,6 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
       onAuthStateChange: vi.fn((callback) => {
-        // Call synchronously to avoid async state updates that trigger act() warnings
         callback("SIGNED_OUT", null);
         return {
           data: {
@@ -37,10 +34,8 @@ vi.mock("@/lib/auth/supabaseAuth", async (importOriginal) => {
   };
 });
 
-// Mock fetch
 global.fetch = vi.fn();
 
-// Mock child components that are complex
 vi.mock("./EventEditModal", () => ({
   EventEditModal: ({ isOpen, onClose }: any) => (isOpen ? <div data-testid="event-edit-modal">Edit Modal</div> : null),
 }));
@@ -101,8 +96,6 @@ describe("CalendarView", () => {
   const mockFamilyId = "test-family-123";
 
   beforeEach(() => {
-    // Only clear fetch mock - DO NOT use vi.clearAllMocks() or vi.restoreAllMocks()
-    // as they would clear the Supabase auth module mock from render.tsx
     if (vi.isMockFunction(global.fetch)) {
       vi.mocked(global.fetch).mockClear();
     }
@@ -212,7 +205,7 @@ describe("CalendarView", () => {
         expect(screen.getByTestId("week-view")).toBeInTheDocument();
       });
 
-      // Act - Switch to day view
+      // Act
       const dayTab = screen.getByRole("tab", { name: /day/i });
       await user.click(dayTab);
 
@@ -312,7 +305,6 @@ describe("CalendarView", () => {
         expect(screen.getByRole("button", { name: /create new event/i })).toBeInTheDocument();
       });
 
-      // Open create modal
       const fabButton = screen.getByRole("button", { name: /create new event/i });
       await user.click(fabButton);
 
@@ -320,10 +312,8 @@ describe("CalendarView", () => {
         expect(screen.getByRole("heading", { name: /create new event/i })).toBeInTheDocument();
       });
 
-      // Get initial fetch call count
       const initialFetchCount = vi.mocked(global.fetch).mock.calls.length;
 
-      // Mock auth for event creation
       const mockSession = {
         access_token: "mock-token",
       };
@@ -345,21 +335,18 @@ describe("CalendarView", () => {
         },
       } as any);
 
-      // Mock event creation
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ id: "event-123" }),
       } as Response);
 
-      // Mock refetch after event creation
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ events: [createMockEvent()] }),
       } as Response);
 
-      // Fill form and submit
       const titleInput = screen.getByLabelText(/event title/i);
       const startInput = screen.getByLabelText(/start time/i);
       const endInput = screen.getByLabelText(/end time/i);
@@ -377,7 +364,7 @@ describe("CalendarView", () => {
       const submitButton = screen.getByRole("button", { name: /create event/i });
       await user.click(submitButton);
 
-      // Assert - Should have made additional fetch call for refetch after event creation
+      // Assert
       await waitFor(
         () => {
           expect(vi.mocked(global.fetch).mock.calls.length).toBeGreaterThan(initialFetchCount + 1);
@@ -437,7 +424,7 @@ describe("CalendarView", () => {
       // Act
       render(<CalendarView familyId={mockFamilyId} />);
 
-      // Assert - Component should render while loading
+      // Assert
       expect(screen.getByRole("button", { name: /create new event/i })).toBeInTheDocument();
 
       if (!resolveFetch) {

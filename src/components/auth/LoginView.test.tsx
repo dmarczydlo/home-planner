@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/utils/render";
@@ -195,7 +194,7 @@ describe("LoginView", () => {
       // Arrange & Act
       const { container } = render(<LoginView />);
 
-      // Assert - Check for card container with padding classes
+      // Assert
       const card = container.querySelector(".bg-card\\/80");
       expect(card).toBeInTheDocument();
       if (card) {

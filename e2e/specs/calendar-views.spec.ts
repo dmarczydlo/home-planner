@@ -6,7 +6,6 @@ test.describe("Calendar Views Navigation", () => {
 
   test.beforeEach(async ({ page }) => {
     calendarPage = new CalendarPage(page);
-    // Wait for page to be ready before each test
     await page.waitForLoadState("domcontentloaded");
   });
 
@@ -23,7 +22,6 @@ test.describe("Calendar Views Navigation", () => {
       // Assert
       await calendarPage.viewSwitcher.expectDayActive();
       await calendarPage.expectDayViewVisible();
-      // Note: URL doesn't change when switching views client-side
     });
 
     test("should switch from Week view to Month view", async ({ page }) => {
@@ -38,7 +36,6 @@ test.describe("Calendar Views Navigation", () => {
       // Assert
       await calendarPage.viewSwitcher.expectMonthActive();
       await calendarPage.expectMonthViewVisible();
-      // Note: URL doesn't change when switching views client-side
     });
 
     test("should switch from Week view to Agenda view", async ({ page }) => {
@@ -53,7 +50,6 @@ test.describe("Calendar Views Navigation", () => {
       // Assert
       await calendarPage.viewSwitcher.expectAgendaActive();
       await calendarPage.expectAgendaViewVisible();
-      // Note: URL doesn't change when switching views client-side
     });
 
     test("should switch back to Week view from Day view", async ({ page }) => {
@@ -68,7 +64,6 @@ test.describe("Calendar Views Navigation", () => {
       // Assert
       await calendarPage.viewSwitcher.expectWeekActive();
       await calendarPage.expectWeekViewVisible();
-      // Note: URL doesn't change when switching views client-side
     });
 
     test("should display all view options", async ({ page }) => {
@@ -126,14 +121,12 @@ test.describe("Calendar Views Navigation", () => {
     test("should navigate to previous date range", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      // Wait for page to be fully loaded
       await page.waitForLoadState("networkidle");
       const initialDateText = (await calendarPage.dateNavigation.getDateDisplayText()).trim();
 
       // Act
       await calendarPage.dateNavigation.clickPrevious();
 
-      // Wait for date to change - use polling approach with more attempts
       let attempts = 0;
       let newDateText = initialDateText;
       while (attempts < 50 && newDateText === initialDateText) {
@@ -149,14 +142,12 @@ test.describe("Calendar Views Navigation", () => {
     test("should navigate to next date range", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      // Wait for page to be fully loaded
       await page.waitForLoadState("networkidle");
       const initialDateText = (await calendarPage.dateNavigation.getDateDisplayText()).trim();
 
       // Act
       await calendarPage.dateNavigation.clickNext();
 
-      // Wait for date to change - use polling approach with more attempts
       let attempts = 0;
       let newDateText = initialDateText;
       while (attempts < 50 && newDateText === initialDateText) {
@@ -172,14 +163,10 @@ test.describe("Calendar Views Navigation", () => {
     test("should navigate to today's date", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      // Move away from today if we're already there
       const initialDateText = await calendarPage.dateNavigation.getDateDisplayText();
       await calendarPage.dateNavigation.clickNext();
-      // Wait a bit and check if Today button appears
       await page.waitForTimeout(500);
-
-      // Only proceed if Today button is visible (meaning we moved away from today)
-      await page.waitForTimeout(300); // Wait for button state to update
+      await page.waitForTimeout(300);
       const todayButtonVisible = await calendarPage.dateNavigation.todayButton.isVisible().catch(() => false);
       if (todayButtonVisible) {
         // Act
@@ -188,7 +175,6 @@ test.describe("Calendar Views Navigation", () => {
         // Assert
         await calendarPage.dateNavigation.expectTodayNotVisible();
       } else {
-        // If we're already on today, just verify Today button is not visible
         await calendarPage.dateNavigation.expectTodayNotVisible();
       }
     });
@@ -196,19 +182,15 @@ test.describe("Calendar Views Navigation", () => {
     test("should show Today button when not on current date", async ({ page }) => {
       // Arrange
       await calendarPage.gotoWeek();
-      // Check if we're already on today
       const todayButtonInitiallyVisible = await calendarPage.dateNavigation.todayButton.isVisible().catch(() => false);
 
       if (!todayButtonInitiallyVisible) {
-        // We're on today, so navigate away
         await calendarPage.dateNavigation.clickNext();
-        await page.waitForTimeout(300); // Wait for button state to update
+        await page.waitForTimeout(300);
       }
 
-      // Assert - Today button should be visible when not on current date
-      // Note: This test may be flaky if we're already on a future date
+      // Assert
       const todayButtonVisible = await calendarPage.dateNavigation.todayButton.isVisible().catch(() => false);
-      // If Today button is not visible, we might already be on a future date, which is also valid
       expect(todayButtonVisible || !todayButtonInitiallyVisible).toBeTruthy();
     });
 
@@ -216,7 +198,7 @@ test.describe("Calendar Views Navigation", () => {
       // Arrange
       await calendarPage.gotoWeek();
 
-      // Act - Navigate to today if not already there
+      // Act
       if (await calendarPage.dateNavigation.todayButton.isVisible()) {
         await calendarPage.dateNavigation.clickToday();
       }
@@ -244,7 +226,6 @@ test.describe("Calendar Views Navigation", () => {
 
       // Assert
       await calendarPage.expectDayViewVisible();
-      // Note: Empty state or events will be shown based on data
     });
 
     test("should display events correctly in Week view", async ({ page }) => {
@@ -276,8 +257,6 @@ test.describe("Calendar Views Navigation", () => {
       await calendarPage.gotoWeek();
 
       // Assert
-      // Empty state may or may not be visible depending on implementation
-      // This test verifies the view loads successfully
       await calendarPage.expectWeekViewVisible();
     });
   });
@@ -323,7 +302,6 @@ test.describe("Calendar Views Navigation", () => {
       // Act
       await calendarPage.dateNavigation.clickNext();
 
-      // Wait for date to change - use polling approach
       let attempts = 0;
       let newDateText = initialDateText;
       while (attempts < 50 && newDateText === initialDateText) {
@@ -333,7 +311,6 @@ test.describe("Calendar Views Navigation", () => {
       }
 
       // Assert
-      // Day view shows full date, so it should change
       expect(newDateText).not.toBe(initialDateText);
     });
 
@@ -346,7 +323,6 @@ test.describe("Calendar Views Navigation", () => {
       // Act
       await calendarPage.dateNavigation.clickNext();
 
-      // Wait for date to change - use polling approach
       let attempts = 0;
       let newDateText = initialDateText;
       while (attempts < 50 && newDateText === initialDateText) {
@@ -356,7 +332,6 @@ test.describe("Calendar Views Navigation", () => {
       }
 
       // Assert
-      // Week view shows date range, so it should change
       expect(newDateText).not.toBe(initialDateText);
     });
 
@@ -370,11 +345,7 @@ test.describe("Calendar Views Navigation", () => {
 
       // Assert
       const newDateText = await calendarPage.dateNavigation.getDateDisplayText();
-      // Month view shows "Month Year", clicking next should change month
-      // Note: If we're at the end of a month, it might still show same month briefly
-      // So we check if it changed OR if we're at a boundary
       if (newDateText === initialDateText) {
-        // If same, click again to ensure we move to next month
         await calendarPage.dateNavigation.clickNext();
         const finalDateText = await calendarPage.dateNavigation.getDateDisplayText();
         expect(finalDateText).not.toBe(initialDateText);
@@ -393,10 +364,7 @@ test.describe("Calendar Views Navigation", () => {
 
       // Assert
       const newDateText = await calendarPage.dateNavigation.getDateDisplayText();
-      // Agenda view might show "Upcoming Events" which doesn't change
-      // So we just verify the navigation button works (no error thrown)
-      // If the text is the same, that's okay for Agenda view
-      expect(newDateText).toBeTruthy(); // Just verify we got some text
+      expect(newDateText).toBeTruthy();
     });
   });
 
@@ -406,8 +374,6 @@ test.describe("Calendar Views Navigation", () => {
       await calendarPage.gotoDay();
 
       // Assert
-      // Current date indicator visibility depends on implementation
-      // This test verifies the view loads successfully
       await calendarPage.expectDayViewVisible();
     });
 

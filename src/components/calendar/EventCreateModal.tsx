@@ -120,10 +120,6 @@ export function EventCreateModal({ familyId, isOpen, onClose, onEventCreated }: 
     validateEvent,
   ]);
 
-  // Reset form data when modal opens to use current date defaults
-  // This ensures that opening the modal always shows defaults based on the current date,
-  // even if the date changed since the component was mounted
-  // Note: We intentionally only depend on isOpen to reset form when modal opens/closes
   // eslint-disable-next-line react-compiler/react-compiler, react-hooks/exhaustive-deps
   useEffect(() => {
     if (isOpen) {
